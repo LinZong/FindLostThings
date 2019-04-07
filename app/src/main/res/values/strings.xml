@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">FindLostThings</string>
+    <string name="CannotConnectToServer">Cannot connect to server. Please check network status.</string>
 </resources>
