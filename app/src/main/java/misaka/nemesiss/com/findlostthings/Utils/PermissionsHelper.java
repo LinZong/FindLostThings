@@ -32,7 +32,6 @@ public class PermissionsHelper
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     public static ArrayList<String> GetPermissionsList()
