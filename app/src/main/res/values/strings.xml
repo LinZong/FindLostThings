@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">FindLostThings</string>
+    <string name="app_name">朝花夕拾</string>
     <string name="CannotConnectToServer">Cannot connect to server. Please check network status.</string>
 </resources>
