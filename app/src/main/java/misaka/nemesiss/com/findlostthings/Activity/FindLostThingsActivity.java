@@ -32,11 +32,11 @@ public class FindLostThingsActivity extends AppCompatActivity
 
     public static void FinishAllActivities()
     {
-        if(activities!=null && activities.size()>0)
+        if (activities != null && activities.size() > 0)
         {
-            for(Activity activity : activities)
+            for (Activity activity : activities)
             {
-                if(!activity.isFinishing())
+                if (!activity.isFinishing())
                 {
                     activity.finish();
                 }
