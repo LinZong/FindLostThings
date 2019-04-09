@@ -8,6 +8,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class HMacSha256
 {
+    //加密用的
     public static String Encrypt(String message) throws NoSuchAlgorithmException, InvalidKeyException
     {
         String secret = "FINDLOSTTHINGS-HMAC-ENCODER";
