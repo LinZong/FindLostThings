@@ -7,4 +7,15 @@
         android:layout_height="match_parent"
         tools:context=".Activity.SplashActivity">
 
+    <TextView
+            android:textSize="18sp"
+            android:textColor="#000"
+            android:text="华南理工大学 专用版"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/SplashActivity_SchoolName" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="116dp"
+    />
 </android.support.constraint.ConstraintLayout>
