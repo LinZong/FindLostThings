@@ -1,6 +1,9 @@
 package misaka.nemesiss.com.findlostthings.Activity;
 
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.widget.Button;
 import android.widget.TextView;
 import butterknife.BindView;
@@ -16,6 +19,10 @@ public class MainActivity extends FindLostThingsActivity
     Button greetBtn;
     @BindView(R.id.MainActivity_GreetText)
     TextView greetText;
+    @BindView(R.id.MainActivity_Toolbar)
+    Toolbar toolbar;
+    // Instance from Menu inflate
+    SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -23,8 +30,7 @@ public class MainActivity extends FindLostThingsActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
-
+        setSupportActionBar(toolbar);
         RxView.clicks(greetBtn)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe((aVoids)->greetText.setText("Hello guys who are in 失物招领App dev group!"));

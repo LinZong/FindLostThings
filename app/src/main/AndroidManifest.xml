@@ -14,6 +14,10 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <activity android:name=".Activity.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
         <activity
                 android:name="com.tencent.tauth.AuthActivity"
@@ -33,10 +37,7 @@
         />
         <activity android:name=".Activity.SplashActivity"
                   android:theme="@style/SplashScreenTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
+
         </activity>
     </application>
 

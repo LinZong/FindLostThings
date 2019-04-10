@@ -1,4 +1,4 @@
-package misaka.nemesiss.com.findlostthings.Activity;
+package misaka.nemesiss.com.findlostthings.Services.User;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,7 +17,7 @@ import misaka.nemesiss.com.findlostthings.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class CallQQ extends AppCompatActivity  {
+public class QQAuthLogin extends AppCompatActivity  {
     private Button login, logout;
     private ImageView img;
     private TextView nickName;
@@ -133,7 +133,7 @@ public class CallQQ extends AppCompatActivity  {
                 name = jsonObject.getString("nickname");
                 imgUrl = jsonObject.getString("figureurl_qq_2");  //头像url
                 nickName.setText(name);
-                Glide.with(CallQQ.this).load(imgUrl).into(img);
+                Glide.with(QQAuthLogin.this).load(imgUrl).into(img);
             } catch (Exception e) {
                 e.printStackTrace();
             }
