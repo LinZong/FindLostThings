@@ -35,6 +35,10 @@
                 android:theme="@android:style/Theme.Translucent.NoTitleBar"
                 android:configChanges="orientation|keyboardHidden|screenSize"
         />
+        <activity android:name=".Activity.SplashActivity"
+                  android:theme="@style/SplashScreenTheme">
+
+        </activity>
     </application>
 
 </manifest>
