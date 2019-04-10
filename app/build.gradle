@@ -27,6 +27,9 @@ android {
         debug {
             signingConfig signingConfigs.签名
         }
+        debug {
+            signingConfig signingConfigs.签名
+        }
     }
     compileOptions {
         targetCompatibility 1.8
