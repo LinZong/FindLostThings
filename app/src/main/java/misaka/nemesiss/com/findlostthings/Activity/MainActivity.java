@@ -1,28 +1,22 @@
 package misaka.nemesiss.com.findlostthings.Activity;
 
+import android.graphics.LinearGradient;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.widget.Button;
-import android.widget.TextView;
+import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
+import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.jakewharton.rxbinding.view.RxView;
 import misaka.nemesiss.com.findlostthings.R;
-import rx.android.schedulers.AndroidSchedulers;
 
 public class MainActivity extends FindLostThingsActivity
 {
-
-    @BindView(R.id.MainActivity_GreetButton)
-    Button greetBtn;
-    @BindView(R.id.MainActivity_GreetText)
-    TextView greetText;
-    @BindView(R.id.MainActivity_Toolbar)
-    Toolbar toolbar;
-    // Instance from Menu inflate
-    SearchView searchView;
+    @BindView(R.id.MainActivity_Search)
+    ConstraintLayout search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -30,10 +24,27 @@ public class MainActivity extends FindLostThingsActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
-        RxView.clicks(greetBtn)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe((aVoids)->greetText.setText("Hello guys who are in 失物招领App dev group!"));
+
+        search.setOnClickListener(view -> LoadSearchAnimation());
+
+    }
+
+    private void LoadSearchAnimation()
+    {
+        View view = getWindow().getDecorView();
+        int CurrentScreenHeight = view.getHeight();
+        int ComponentHeight = search.getHeight();
+        float ScaleTime = (float)CurrentScreenHeight / ComponentHeight;
+        ScaleAnimation scaleAnimation = new ScaleAnimation(1.0f,1.0f,1.0f,ScaleTime,Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF, 0);
+        scaleAnimation.setFillAfter(true);
+        scaleAnimation.setFillBefore(false);
+        scaleAnimation.setFillEnabled(true);
+        scaleAnimation.setRepeatCount(0);
+        scaleAnimation.setDuration(500);
+        scaleAnimation.setStartOffset(500);
+        search.startAnimation(scaleAnimation);
+        search.setAlpha(1);
+        search.animate().alpha(0).setDuration(500).setStartDelay(500);
 
     }
 }

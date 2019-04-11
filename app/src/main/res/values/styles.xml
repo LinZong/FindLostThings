@@ -11,7 +11,9 @@
     <style name="SplashScreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_bg_drawable</item>
     </style>
-    <style name="AppSearchView" parent="Widget.AppCompat.SearchView" >
-        <item name="android:textSize">14sp</item>
+    <style name="WhiteConstrain" parent="Theme.AppCompat.Light" >
+        <item name="colorPrimary">#ffffff</item>
+        <item name="colorPrimaryDark">#ffffff</item>
+        <item name="colorAccent">#ffffff</item>
     </style>
 </resources>
