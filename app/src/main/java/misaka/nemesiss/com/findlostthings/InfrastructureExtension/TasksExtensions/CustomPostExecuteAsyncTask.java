@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 
 public abstract class CustomPostExecuteAsyncTask<TParam,TProgress,TResult> extends AsyncTask<TParam,TProgress,TResult>
 {
+    //
     private TaskPostExecuteWrapper<TResult> wrapper;
     public CustomPostExecuteAsyncTask(TaskPostExecuteWrapper<TResult> DoInPostExecute)
     {

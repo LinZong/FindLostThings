@@ -49,7 +49,7 @@ public class AppUtils
         Toast.makeText(FindLostThingsApplication.getContext(), R.string.CannotConnectToServer,Toast.LENGTH_SHORT).show();
     }
 
-    public static List<Pair<String,String>> BearerAuthRequestHeaders(String token)
+    public static List<Pair<String,String>> BearerAuthRequestHeaders(String token) //暂时用不到
     {
         List<Pair<String,String>> header = new ArrayList<>();
         header.add(new Pair<>("Authorization","Bearer "+token));
@@ -84,7 +84,7 @@ public class AppUtils
         return clientInstance;
     }
 
-    public static Date UnixStamp2Date(long timeStamp)
+    public static Date UnixStamp2Date(long timeStamp) //1970年到现在过了多少秒为时间戳UnixStamp
     {
         //String  formats = "yyyy-MM-dd HH:mm:ss";
         Long timestamp = timeStamp * 1000;
@@ -101,7 +101,7 @@ public class AppUtils
         return TokenDateFormatter().format(UnixStamp2Date(unix));
     }
 
-    public static void ToolbarShowReturnButton(AppCompatActivity activity, Toolbar tb){
+    public static void ToolbarShowReturnButton(AppCompatActivity activity, Toolbar tb){//toolbar返回键
         activity.setSupportActionBar(tb);
         ActionBar ab = activity.getSupportActionBar();
         if(ab!=null)

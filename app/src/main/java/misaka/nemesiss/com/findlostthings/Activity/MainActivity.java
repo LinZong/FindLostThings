@@ -29,7 +29,7 @@ public class MainActivity extends FindLostThingsActivity
 
     }
 
-    private void LoadSearchAnimation()
+    private void LoadSearchAnimation()//动画
     {
         View view = getWindow().getDecorView();
         int CurrentScreenHeight = view.getHeight();
