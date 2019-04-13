@@ -73,7 +73,7 @@ public class APIDocs {
                     Request request=new Request.Builder()
                             .url(FullUserInfo)
                             .addHeader(AccessToken,String.valueOf(SnowflakeID))
-                            .post(requestBody)
+                            .put(requestBody)
                             .build();
                     Response response=okHttpClient.newCall(request).execute();
                     if(response.isSuccessful())
