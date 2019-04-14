@@ -3,31 +3,31 @@ package misaka.nemesiss.com.findlostthings.Tasks;
 import com.google.gson.Gson;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.CustomPostExecuteAsyncTask;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.TaskPostExecuteWrapper;
-import misaka.nemesiss.com.findlostthings.Model.Response.LostThingsCategoryPartition;
+import misaka.nemesiss.com.findlostthings.Model.Response.SchoolInfoResponse;
 import misaka.nemesiss.com.findlostthings.Services.User.APIDocs;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
 import java.util.concurrent.TimeUnit;
 
-public class GetLostThingsCategoryPartitionTask extends CustomPostExecuteAsyncTask<Integer, Void, LostThingsCategoryPartition>{
+public class GetSupportSchoolsTask extends CustomPostExecuteAsyncTask<Void,Void, SchoolInfoResponse> {
     private OkHttpClient okHttpClient;
-    public GetLostThingsCategoryPartitionTask(TaskPostExecuteWrapper<LostThingsCategoryPartition> DoInPostExecute) {
+    public GetSupportSchoolsTask(TaskPostExecuteWrapper<SchoolInfoResponse> DoInPostExecute) {
         super(DoInPostExecute);
+        APIDocs.encryptionAccessToken();
     }
-
     @Override
-    protected LostThingsCategoryPartition doInBackground(Integer... IDs) {
+    protected SchoolInfoResponse doInBackground(Void... voids) {
         try {
-            String VariedUrl =(APIDocs.FullLostThingsCategoryPartition + IDs[0]);
             Request request = new Request.Builder()
-                    .url(VariedUrl)
+                    .url(APIDocs.FullSchoolInfo)
                     .build();
-            Response response2 = okHttpClient.newCall(request).execute();
-            if (response2.isSuccessful()){
-                String responseData2 = response2.body().string();
+            Response response = okHttpClient.newCall(request).execute();
+            if (response.isSuccessful()){
+                String responseData = response.body().string();
                 Gson gson = new Gson();
-                LostThingsCategoryPartition lostThingsCategoryPartition = gson.fromJson(responseData2, misaka.nemesiss.com.findlostthings.Model.Response.LostThingsCategoryPartition.class);
+                SchoolInfoResponse schoolInfoRespose = gson.fromJson(responseData, SchoolInfoResponse.class);
             }
 
         } catch (Exception e) {
@@ -41,4 +41,5 @@ public class GetLostThingsCategoryPartitionTask extends CustomPostExecuteAsyncTa
         super.onPreExecute();
         okHttpClient = new OkHttpClient.Builder().connectTimeout(4500, TimeUnit.MILLISECONDS).build();
     }
+
 }

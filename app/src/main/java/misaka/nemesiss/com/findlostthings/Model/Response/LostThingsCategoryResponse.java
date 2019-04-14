@@ -4,7 +4,7 @@ package misaka.nemesiss.com.findlostthings.Model.Response;
 
         import java.util.List;
 
-public class LostThingsCategoryResponse extends CommonRespose {
+public class LostThingsCategoryResponse extends CommonResponse {
     private List<LostThingsCategory> CategoryList;
 
     public List<LostThingsCategory> getCategoryList() {

@@ -6,56 +6,50 @@ import com.google.gson.Gson;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.CustomPostExecuteAsyncTask;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.TaskPostExecuteWrapper;
-import misaka.nemesiss.com.findlostthings.Model.Request.LoginAccountInfo.UserInformation;
-import misaka.nemesiss.com.findlostthings.Model.Response.UserInfoResponse;
-import misaka.nemesiss.com.findlostthings.Model.Response.UserInfoUpdateResponse;
+import misaka.nemesiss.com.findlostthings.Model.Response.GetStoreBucketKeyResponse;
 import misaka.nemesiss.com.findlostthings.Services.User.APIDocs;
-import okhttp3.*;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import java.util.concurrent.TimeUnit;
 import static android.content.Context.MODE_PRIVATE;
 
-public class UpdateUserInformationAsyncTask extends CustomPostExecuteAsyncTask<String,Void, UserInfoResponse>{
+public class GetStoreBucketKeyTask extends CustomPostExecuteAsyncTask<Void,Void, GetStoreBucketKeyResponse> {
+
     private OkHttpClient okHttpClient;
     String EncryptedAccessToken = null;
     Context ctx = FindLostThingsApplication.getContext();
     SharedPreferences preferences = ctx.getSharedPreferences("userIDData", MODE_PRIVATE);
     long SnowflakeID = preferences.getLong("Snowflake ID", 0);
 
-    public UpdateUserInformationAsyncTask(TaskPostExecuteWrapper<UserInfoResponse> DoInPostExecute) {
+    public GetStoreBucketKeyTask (TaskPostExecuteWrapper<GetStoreBucketKeyResponse> DoInPostExecute) {
         super(DoInPostExecute);
         APIDocs.encryptionAccessToken();
     }
-
-
     @Override
-    protected UserInfoResponse doInBackground(String... information) {
+    protected GetStoreBucketKeyResponse doInBackground(Void... voids) {
         try {
-            UserInformation userInfo = new UserInformation();
-            userInfo.setQQ(information[0]);
-            userInfo.setWxID(information[1]);
-            userInfo.setPhoneNumber(information[2]);
-            userInfo.setEmail(information[3]);
-            Gson gson = new Gson();
-            String result = gson.toJson(userInfo, UserInformation.class);
-            RequestBody requestBody = FormBody.create(MediaType.parse("application/json"), result);
             Request request = new Request.Builder()
-                    .url(APIDocs.FullUserInfo)
+                    .url(APIDocs.FullGetStoreBucketKey)
                     .addHeader(EncryptedAccessToken, String.valueOf(SnowflakeID))
-                    .put(requestBody)
                     .build();
             Response response = okHttpClient.newCall(request).execute();
-            if (response.isSuccessful()) {
+            if (response.isSuccessful()){
                 String responseData = response.body().string();
-                UserInfoUpdateResponse userInfoRespose = gson.fromJson(responseData, UserInfoUpdateResponse.class);
+                Gson gson = new Gson();
+               GetStoreBucketKeyResponse getStoreBucketKeyRespose = gson.fromJson(responseData, GetStoreBucketKeyResponse.class);
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
+
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
         okHttpClient = new OkHttpClient.Builder().connectTimeout(4500, TimeUnit.MILLISECONDS).build();
     }
+
 }

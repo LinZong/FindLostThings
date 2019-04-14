@@ -1,6 +1,6 @@
 package misaka.nemesiss.com.findlostthings.Model.Response;
 
-public class LoginAccountResponse extends CommonRespose {
+public class LoginAccountResponse extends CommonResponse {
     private long UserID;
     private String LastLoginDeviceAndroidID;
 

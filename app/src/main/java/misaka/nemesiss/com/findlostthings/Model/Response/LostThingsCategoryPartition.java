@@ -2,16 +2,16 @@ package misaka.nemesiss.com.findlostthings.Model.Response;
 
 import misaka.nemesiss.com.findlostthings.Model.LostThingsCategory;
 
-public class LostThingsCategoryPartition extends CommonRespose {
+public class LostThingsCategoryPartition extends CommonResponse {
     private int CategoryId;
-    private LostThingsCategory lostThingsCategory;
+    private LostThingsCategory CategoryDetails;
 
     public void setCategoryId(int categoryId) {
         CategoryId = categoryId;
     }
 
     public void setLostThingsCategory(LostThingsCategory lostThingsCategory) {
-        this.lostThingsCategory = lostThingsCategory;
+        this.CategoryDetails = lostThingsCategory;
     }
 
 
@@ -20,6 +20,6 @@ public class LostThingsCategoryPartition extends CommonRespose {
     }
 
     public LostThingsCategory getLostThingsCategory() {
-        return lostThingsCategory;
+        return CategoryDetails;
     }
 }

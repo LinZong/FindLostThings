@@ -17,11 +17,17 @@ public class APIDocs {
     public static final String UserInfo = "/user/info";
     public static final String LostThingsCategory = "/category";
     public static final String LostThingsCategoryPartition = "/category/detail?id=";
+    public static final String GetStoreBucketKey="/tencent/coskey";
+    public static final String SchoolInfo="/school/list/";
+    public static final String SchoolBuildings=" /school/building?id=";
 
     public static final String FullAddress = DeploymentAddress + RequestAddress;
     public static final String FullUserInfo = DeploymentAddress + UserInfo;
     public static final String FullLostThingsCategory = DeploymentAddress + LostThingsCategory;
     public static final String FullLostThingsCategoryPartition = DeploymentAddress + LostThingsCategoryPartition;
+    public static final String FullGetStoreBucketKey=DeploymentAddress+GetStoreBucketKey;
+    public static final String FullSchoolInfo=DeploymentAddress+SchoolInfo;
+    public static final String FullSchoolBuildings=DeploymentAddress+SchoolBuildings;
 
     static  String EncryptedAccessToken = null;
 

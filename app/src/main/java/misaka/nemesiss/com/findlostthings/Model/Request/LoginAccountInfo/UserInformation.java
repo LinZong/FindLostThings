@@ -1,6 +1,6 @@
-package misaka.nemesiss.com.findlostthings.Services.User;
+package misaka.nemesiss.com.findlostthings.Model.Request.LoginAccountInfo;
 
-public class UserInfo {
+public class UserInformation {
     private long Id;
     private String Nickname;
     private int RealPersonValid;

@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 
 public class GetLostThingsCategoryAsyncTask extends CustomPostExecuteAsyncTask<Void, Void, List<LostThingsCategory>> {
 
-
     private OkHttpClient okHttpClient;
     public GetLostThingsCategoryAsyncTask(TaskPostExecuteWrapper<List<LostThingsCategory>> DoInPostExecute) {
         super(DoInPostExecute);

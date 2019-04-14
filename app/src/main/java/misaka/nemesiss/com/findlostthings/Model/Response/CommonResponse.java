@@ -1,6 +1,6 @@
 package misaka.nemesiss.com.findlostthings.Model.Response;
 
-public class CommonRespose {
+public class CommonResponse {
     private int StatusCode;
 
     public int getStatusCode() {
