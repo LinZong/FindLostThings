@@ -2,25 +2,34 @@ package misaka.nemesiss.com.findlostthings.Activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.tencent.connect.UserInfo;
 import com.tencent.connect.auth.QQToken;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
+import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.TaskPostExecuteWrapper;
+import misaka.nemesiss.com.findlostthings.Model.LostThingsCategory;
 import misaka.nemesiss.com.findlostthings.R;
-import misaka.nemesiss.com.findlostthings.Services.User.APIDocs;
+import misaka.nemesiss.com.findlostthings.Tasks.GetLostThingsCategoryAsyncTask;
+import misaka.nemesiss.com.findlostthings.Tasks.PostInformationAsyncTask;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class QQAuthLogin extends AppCompatActivity  {
+import java.util.List;
+
+import static java.lang.System.currentTimeMillis;
+
+public class QQAuthLogin extends FindLostThingsActivity {
     private Button login, logout;
     private ImageView img;
     private TextView nickName;
@@ -32,15 +41,17 @@ public class QQAuthLogin extends AppCompatActivity  {
     private UserInfo userInfo;
     private GetInfoListener mInfoListener;
 
-    private  String openID;
-    private String access_token;
-    private  String expires;
-    APIDocs apiDocs=new APIDocs();
+    private String openID;
+    public String access_token;
+    private String expires;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qqauth_login);
         init();
+        LogThingsCategory();
     }
 
     private void init() {
@@ -48,10 +59,7 @@ public class QQAuthLogin extends AppCompatActivity  {
         nickName = (TextView) findViewById(R.id.tv_nickname);
         login = (Button) findViewById(R.id.btn_login);
         logout = (Button) findViewById(R.id.btn_logout);
-        //初始化Tencent对象
-        if (mTencent == null) {
-            mTencent = Tencent.createInstance(APPID, this);
-        }
+        CheckIfDateValid();
         //初始化登陆回调Listener
         if (mListener == null) {
             mListener = new QQLoginListener();
@@ -84,6 +92,10 @@ public class QQAuthLogin extends AppCompatActivity  {
             //修改UI
             img.setImageResource(R.mipmap.ic_launcher);
             nickName.setText("未登录");
+
+            SharedPreferences.Editor editor = getSharedPreferences("LoginReturnData", MODE_PRIVATE).edit();
+            editor.putBoolean("HaveStoredUserIdentity", false);
+            editor.apply();
         }
     }
 
@@ -110,17 +122,51 @@ public class QQAuthLogin extends AppCompatActivity  {
         //解析返回的Json串
         JSONObject jsonObject = (JSONObject) o;
         try {
-             openID = jsonObject.getString("openid"); //用户标识
-             access_token = jsonObject.getString("access_token"); //登录信息
-             expires = jsonObject.getString("expires_in"); //token有效期
-            //配置token
-            mTencent.setOpenId(openID);
-            mTencent.setAccessToken(access_token, expires);
-
+            openID = jsonObject.getString("openid"); //用户标识
+            access_token = jsonObject.getString("access_token"); //登录信息
+            expires = jsonObject.getString("expires_in"); //token有效期
+            SaveUserInfo();
+            CheckIfDateValid();
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private Boolean CheckIfDateValid() {
+        SharedPreferences preferences = getSharedPreferences("LoginReturnData", MODE_PRIVATE);
+
+        Boolean HaveUserIdentity = preferences.getBoolean("HaveStoredUserIdentity", false);
+        if (HaveUserIdentity) {
+            String openID = preferences.getString("openID", "");
+            String access_token = preferences.getString("access_token", "");
+            String expires = preferences.getString("expires", "");
+
+            if ((Long.parseLong(expires) - currentTimeMillis()) / 1000 > 0) {
+                mTencent = Tencent.createInstance(APPID, this);
+                mTencent.setOpenId(openID);
+                mTencent.setAccessToken(access_token, String.valueOf((Long.parseLong(expires) - currentTimeMillis()) / 1000));
+                setUserInfo();
+                return true;
+            } else {
+                Toast.makeText(QQAuthLogin.this, "当前用户已过期，请重新登录", Toast.LENGTH_SHORT).show();
+
+            }
+        }
+        mTencent = Tencent.createInstance(APPID, this);
+        return false;
+    }
+
+    private void SaveUserInfo()//将返回的openid、access_token、expires_in三个参数保存在本地
+    {
+        String tokenInvalidDate = String.valueOf(currentTimeMillis() + Long.parseLong(expires) * 1000);//token的失效日期
+        Context ctx = QQAuthLogin.this;
+        SharedPreferences.Editor editor = ctx.getSharedPreferences("LoginReturnData", MODE_PRIVATE).edit();
+        editor.putBoolean("HaveStoredUserIdentity", true);
+        editor.putString("openID", openID);
+        editor.putString("access_token", access_token);
+        editor.putString("expires", tokenInvalidDate);
+        editor.apply();
     }
 
     private void setUserInfo() {
@@ -143,7 +189,10 @@ public class QQAuthLogin extends AppCompatActivity  {
                 imgUrl = jsonObject.getString("figureurl_qq_2");  //头像url
                 nickName.setText(name);
                 Glide.with(QQAuthLogin.this).load(imgUrl).into(img);
-                apiDocs.postInformation(openID,access_token,name,getAndroidId(QQAuthLogin.this));
+//                PostInformationAsyncTask postInformationAsyncTask=
+//              postInformationAsyncTask.doInBackground(openID,name,getAndroidId(QQAuthLogin.this));
+                new PostInformationAsyncTask((res) -> {
+                }).execute(openID, name, getAndroidId(QQAuthLogin.this));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -159,8 +208,9 @@ public class QQAuthLogin extends AppCompatActivity  {
 
         }
     }
+
     //获取登录设备的安卓ID
-    public static String getAndroidId (Context context) {
+    public static String getAndroidId(Context context) {
         String ANDROID_ID = Settings.System.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
         return ANDROID_ID;
     }
@@ -168,6 +218,17 @@ public class QQAuthLogin extends AppCompatActivity  {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         mTencent.onActivityResultData(requestCode, resultCode, data, mListener);
+    }
+
+    private void LogThingsCategory() {
+        new GetLostThingsCategoryAsyncTask(new TaskPostExecuteWrapper<List<LostThingsCategory>>() {
+            @Override
+            public void DoOnPostExecute(List<LostThingsCategory> TaskRet) {
+                for (LostThingsCategory i : TaskRet) {
+                    Log.d("CategoryLog", i.getName());
+                }
+            }
+        }).execute();
     }
 }
 
