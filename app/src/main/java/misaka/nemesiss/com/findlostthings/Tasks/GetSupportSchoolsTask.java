@@ -8,14 +8,12 @@ import misaka.nemesiss.com.findlostthings.Services.User.APIDocs;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-
 import java.util.concurrent.TimeUnit;
 
 public class GetSupportSchoolsTask extends CustomPostExecuteAsyncTask<Void,Void, SchoolInfoResponse> {
     private OkHttpClient okHttpClient;
     public GetSupportSchoolsTask(TaskPostExecuteWrapper<SchoolInfoResponse> DoInPostExecute) {
         super(DoInPostExecute);
-        APIDocs.encryptionAccessToken();
     }
     @Override
     protected SchoolInfoResponse doInBackground(Void... voids) {
@@ -28,6 +26,7 @@ public class GetSupportSchoolsTask extends CustomPostExecuteAsyncTask<Void,Void,
                 String responseData = response.body().string();
                 Gson gson = new Gson();
                 SchoolInfoResponse schoolInfoRespose = gson.fromJson(responseData, SchoolInfoResponse.class);
+                return schoolInfoRespose;
             }
 
         } catch (Exception e) {

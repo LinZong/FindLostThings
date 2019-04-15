@@ -14,7 +14,7 @@ import okhttp3.Response;
 import java.util.concurrent.TimeUnit;
 import static android.content.Context.MODE_PRIVATE;
 
-public class GetStoreBucketKeyTask extends CustomPostExecuteAsyncTask<Void,Void, GetStoreBucketKeyResponse> {
+public class GetStoreBucketKeyTask extends CustomPostExecuteAsyncTask<Void, Void, GetStoreBucketKeyResponse> {
 
     private OkHttpClient okHttpClient;
     String EncryptedAccessToken = null;
@@ -22,22 +22,37 @@ public class GetStoreBucketKeyTask extends CustomPostExecuteAsyncTask<Void,Void,
     SharedPreferences preferences = ctx.getSharedPreferences("userIDData", MODE_PRIVATE);
     long SnowflakeID = preferences.getLong("Snowflake ID", 0);
 
-    public GetStoreBucketKeyTask (TaskPostExecuteWrapper<GetStoreBucketKeyResponse> DoInPostExecute) {
+    public GetStoreBucketKeyTask(TaskPostExecuteWrapper<GetStoreBucketKeyResponse> DoInPostExecute) {
         super(DoInPostExecute);
-        APIDocs.encryptionAccessToken();
+        EncryptedAccessToken = APIDocs.encryptionAccessToken();
     }
+
     @Override
     protected GetStoreBucketKeyResponse doInBackground(Void... voids) {
         try {
             Request request = new Request.Builder()
                     .url(APIDocs.FullGetStoreBucketKey)
-                    .addHeader(EncryptedAccessToken, String.valueOf(SnowflakeID))
+                    .addHeader("actk", EncryptedAccessToken)
+                    .addHeader("userid", String.valueOf(SnowflakeID))
                     .build();
             Response response = okHttpClient.newCall(request).execute();
-            if (response.isSuccessful()){
+            if (response.isSuccessful()) {
                 String responseData = response.body().string();
                 Gson gson = new Gson();
-               GetStoreBucketKeyResponse getStoreBucketKeyRespose = gson.fromJson(responseData, GetStoreBucketKeyResponse.class);
+                GetStoreBucketKeyResponse getStoreBucketKeyRespose = gson.fromJson(responseData, GetStoreBucketKeyResponse.class);
+                SharedPreferences.Editor editor = ctx.getSharedPreferences("BucketKeyInfo", MODE_PRIVATE).edit();
+                editor.putInt("StatusCode", getStoreBucketKeyRespose.getStatusCode());
+                editor.putString("FullBucketName", getStoreBucketKeyRespose.getFullBucketName());
+                editor.putString("Region", getStoreBucketKeyRespose.getRegion());
+                editor.putLong("ExpiredTime", getStoreBucketKeyRespose.getResponse().getExpiredTime());
+                editor.putString("Expiration", getStoreBucketKeyRespose.getResponse().getExpiration());
+                editor.putString("RequestId", getStoreBucketKeyRespose.getResponse().getRequestId());
+                editor.putString("Token", getStoreBucketKeyRespose.getResponse().getCredentials().getToken());
+                editor.putString("TmpSecretId", getStoreBucketKeyRespose.getResponse().getCredentials().getTmpSecretId());
+                editor.putString("TmpSecretKey", getStoreBucketKeyRespose.getResponse().getCredentials().getTmpSecretKey());
+                editor.apply();
+
+                return getStoreBucketKeyRespose;
             }
 
         } catch (Exception e) {

@@ -6,45 +6,56 @@ import com.google.gson.Gson;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.CustomPostExecuteAsyncTask;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.TaskPostExecuteWrapper;
-import misaka.nemesiss.com.findlostthings.Model.Response.UserInfoResponse;
 import misaka.nemesiss.com.findlostthings.Services.User.APIDocs;
+import misaka.nemesiss.com.findlostthings.Services.User.LostThingsInfo;
+import misaka.nemesiss.com.findlostthings.Services.User.WaterfallThingsInfo;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import java.util.concurrent.TimeUnit;
 import static android.content.Context.MODE_PRIVATE;
 
-public class GetUserInformationTask extends CustomPostExecuteAsyncTask<Void,Void, UserInfoResponse> {
+public class WaterfallThingsInfoTask extends CustomPostExecuteAsyncTask<WaterfallThingsInfo,Void, LostThingsInfo>
+{
     private OkHttpClient okHttpClient;
-
+    String EncryptedAccessToken = null;
     Context ctx = FindLostThingsApplication.getContext();
     SharedPreferences preferences = ctx.getSharedPreferences("userIDData", MODE_PRIVATE);
     long SnowflakeID = preferences.getLong("Snowflake ID", 0);
-
-    String EncryptedAccessToken = null;
-
-
-    public GetUserInformationTask(TaskPostExecuteWrapper<UserInfoResponse> DoInPostExecute) {
+    final String s1="EndItemId=";
+    final String s2="&";
+    final String s3="HaveFetchedItemCount=";
+    final String s4="&Count=";
+    String s5;
+    public  WaterfallThingsInfoTask(TaskPostExecuteWrapper<LostThingsInfo> DoInPostExecute) {
         super(DoInPostExecute);
         EncryptedAccessToken= APIDocs.encryptionAccessToken();
     }
-
-
     @Override
-    protected UserInfoResponse doInBackground(Void... voids) {
+    protected LostThingsInfo doInBackground(WaterfallThingsInfo... waterfallThingsInfos) {
         try {
+            if(waterfallThingsInfos[0].getStatus()==0)
+            {
+                String s5=APIDocs.FullThingList+s1+waterfallThingsInfos[0].getEndItemId()+s2+s3+
+                    waterfallThingsInfos[0].getHaveFetchedItemCount()+s4+waterfallThingsInfos[0].getCount();
+            }
+            else
+            {
+                s5=APIDocs.FullThingList+s3+ waterfallThingsInfos[0].getHaveFetchedItemCount()+s4+waterfallThingsInfos[0].getCount();
+            }
             Request request = new Request.Builder()
-                    .url(APIDocs.FullUserInfo)
                     .addHeader("actk", EncryptedAccessToken)
-                    .addHeader("userid",String.valueOf(SnowflakeID))
+                    .addHeader("userid", String.valueOf(SnowflakeID))
+                    .url(s5)
                     .build();
             Response response = okHttpClient.newCall(request).execute();
-            if(response.isSuccessful()){
+            if (response.isSuccessful()){
                 String responseData = response.body().string();
-                Gson gson = new Gson();//Gson 解析服务器返回的用户信息，存于对象userInfo中，可随时通过get方法调用
-               UserInfoResponse userInfoRespose= gson.fromJson(responseData, UserInfoResponse.class);
-               return userInfoRespose;
+                Gson gson = new Gson();
+                LostThingsInfo lostThingsInfo = gson.fromJson(responseData, LostThingsInfo.class);
+                return lostThingsInfo;
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }

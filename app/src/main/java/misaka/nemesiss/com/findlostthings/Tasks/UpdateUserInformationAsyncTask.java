@@ -7,28 +7,27 @@ import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.CustomPostExecuteAsyncTask;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.TaskPostExecuteWrapper;
 import misaka.nemesiss.com.findlostthings.Model.Request.LoginAccountInfo.UserInformation;
-import misaka.nemesiss.com.findlostthings.Model.Response.UserInfoResponse;
 import misaka.nemesiss.com.findlostthings.Model.Response.UserInfoUpdateResponse;
 import misaka.nemesiss.com.findlostthings.Services.User.APIDocs;
 import okhttp3.*;
 import java.util.concurrent.TimeUnit;
 import static android.content.Context.MODE_PRIVATE;
 
-public class UpdateUserInformationAsyncTask extends CustomPostExecuteAsyncTask<String,Void, UserInfoResponse>{
+public class UpdateUserInformationAsyncTask extends CustomPostExecuteAsyncTask<String,Void, UserInfoUpdateResponse>{
     private OkHttpClient okHttpClient;
     String EncryptedAccessToken = null;
     Context ctx = FindLostThingsApplication.getContext();
     SharedPreferences preferences = ctx.getSharedPreferences("userIDData", MODE_PRIVATE);
     long SnowflakeID = preferences.getLong("Snowflake ID", 0);
 
-    public UpdateUserInformationAsyncTask(TaskPostExecuteWrapper<UserInfoResponse> DoInPostExecute) {
+    public UpdateUserInformationAsyncTask(TaskPostExecuteWrapper<UserInfoUpdateResponse> DoInPostExecute) {
         super(DoInPostExecute);
-        APIDocs.encryptionAccessToken();
+        EncryptedAccessToken= APIDocs.encryptionAccessToken();
     }
 
 
     @Override
-    protected UserInfoResponse doInBackground(String... information) {
+    protected UserInfoUpdateResponse doInBackground(String... information) {
         try {
             UserInformation userInfo = new UserInformation();
             userInfo.setQQ(information[0]);
@@ -40,13 +39,15 @@ public class UpdateUserInformationAsyncTask extends CustomPostExecuteAsyncTask<S
             RequestBody requestBody = FormBody.create(MediaType.parse("application/json"), result);
             Request request = new Request.Builder()
                     .url(APIDocs.FullUserInfo)
-                    .addHeader(EncryptedAccessToken, String.valueOf(SnowflakeID))
+                    .addHeader("actk", EncryptedAccessToken)
+                    .addHeader("userid",String.valueOf(SnowflakeID))
                     .put(requestBody)
                     .build();
             Response response = okHttpClient.newCall(request).execute();
             if (response.isSuccessful()) {
                 String responseData = response.body().string();
-                UserInfoUpdateResponse userInfoRespose = gson.fromJson(responseData, UserInfoUpdateResponse.class);
+                UserInfoUpdateResponse userInfoResponse = gson.fromJson(responseData, UserInfoUpdateResponse.class);
+                return userInfoResponse;
             }
         } catch (Exception e) {
             e.printStackTrace();

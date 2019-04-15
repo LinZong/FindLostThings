@@ -6,45 +6,45 @@ import com.google.gson.Gson;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.CustomPostExecuteAsyncTask;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.TaskPostExecuteWrapper;
-import misaka.nemesiss.com.findlostthings.Model.Response.UserInfoResponse;
+import misaka.nemesiss.com.findlostthings.Model.Response.MyPublishListResponse;
 import misaka.nemesiss.com.findlostthings.Services.User.APIDocs;
+import misaka.nemesiss.com.findlostthings.Services.User.LostThingsInfo;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import static android.content.Context.MODE_PRIVATE;
 
-public class GetUserInformationTask extends CustomPostExecuteAsyncTask<Void,Void, UserInfoResponse> {
+public class MyFindListTask extends CustomPostExecuteAsyncTask<Void,Void, List<LostThingsInfo>>
+{
     private OkHttpClient okHttpClient;
-
+    String EncryptedAccessToken = null;
     Context ctx = FindLostThingsApplication.getContext();
     SharedPreferences preferences = ctx.getSharedPreferences("userIDData", MODE_PRIVATE);
     long SnowflakeID = preferences.getLong("Snowflake ID", 0);
 
-    String EncryptedAccessToken = null;
-
-
-    public GetUserInformationTask(TaskPostExecuteWrapper<UserInfoResponse> DoInPostExecute) {
+    public MyFindListTask(TaskPostExecuteWrapper<List<LostThingsInfo>> DoInPostExecute) {
         super(DoInPostExecute);
         EncryptedAccessToken= APIDocs.encryptionAccessToken();
     }
-
-
     @Override
-    protected UserInfoResponse doInBackground(Void... voids) {
+    protected List<LostThingsInfo> doInBackground(Void... voids) {
         try {
             Request request = new Request.Builder()
-                    .url(APIDocs.FullUserInfo)
-                    .addHeader("actk", EncryptedAccessToken)
+                    .url(APIDocs.FullMyFindList)
+                    .addHeader("actk",EncryptedAccessToken)
                     .addHeader("userid",String.valueOf(SnowflakeID))
                     .build();
-            Response response = okHttpClient.newCall(request).execute();
-            if(response.isSuccessful()){
-                String responseData = response.body().string();
-                Gson gson = new Gson();//Gson 解析服务器返回的用户信息，存于对象userInfo中，可随时通过get方法调用
-               UserInfoResponse userInfoRespose= gson.fromJson(responseData, UserInfoResponse.class);
-               return userInfoRespose;
+
+            Response response1 = okHttpClient.newCall(request).execute();
+            if (response1.isSuccessful()){
+                String responseData1 = response1.body().string();
+                Gson gson = new Gson();
+                MyPublishListResponse resp = gson.fromJson(responseData1, MyPublishListResponse.class);
+                return resp.getLostThingsInfos();
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }

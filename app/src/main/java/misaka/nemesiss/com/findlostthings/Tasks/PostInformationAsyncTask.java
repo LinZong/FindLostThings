@@ -2,7 +2,6 @@ package misaka.nemesiss.com.findlostthings.Tasks;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.text.TextUtils;
 import com.google.gson.Gson;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.CustomPostExecuteAsyncTask;
@@ -10,11 +9,7 @@ import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtension
 import misaka.nemesiss.com.findlostthings.Model.Request.LoginAccountInfo.LoginAccountInfo;
 import misaka.nemesiss.com.findlostthings.Model.Response.LoginAccountResponse;
 import misaka.nemesiss.com.findlostthings.Services.User.APIDocs;
-import misaka.nemesiss.com.findlostthings.Utils.HMacSha256;
 import okhttp3.*;
-
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
 import static android.content.Context.MODE_PRIVATE;
 
@@ -24,7 +19,7 @@ public class PostInformationAsyncTask extends CustomPostExecuteAsyncTask<String,
     Context ctx = FindLostThingsApplication.getContext();
     public PostInformationAsyncTask(TaskPostExecuteWrapper<LoginAccountResponse> DoInPostExecute) {
         super(DoInPostExecute);
-        APIDocs.encryptionAccessToken();
+        EncryptedAccessToken= APIDocs.encryptionAccessToken();
     }
 
     @Override
@@ -47,6 +42,7 @@ public class PostInformationAsyncTask extends CustomPostExecuteAsyncTask<String,
             if (response.isSuccessful()) {
                 String responseData = response.body().string();
                 LoginAccountResponse resp = gson.fromJson(responseData, LoginAccountResponse.class);
+
                 int statusCode = resp.getStatusCode();
                 long userID = resp.getUserID();
                 switch (statusCode) {
@@ -58,7 +54,9 @@ public class PostInformationAsyncTask extends CustomPostExecuteAsyncTask<String,
                     default:
                         break;
                 }
+                return resp;
             }
+
         }
         catch (Exception e) {
             e.printStackTrace();

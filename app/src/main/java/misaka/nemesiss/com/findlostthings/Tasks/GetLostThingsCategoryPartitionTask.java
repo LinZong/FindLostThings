@@ -28,6 +28,7 @@ public class GetLostThingsCategoryPartitionTask extends CustomPostExecuteAsyncTa
                 String responseData2 = response2.body().string();
                 Gson gson = new Gson();
                 LostThingsCategoryPartition lostThingsCategoryPartition = gson.fromJson(responseData2, misaka.nemesiss.com.findlostthings.Model.Response.LostThingsCategoryPartition.class);
+                return  lostThingsCategoryPartition;
             }
 
         } catch (Exception e) {
