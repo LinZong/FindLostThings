@@ -22,13 +22,11 @@ public class GetSupportSchoolsTask extends CustomPostExecuteAsyncTask<Void,Void,
                     .url(APIDocs.FullSchoolInfo)
                     .build();
             Response response = okHttpClient.newCall(request).execute();
-            if (response.isSuccessful()){
+            if (response.isSuccessful()) {
                 String responseData = response.body().string();
                 Gson gson = new Gson();
-                SchoolInfoResponse schoolInfoRespose = gson.fromJson(responseData, SchoolInfoResponse.class);
-                return schoolInfoRespose;
+                return gson.fromJson(responseData, SchoolInfoResponse.class);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -13,13 +13,13 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class APIDocs {
     public static final String DeploymentAddress = "http://111.230.238.192/learn/lost";
-    public static final String RequestAddress = "/user/login ";
+    public static final String RequestAddress = "/user/login";
     public static final String UserInfo = "/user/info";
     public static final String LostThingsCategory = "/category";
     public static final String LostThingsCategoryPartition = "/category/detail?id=";
     public static final String GetStoreBucketKey="/tencent/coskey";
     public static final String SchoolInfo="/school/list/";
-    public static final String SchoolBuildings=" /school/building?id=";
+    public static final String SchoolBuildings="/school/building?id=";
     public static final String LostThingsInfo="/thing/publish";
     public static final String ThingList="/thing/list?";
     public static final String MyPublishList="/thing/mylist?type=1";

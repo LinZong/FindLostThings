@@ -2,14 +2,18 @@ package misaka.nemesiss.com.findlostthings.Model.Response;
 
 import misaka.nemesiss.com.findlostthings.Model.Request.LoginAccountInfo.UserInformation;
 
-public class UserInfoUpdateResponse extends CommonResponse {
-    private UserInformation Updated;
+import java.util.List;
 
-    public UserInformation getUserInfo() {
-        return Updated;
+public class UserInfoUpdateResponse extends CommonResponse {
+    protected List<UserInformation> Updated;
+
+    public void setUpdated(List<UserInformation> updated)
+    {
+        Updated = updated;
     }
 
-    public void setUserInfo(UserInformation userInfo) {
-        this.Updated = userInfo;
+    public List<UserInformation> getUpdated()
+    {
+        return Updated;
     }
 }

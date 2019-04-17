@@ -2,14 +2,16 @@ package misaka.nemesiss.com.findlostthings.Model.Response;
 
 import misaka.nemesiss.com.findlostthings.Services.User.MySchoolBuildings;
 
-public class SchoolBuildingsResponse extends CommonResponse {
-    private MySchoolBuildings SchoolBuildings;
+import java.util.List;
 
-    public void setSchoolBuildings(MySchoolBuildings schoolBuildings) {
+public class SchoolBuildingsResponse extends CommonResponse {
+    private List<MySchoolBuildings> SchoolBuildings;
+
+    public void setSchoolBuildings(List<MySchoolBuildings> schoolBuildings) {
         SchoolBuildings = schoolBuildings;
     }
 
-    public MySchoolBuildings getSchoolBuildings() {
+    public List<MySchoolBuildings> getSchoolBuildings() {
         return SchoolBuildings;
     }
 }

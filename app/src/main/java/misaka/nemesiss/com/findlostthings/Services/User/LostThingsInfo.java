@@ -14,7 +14,7 @@ public class LostThingsInfo {
     private String PublisherContacts;
     private String GivenContacts;
     private long Given;
-    private String[] ThingPhotoUrls;
+    private String ThingPhotoUrls;
     private String FoundAddrDescription;
     private String ThingAddiDescription;
 
@@ -74,7 +74,7 @@ public class LostThingsInfo {
         ThingDetailId = thingDetailId;
     }
 
-    public void setThingPhotoUrls(String[] thingPhotoUrls) {
+    public void setThingPhotoUrls(String thingPhotoUrls) {
         ThingPhotoUrls = thingPhotoUrls;
     }
 
@@ -142,7 +142,7 @@ public class LostThingsInfo {
         return Title;
     }
 
-    public String[] getThingPhotoUrls() {
+    public String getThingPhotoUrls() {
         return ThingPhotoUrls;
     }
 

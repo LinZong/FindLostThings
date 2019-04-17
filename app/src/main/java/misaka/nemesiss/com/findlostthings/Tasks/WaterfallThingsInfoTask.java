@@ -12,10 +12,13 @@ import misaka.nemesiss.com.findlostthings.Services.User.WaterfallThingsInfo;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.modelmapper.TypeToken;
+
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import static android.content.Context.MODE_PRIVATE;
 
-public class WaterfallThingsInfoTask extends CustomPostExecuteAsyncTask<WaterfallThingsInfo,Void, LostThingsInfo>
+public class WaterfallThingsInfoTask extends CustomPostExecuteAsyncTask<WaterfallThingsInfo,Void, List<LostThingsInfo>>
 {
     private OkHttpClient okHttpClient;
     String EncryptedAccessToken = null;
@@ -27,12 +30,12 @@ public class WaterfallThingsInfoTask extends CustomPostExecuteAsyncTask<Waterfal
     final String s3="HaveFetchedItemCount=";
     final String s4="&Count=";
     String s5;
-    public  WaterfallThingsInfoTask(TaskPostExecuteWrapper<LostThingsInfo> DoInPostExecute) {
+    public  WaterfallThingsInfoTask(TaskPostExecuteWrapper<List<LostThingsInfo>> DoInPostExecute) {
         super(DoInPostExecute);
         EncryptedAccessToken= APIDocs.encryptionAccessToken();
     }
     @Override
-    protected LostThingsInfo doInBackground(WaterfallThingsInfo... waterfallThingsInfos) {
+    protected List<LostThingsInfo> doInBackground(WaterfallThingsInfo... waterfallThingsInfos) {
         try {
             if(waterfallThingsInfos[0].getStatus()==0)
             {
@@ -52,7 +55,7 @@ public class WaterfallThingsInfoTask extends CustomPostExecuteAsyncTask<Waterfal
             if (response.isSuccessful()){
                 String responseData = response.body().string();
                 Gson gson = new Gson();
-                LostThingsInfo lostThingsInfo = gson.fromJson(responseData, LostThingsInfo.class);
+                List<LostThingsInfo> lostThingsInfo = gson.fromJson(responseData, new TypeToken<List<LostThingsInfo>>(){}.getType());
                 return lostThingsInfo;
             }
 
