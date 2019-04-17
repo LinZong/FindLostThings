@@ -224,8 +224,6 @@ public class QQAuthLogin extends FindLostThingsActivity
                 imgUrl = jsonObject.getString("figureurl_qq_2");  //头像url
                 nickName.setText(name);
                 Glide.with(QQAuthLogin.this).load(imgUrl).into(img);
-//                PostInformationAsyncTask postInformationAsyncTask=
-//              postInformationAsyncTask.doInBackground(openID,name,getAndroidId(QQAuthLogin.this));
                 new PostInformationAsyncTask((res) ->
                 {
                 }).execute(openID, name, getAndroidId(QQAuthLogin.this));
@@ -310,12 +308,12 @@ public class QQAuthLogin extends FindLostThingsActivity
 
     private void LogThingsCategory1()
     {
-//        new GetSchoolBuildingsTask(TaskRet -> {
-//            for (MySchoolBuildings sb : TaskRet.getSchoolBuildings())
-//            {
-//                Log.d("QQAuthLogin",sb.getBuildingName());
-//            }
-//        }).execute(1);
+        new GetSchoolBuildingsTask(TaskRet -> {
+            for (MySchoolBuildings sb : TaskRet.getSchoolBuildings())
+            {
+                Log.d("QQAuthLogin",sb.getBuildingName());
+            }
+        }).execute(1);
     }
 }
 

@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+
     <application
             android:name=".Application.FindLostThingsApplication"
             android:allowBackup="true"
@@ -14,7 +15,6 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <activity android:name=".Activity.MainActivity">
-
         </activity>
         <activity
                 android:name="com.tencent.tauth.AuthActivity"
@@ -36,12 +36,16 @@
         <activity
                 android:name=".Activity.SplashActivity"
                 android:theme="@style/SplashScreenTheme">
+
         </activity>
         <activity android:name=".Activity.QQAuthLogin">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".Activity.DisplayLostThingsWaterfall">
+
         </activity>
     </application>
 

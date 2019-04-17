@@ -15,7 +15,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import misaka.nemesiss.com.findlostthings.R;
 
-public class SplashActivity extends AppCompatActivity
+public class SplashActivity extends FindLostThingsActivity
 {
     @BindView(R.id.SplashActivity_SchoolName)
     TextView SchoolName;
