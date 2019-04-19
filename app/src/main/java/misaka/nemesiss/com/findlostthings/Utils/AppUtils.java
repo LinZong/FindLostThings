@@ -1,8 +1,16 @@
 package misaka.nemesiss.com.findlostthings.Utils;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -10,12 +18,15 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.widget.Toast;
+import com.yalantis.ucrop.UCrop;
+import misaka.nemesiss.com.findlostthings.Activity.PickupImageActivity;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.BuildConfig;
 import misaka.nemesiss.com.findlostthings.R;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,8 +36,11 @@ import java.util.concurrent.TimeUnit;
 
 public class AppUtils
 {
+    public static final String RESOURCE = "android.resource://";
     public static OkHttpClient.Builder clientInstance = null;
     public static String packageName = BuildConfig.APPLICATION_ID;
+    public static final String IMAGE_TYPE = "image/jpeg";
+    public static final int TYPE_CAMERA = 1234;
     public static ProgressDialog ShowProgressDialog(Context ctx, boolean Cancelable, String title, String content){
         ProgressDialog dialog = new ProgressDialog(ctx);
         dialog.setCancelable(Cancelable);
@@ -125,4 +139,59 @@ public class AppUtils
         return false;
     }
 
+    public static String GetSystemDCIMPath()
+    {
+        //  /storage/emulated/0/DCIM/Camera
+        return Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DCIM).getAbsolutePath();
+    }
+
+    public static String GetAppDataDCIMPath()
+    {
+        //  /storage/emulated/0/Android/data/misaka.nemesiss.com.findlostthings/files/DCIM
+        File[] MountedSdcardPrefix = ContextCompat.getExternalFilesDirs(FindLostThingsApplication.getContext(),null);
+        File Path = new File(MountedSdcardPrefix.length>1?MountedSdcardPrefix[1]:MountedSdcardPrefix[0], Environment.DIRECTORY_DCIM);
+        return Path.getAbsolutePath();
+    }
+    public static Uri ParseResourceIdToUri(int resId)
+    {
+        return Uri.parse(RESOURCE+packageName+"/"+resId);
+    }
+
+    public static void OpenCamera(Uri WangStoreImageUri, Activity CallCameraActivity)
+    {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, WangStoreImageUri);
+        } else {
+            ContentValues contentValues = new ContentValues(1);
+            contentValues.put(MediaStore.Images.Media.DATA, WangStoreImageUri.getPath());
+            contentValues.put(MediaStore.Images.Media.MIME_TYPE, IMAGE_TYPE);
+            Uri uri = CallCameraActivity.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        }
+        CallCameraActivity.startActivityForResult(intent, TYPE_CAMERA);
+    }
+
+    public static UCrop OpenUCrop(Uri OriginalUri)
+    {
+        Context context = FindLostThingsApplication.getContext();
+        UCrop.Options options = new UCrop.Options();
+        options.setToolbarColor(context.getResources().getColor(R.color.colorPrimary));
+        options.setStatusBarColor(context.getResources().getColor(R.color.colorPrimaryDark));
+        options.setFreeStyleCropEnabled(true);
+        String OriginalImageSavedPath = OriginalUri.getPath();
+        String CroppedPath = AppUtils.GetCroppedPath(OriginalImageSavedPath);
+        UCrop of = UCrop.of(OriginalUri,Uri.fromFile(new File(CroppedPath))).withOptions(options);
+        return of;
+    }
+    public static String GetCroppedPath(String originalPath)
+    {
+        return originalPath.substring(0,originalPath.lastIndexOf("."))+"__CROPPED.jpg";
+    }
+
+    public static String GetTempImageName()
+    {
+        return System.currentTimeMillis() + ".jpg";
+    }
 }

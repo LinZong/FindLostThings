@@ -4,4 +4,6 @@
     <color name="colorPrimaryDark">#fb87ff</color>
     <color name="colorPrimaryBright">#fddaff</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="OpenAdditionalInfoColor">#3a89ff</color>
+    <color name="DefaultTextViewColor">#ae0000</color>
 </resources>

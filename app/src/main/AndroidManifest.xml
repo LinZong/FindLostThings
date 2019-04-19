@@ -5,6 +5,9 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
             android:name=".Application.FindLostThingsApplication"
@@ -25,7 +28,6 @@
 
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-
                 <data android:scheme="tencent101570216"/>
             </intent-filter>
         </activity>
@@ -39,14 +41,28 @@
 
         </activity>
         <activity android:name=".Activity.QQAuthLogin">
+
+        </activity>
+        <activity android:name=".Activity.DisplayLostThingsWaterfall">
+
+        </activity>
+        <activity android:name=".Activity.PickupImageActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.DisplayLostThingsWaterfall">
 
-        </activity>
+        <activity
+                android:name="cn.finalteam.rxgalleryfinal.ui.activity.MediaActivity"
+                android:exported="true"
+                android:theme="@style/AppTheme"
+        />
+        <activity
+                android:name="com.yalantis.ucrop.UCropActivity"
+                android:screenOrientation="portrait"
+                android:theme="@style/AppTheme"/>
+
     </application>
 
 </manifest>
