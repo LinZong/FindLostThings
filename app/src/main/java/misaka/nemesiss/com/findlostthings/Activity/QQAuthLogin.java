@@ -289,22 +289,6 @@ public class QQAuthLogin extends FindLostThingsActivity
             }
         }).execute(lostThingsInfo);
     }
-//    private void LogThingsCategory()
-//    {
-//        LostThingsInfo lostThingsInfo = new LostThingsInfo();
-//        lostThingsInfo.setPublisher(21341);
-//        lostThingsInfo.setFoundTime(121341);
-//
-//        new PostEditInfoTask(new TaskPostExecuteWrapper<Integer>()
-//        {
-//            @Override
-//
-//            public void DoOnPostExecute(Integer TaskRet)
-//            {
-//                Log.d("CategoryLog", TaskRet.toString());
-//            }
-//        }).execute(lostThingsInfo);
-//    }
 
     private void LogThingsCategory1()
     {
