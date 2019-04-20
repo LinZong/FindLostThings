@@ -191,6 +191,23 @@ public class PickupImageActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        outState.putString("TempImageSavedUriString",TempImageSavedUri.getPath());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState)
+    {
+        super.onRestoreInstanceState(savedInstanceState);
+        String savedTempFilePath = savedInstanceState.getString("TempImageSavedUriString",null);
+        if(savedTempFilePath!=null){
+            TempImageSavedUri = Uri.fromFile(new File(savedTempFilePath));
+        }
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
