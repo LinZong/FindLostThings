@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -32,13 +31,11 @@ import misaka.nemesiss.com.findlostthings.Utils.PermissionsHelper;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Calendar;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class PickupImageActivity extends AppCompatActivity
+public class PickupImageActivity extends FindLostThingsActivity
 {
     private List<Uri> PickupImagesList = new LinkedList<>();
 
@@ -194,7 +191,17 @@ public class PickupImageActivity extends AppCompatActivity
     protected void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        outState.putString("TempImageSavedUriString",TempImageSavedUri.getPath());
+        if(TempImageSavedUri!=null)
+        {
+            outState.putString("TempImageSavedUriString",TempImageSavedUri.getPath());
+        }
+        ArrayList<String> PickupImagesStringList = new ArrayList<>();
+        int PickLength = PickupImagesList.size() - 1;
+        for (int i = 0; i < PickLength; i++)
+        {
+            PickupImagesStringList.add(PickupImagesList.get(i).getPath());
+        }
+        outState.putStringArrayList("PickupImagesStringList",PickupImagesStringList);
     }
 
     @Override
@@ -204,6 +211,14 @@ public class PickupImageActivity extends AppCompatActivity
         String savedTempFilePath = savedInstanceState.getString("TempImageSavedUriString",null);
         if(savedTempFilePath!=null){
             TempImageSavedUri = Uri.fromFile(new File(savedTempFilePath));
+        }
+        ArrayList<String> PickupImagesStringList = savedInstanceState.getStringArrayList("PickupImagesStringList");
+        if(PickupImagesStringList!=null){
+            for (String s : PickupImagesStringList)
+            {
+                AppendImage(Uri.fromFile(new File(s)),false);
+            }
+            imageAdapter.notifyDataSetChanged();
         }
     }
 

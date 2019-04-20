@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -180,10 +181,11 @@ public class AppUtils
         options.setToolbarColor(context.getResources().getColor(R.color.colorPrimary));
         options.setStatusBarColor(context.getResources().getColor(R.color.colorPrimaryDark));
         options.setFreeStyleCropEnabled(true);
+        options.setCompressionFormat(Bitmap.CompressFormat.JPEG);
+        options.setCompressionQuality(100);
         String OriginalImageSavedPath = OriginalUri.getPath();
         String CroppedPath = AppUtils.GetCroppedPath(OriginalImageSavedPath);
-        UCrop of = UCrop.of(OriginalUri,Uri.fromFile(new File(CroppedPath))).withOptions(options);
-        return of;
+        return UCrop.of(OriginalUri,Uri.fromFile(new File(CroppedPath))).withOptions(options);
     }
     public static String GetCroppedPath(String originalPath)
     {
