@@ -43,6 +43,10 @@
         <activity android:name=".Activity.QQAuthLogin">
         </activity>
         <activity android:name=".Activity.PickupImageActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
         <activity
                 android:name="cn.finalteam.rxgalleryfinal.ui.activity.MediaActivity"
@@ -56,18 +60,12 @@
         <activity android:name=".Activity.SetUp">
         </activity>
         <activity android:name=".Activity.ShowOrChangeUserInfo">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
         <activity
                 android:name=".Activity.PreviewSelectedImageActivity"
                 android:launchMode="standard">
         </activity>
         <activity android:name=".Activity.TryUploadFilesActivity">
-
         </activity>
     </application>
 
