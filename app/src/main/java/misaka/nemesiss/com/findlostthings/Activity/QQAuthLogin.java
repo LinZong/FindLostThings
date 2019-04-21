@@ -12,25 +12,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
-import com.google.gson.Gson;
 import com.tencent.connect.UserInfo;
 import com.tencent.connect.auth.QQToken;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.TaskPostExecuteWrapper;
-import misaka.nemesiss.com.findlostthings.Model.LostThingsCategory;
-import misaka.nemesiss.com.findlostthings.Model.Response.*;
 import misaka.nemesiss.com.findlostthings.R;
 import misaka.nemesiss.com.findlostthings.Services.User.LostThingsInfo;
 import misaka.nemesiss.com.findlostthings.Services.User.MySchoolBuildings;
-import misaka.nemesiss.com.findlostthings.Services.User.WaterfallThingsInfo;
-import misaka.nemesiss.com.findlostthings.Tasks.*;
+import misaka.nemesiss.com.findlostthings.Tasks.GetSchoolBuildingsTask;
+import misaka.nemesiss.com.findlostthings.Tasks.LostThingsInfoTask;
+import misaka.nemesiss.com.findlostthings.Tasks.PostInformationAsyncTask;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.List;
-
 import static java.lang.System.currentTimeMillis;
 
 public class QQAuthLogin extends FindLostThingsActivity
@@ -57,8 +52,9 @@ public class QQAuthLogin extends FindLostThingsActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qqauth_login);
         init();
-        LogThingsCategory1();
-        LogThingsCategory();
+
+        //LogThingsCategory1();
+        //LogThingsCategory();
     }
 
     private void init()
@@ -174,6 +170,11 @@ public class QQAuthLogin extends FindLostThingsActivity
                 mTencent = Tencent.createInstance(APPID, this);
                 mTencent.setOpenId(openID);
                 mTencent.setAccessToken(access_token, String.valueOf((Long.parseLong(expires) - currentTimeMillis()) / 1000));
+                if(mTencent.isSessionValid())
+                {
+                    Intent intent=new Intent(QQAuthLogin.this,MainActivity.class);
+                    startActivity(intent);
+                }
                 setUserInfo();
                 return true;
             }
@@ -260,9 +261,9 @@ public class QQAuthLogin extends FindLostThingsActivity
         mTencent.onActivityResultData(requestCode, resultCode, data, mListener);
     }
 
-        private void LogThingsCategory()
+    private void LogThingsCategory()
     {
-        LostThingsInfo lostThingsInfo=new LostThingsInfo();
+        LostThingsInfo lostThingsInfo = new LostThingsInfo();
         lostThingsInfo.setFoundTime(111);
         lostThingsInfo.setGivenTime(222);
         lostThingsInfo.setGiven(22);
@@ -285,17 +286,18 @@ public class QQAuthLogin extends FindLostThingsActivity
             @Override
             public void DoOnPostExecute(Integer TaskRet)
             {
-                    Log.d("CategoryLog",TaskRet.toString());
+                Log.d("CategoryLog", TaskRet.toString());
             }
         }).execute(lostThingsInfo);
     }
 
     private void LogThingsCategory1()
     {
-        new GetSchoolBuildingsTask(TaskRet -> {
+        new GetSchoolBuildingsTask(TaskRet ->
+        {
             for (MySchoolBuildings sb : TaskRet.getSchoolBuildings())
             {
-                Log.d("QQAuthLogin",sb.getBuildingName());
+                Log.d("QQAuthLogin", sb.getBuildingName());
             }
         }).execute(1);
     }

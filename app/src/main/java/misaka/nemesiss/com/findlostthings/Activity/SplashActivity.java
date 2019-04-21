@@ -40,7 +40,6 @@ public class SplashActivity extends FindLostThingsActivity
 
     private void HideNavigationBar()
     {
-
         if (Build.VERSION.SDK_INT < 19) { // lower api
             View v = this.getWindow().getDecorView();
             v.setSystemUiVisibility(View.GONE);

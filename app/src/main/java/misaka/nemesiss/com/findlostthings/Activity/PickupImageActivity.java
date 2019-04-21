@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class PickupImageActivity extends AppCompatActivity
+public class PickupImageActivity extends FindLostThingsActivity
 {
     private List<Uri> PickupImagesList = new LinkedList<>();
 
@@ -57,7 +57,7 @@ public class PickupImageActivity extends AppCompatActivity
     @BindView(R.id.PublishLostThingsTitle)
     TextView PublishLostThingsTitle;
     @BindView(R.id.ThingCategorySpinner)
-    MaterialSpinner ThingCategorySpinner;
+    MaterialSpinner ThingCategorySpinner;//下拉选择
     @BindView(R.id.ThingDetailedSpinner)
     MaterialSpinner ThingDetailedSpinner;
     @BindView(R.id.SchoolAreaSpinner)
@@ -83,9 +83,7 @@ public class PickupImageActivity extends AppCompatActivity
 
     private Calendar CurrentPickDateAndTime;
 
-
-
-    public RxBusResultDisposable<ImageMultipleResultEvent> getMultiImageSelectHandler()
+    public RxBusResultDisposable<ImageMultipleResultEvent> getMultiImageSelectHandler() //返回选择照片的路径
     {
         return new RxBusResultDisposable<ImageMultipleResultEvent>()
         {

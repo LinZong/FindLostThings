@@ -23,8 +23,6 @@ import java.util.List;
 
 public class PublishLostThingPreviewImageAdapter extends RecyclerView.Adapter<PublishLostThingPreviewImageAdapter.PublishImagePreviewViewHolder>
 {
-    public static final int REAL_PHOTO = 0;
-    public static final int PLACE_HOLDER = 1;
     private boolean IsReachMaxPic = false;
     private List<Uri> showImages;
     private Activity activity;

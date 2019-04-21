@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -18,8 +19,10 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.widget.Toast;
+import com.tencent.tauth.Tencent;
 import com.yalantis.ucrop.UCrop;
 import misaka.nemesiss.com.findlostthings.Activity.PickupImageActivity;
+import misaka.nemesiss.com.findlostthings.Activity.QQAuthLogin;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.BuildConfig;
 import misaka.nemesiss.com.findlostthings.R;
@@ -33,6 +36,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+
+import static android.content.Context.MODE_PRIVATE;
+import static java.lang.System.currentTimeMillis;
 
 public class AppUtils
 {

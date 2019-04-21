@@ -18,6 +18,18 @@ public class LostThingsInfo {
     private String FoundAddrDescription;
     private String ThingAddiDescription;
 
+    private int photoUrl;
+
+    public void setPhotoUrl(int photoUrl)
+    {
+        this.photoUrl = photoUrl;
+    }
+
+    public int getPhotoUrl()
+    {
+        return photoUrl;
+    }
+
     public void setId(String id) {
         Id = id;
     }
