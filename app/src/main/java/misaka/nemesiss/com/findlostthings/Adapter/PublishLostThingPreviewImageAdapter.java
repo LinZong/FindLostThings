@@ -121,8 +121,6 @@ public class PublishLostThingPreviewImageAdapter extends RecyclerView.Adapter<Pu
             CallPhotoPickerToPick();
             dialog.cancel();
         });
-
-
     }
 
     private void SelectPhotoHandler(int position)

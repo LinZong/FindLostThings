@@ -32,7 +32,6 @@ public class QQAuthLoginActivity extends FindLostThingsActivity
     private TextView nickName;
     private String name, imgUrl;
 
-    private static final String APPID = "101570216";
     private Tencent mTencent;
     private QQLoginListener mListener;
     private UserInfo userInfo;
@@ -139,8 +138,6 @@ public class QQAuthLoginActivity extends FindLostThingsActivity
             openID = jsonObject.getString("openid"); //用户标识
             access_token = jsonObject.getString("access_token"); //登录信息
             expires = jsonObject.getString("expires_in"); //token有效期
-
-
         } catch (JSONException e)
         {
             e.printStackTrace();
@@ -223,9 +220,6 @@ public class QQAuthLoginActivity extends FindLostThingsActivity
 
         }
     }
-
-    //获取登录设备的安卓ID
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)

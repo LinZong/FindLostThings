@@ -1,29 +1,20 @@
 package misaka.nemesiss.com.findlostthings.Activity;
 
 import android.content.Intent;
-import android.graphics.LinearGradient;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.ScaleAnimation;
-import android.widget.LinearLayout;
-import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,13 +30,9 @@ import misaka.nemesiss.com.findlostthings.Model.UserAccount;
 import misaka.nemesiss.com.findlostthings.R;
 import misaka.nemesiss.com.findlostthings.Services.User.LostThingsInfo;
 import misaka.nemesiss.com.findlostthings.Services.User.LostThingsInfoAdapter;
-import misaka.nemesiss.com.findlostthings.Services.User.WaterfallThingsInfo;
 import misaka.nemesiss.com.findlostthings.Tasks.PostInformationAsyncTask;
-import misaka.nemesiss.com.findlostthings.Tasks.WaterfallThingsInfoTask;
 import misaka.nemesiss.com.findlostthings.Utils.AppUtils;
 import org.json.JSONObject;
-
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -89,7 +76,27 @@ public class MainActivity extends FindLostThingsActivity
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item)
             {
-                mDrawerLayout.closeDrawers();
+
+                switch (item.getItemId())
+                {
+                    case R.id.my_find:
+                       //
+                        Intent intent=new Intent(MainActivity.this,Mypublish.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.set_up:
+                        //mDrawerLayout.closeDrawers();
+                        Intent intent1=new Intent(MainActivity.this,SetUp.class);
+                        startActivity(intent1);
+                        break;
+                    case R.id.user_nickNameAndImage:
+                        Intent intent2=new Intent(MainActivity.this,ShowOrChangeUserInfo.class);
+                        startActivity(intent2);
+                        break;
+                        default:
+                            mDrawerLayout.closeDrawers();
+                            break;
+                }
                 return true;
             }
         });

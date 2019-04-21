@@ -5,6 +5,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import misaka.nemesiss.com.findlostthings.R;
 import misaka.nemesiss.com.findlostthings.Services.User.LostThingsInfo;
 import misaka.nemesiss.com.findlostthings.Services.User.LostThingsInfoAdapter;
@@ -72,7 +73,17 @@ public class Mypublish extends FindLostThingsActivity
             }
         }).start();
     }
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return true;
+    }
     private void initLostThingsInfo()
     {
         LostThingsInfo lostThingsInfo1 = new LostThingsInfo();
