@@ -1,5 +1,6 @@
 package misaka.nemesiss.com.findlostthings.Activity;
 
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -18,7 +19,8 @@ public class SetUp extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_up);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        TextView pushNotice=(TextView)findViewById(R.id.push_notice);
+        ConstraintLayout pushNotice=(ConstraintLayout)findViewById(R.id.push_notice);
+        TextView textView1=(TextView)findViewById(R.id.notice);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);//左侧添加一个默认的返回图标
         getSupportActionBar().setHomeButtonEnabled(true); //设置返回键可用
@@ -27,11 +29,10 @@ public class SetUp extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-
-                if(pushNotice.getText().toString().equals("关"))
-                    pushNotice.setText("开");
+                if(textView1.getText().toString().equals("关"))
+                    textView1.setText("开");
                 else
-                    pushNotice.setText("关");
+                    textView1.setText("关");
             }
         });
     }
