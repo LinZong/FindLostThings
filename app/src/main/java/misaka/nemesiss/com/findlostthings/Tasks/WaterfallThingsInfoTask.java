@@ -14,6 +14,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.modelmapper.TypeToken;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import static android.content.Context.MODE_PRIVATE;
@@ -32,7 +34,16 @@ public class WaterfallThingsInfoTask extends CustomPostExecuteAsyncTask<Waterfal
     String s5;
     public  WaterfallThingsInfoTask(TaskPostExecuteWrapper<List<LostThingsInfo>> DoInPostExecute) {
         super(DoInPostExecute);
-        EncryptedAccessToken= APIDocs.encryptionAccessToken();
+        try
+        {
+            EncryptedAccessToken= APIDocs.encryptionAccessToken();
+        } catch (InvalidKeyException e)
+        {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e)
+        {
+            e.printStackTrace();
+        }
     }
     @Override
     protected List<LostThingsInfo> doInBackground(WaterfallThingsInfo... waterfallThingsInfos) {

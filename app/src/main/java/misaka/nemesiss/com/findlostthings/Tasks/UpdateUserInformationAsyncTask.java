@@ -10,6 +10,9 @@ import misaka.nemesiss.com.findlostthings.Model.Request.LoginAccountInfo.UserInf
 import misaka.nemesiss.com.findlostthings.Model.Response.UserInfoUpdateResponse;
 import misaka.nemesiss.com.findlostthings.Services.User.APIDocs;
 import okhttp3.*;
+
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
 import static android.content.Context.MODE_PRIVATE;
 
@@ -22,7 +25,16 @@ public class UpdateUserInformationAsyncTask extends CustomPostExecuteAsyncTask<S
 
     public UpdateUserInformationAsyncTask(TaskPostExecuteWrapper<UserInfoUpdateResponse> DoInPostExecute) {
         super(DoInPostExecute);
-        EncryptedAccessToken= APIDocs.encryptionAccessToken();
+        try
+        {
+            EncryptedAccessToken= APIDocs.encryptionAccessToken();
+        } catch (InvalidKeyException e)
+        {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e)
+        {
+            e.printStackTrace();
+        }
     }
 
 

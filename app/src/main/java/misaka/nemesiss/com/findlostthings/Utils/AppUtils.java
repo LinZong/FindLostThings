@@ -28,11 +28,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Response;
 
 import java.io.File;
+import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class AppUtils
@@ -42,7 +40,9 @@ public class AppUtils
     public static String packageName = BuildConfig.APPLICATION_ID;
     public static final String IMAGE_TYPE = "image/jpeg";
     public static final int TYPE_CAMERA = 1234;
-    public static ProgressDialog ShowProgressDialog(Context ctx, boolean Cancelable, String title, String content){
+
+    public static ProgressDialog ShowProgressDialog(Context ctx, boolean Cancelable, String title, String content)
+    {
         ProgressDialog dialog = new ProgressDialog(ctx);
         dialog.setCancelable(Cancelable);
         dialog.setTitle(title);
@@ -61,13 +61,13 @@ public class AppUtils
 
     public static void ShowNoNetworkError()
     {
-        Toast.makeText(FindLostThingsApplication.getContext(), R.string.CannotConnectToServer,Toast.LENGTH_SHORT).show();
+        Toast.makeText(FindLostThingsApplication.getContext(), R.string.CannotConnectToServer, Toast.LENGTH_SHORT).show();
     }
 
-    public static List<Pair<String,String>> BearerAuthRequestHeaders(String token) //暂时用不到
+    public static List<Pair<String, String>> BearerAuthRequestHeaders(String token) //暂时用不到
     {
-        List<Pair<String,String>> header = new ArrayList<>();
-        header.add(new Pair<>("Authorization","Bearer "+token));
+        List<Pair<String, String>> header = new ArrayList<>();
+        header.add(new Pair<>("Authorization", "Bearer " + token));
         return header;
     }
 
@@ -80,19 +80,19 @@ public class AppUtils
     {
         for (int i = 0; i < strs.length; i++)
         {
-            if(TextUtils.isEmpty(strs[i])) return false;
+            if (TextUtils.isEmpty(strs[i])) return false;
         }
         return true;
     }
 
     public static boolean ConfirmResponseSuccessful(Response resp)
     {
-        return resp!=null && resp.isSuccessful();
+        return resp != null && resp.isSuccessful();
     }
 
     public static OkHttpClient.Builder GetOkHttpClient()
     {
-        if(clientInstance == null)
+        if (clientInstance == null)
         {
             clientInstance = new OkHttpClient.Builder().connectTimeout(4500, TimeUnit.MILLISECONDS);
         }
@@ -108,7 +108,7 @@ public class AppUtils
 
     public static long Date2UnixStamp(Date date)
     {
-        return date.getTime()/1000;
+        return date.getTime() / 1000;
     }
 
     public static String UnixStampToFmtString(long unix)
@@ -116,10 +116,11 @@ public class AppUtils
         return TokenDateFormatter().format(UnixStamp2Date(unix));
     }
 
-    public static void ToolbarShowReturnButton(AppCompatActivity activity, Toolbar tb){//toolbar返回键
+    public static void ToolbarShowReturnButton(AppCompatActivity activity, Toolbar tb)
+    {//toolbar返回键
         activity.setSupportActionBar(tb);
         ActionBar ab = activity.getSupportActionBar();
-        if(ab!=null)
+        if (ab != null)
         {
             ab.setDisplayHomeAsUpEnabled(true);
         }
@@ -129,11 +130,13 @@ public class AppUtils
     public static boolean IfAppIsRunning(Context context)
     {
         ActivityManager activityManager =
-                (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
+                (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningAppProcessInfo> processInfos
                 = activityManager.getRunningAppProcesses();
-        for(int i = 0; i < processInfos.size(); i++){
-            if(processInfos.get(i).processName.equals(packageName)){
+        for (int i = 0; i < processInfos.size(); i++)
+        {
+            if (processInfos.get(i).processName.equals(packageName))
+            {
                 return true;
             }
         }
@@ -150,21 +153,24 @@ public class AppUtils
     public static String GetAppDataDCIMPath()
     {
         //  /storage/emulated/0/Android/data/misaka.nemesiss.com.findlostthings/files/DCIM
-        File[] MountedSdcardPrefix = ContextCompat.getExternalFilesDirs(FindLostThingsApplication.getContext(),null);
-        File Path = new File(MountedSdcardPrefix.length>1?MountedSdcardPrefix[1]:MountedSdcardPrefix[0], Environment.DIRECTORY_DCIM);
+        File[] MountedSdcardPrefix = ContextCompat.getExternalFilesDirs(FindLostThingsApplication.getContext(), null);
+        File Path = new File(MountedSdcardPrefix.length > 1 ? MountedSdcardPrefix[1] : MountedSdcardPrefix[0], Environment.DIRECTORY_DCIM);
         return Path.getAbsolutePath();
     }
+
     public static Uri ParseResourceIdToUri(int resId)
     {
-        return Uri.parse(RESOURCE+packageName+"/"+resId);
+        return Uri.parse(RESOURCE + packageName + "/" + resId);
     }
 
     public static void OpenCamera(Uri WangStoreImageUri, Activity CallCameraActivity)
     {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N)
+        {
             intent.putExtra(MediaStore.EXTRA_OUTPUT, WangStoreImageUri);
-        } else {
+        } else
+        {
             ContentValues contentValues = new ContentValues(1);
             contentValues.put(MediaStore.Images.Media.DATA, WangStoreImageUri.getPath());
             contentValues.put(MediaStore.Images.Media.MIME_TYPE, IMAGE_TYPE);
@@ -185,15 +191,109 @@ public class AppUtils
         options.setCompressionQuality(100);
         String OriginalImageSavedPath = OriginalUri.getPath();
         String CroppedPath = AppUtils.GetCroppedPath(OriginalImageSavedPath);
-        return UCrop.of(OriginalUri,Uri.fromFile(new File(CroppedPath))).withOptions(options);
+        return UCrop.of(OriginalUri, Uri.fromFile(new File(CroppedPath))).withOptions(options);
     }
+
     public static String GetCroppedPath(String originalPath)
     {
-        return originalPath.substring(0,originalPath.lastIndexOf("."))+"__CROPPED.jpg";
+        return originalPath.substring(0, originalPath.lastIndexOf(".")) + "__CROPPED.jpg";
     }
 
     public static String GetTempImageName()
     {
         return System.currentTimeMillis() + ".jpg";
     }
+
+    public static String GetPublishLostThingUploadImagePath(long UserID, String CurrentPublishUUID)
+    {
+        //获取当前年月
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        int mYear = cal.get(Calendar.YEAR);
+        int mMonth = cal.get(Calendar.MONTH) + 1;
+        String YearAndDate = String.format("%d%02d", mYear, mMonth);
+        StringBuilder builder = new StringBuilder();
+        builder.append("lost/upload/things/")
+                .append(UserID)
+                .append("/")
+                .append(YearAndDate)
+                .append("/")
+                .append(CurrentPublishUUID)
+                .append("/");
+        return builder.toString();
+    }
+
+    public static String[] GetPathSha1Slices(String ImagePath)
+    {
+        String Sha1Result = Sha1Encode(ImagePath);
+        String[] result = new String[10];
+        for (int i = 0; i < 10; i++)
+        {
+            result[i] = Sha1Result.substring(i, i + 4);
+        }
+        return result;
+    }
+
+    public static String Sha1Encode(String content)
+    {
+        byte[] hash;
+        try
+        {
+            hash = MessageDigest.getInstance("SHA-1").digest(content.getBytes("UTF-8"));
+        } catch (Exception e)
+        {
+            throw new RuntimeException("NoSuchAlgorithmException", e);
+        }
+        StringBuilder hex = new StringBuilder(hash.length * 2);
+        for (byte b : hash)
+        {
+            if ((b & 0xFF) < 0x10)
+            {
+                hex.append("0");
+            }
+            hex.append(Integer.toHexString(b & 0xFF));
+        }
+        return hex.toString();
+    }
+
+    public static List<String> GetAllUploadObjectKeys(List<Uri> ImageUriList, long UserID, String CurrentPublishUUID)
+    {
+        List<File> files = GetAllUploadObjectOriginalFilePtr(ImageUriList);
+        List<String> allFileNames = new ArrayList<>();
+        for (File f : files)
+        {
+            allFileNames.add(f.getName());
+        }
+        String UploadObjKey = GetPublishLostThingUploadImagePath(UserID, CurrentPublishUUID);
+
+        String[] objKeySha1Slices = GetPathSha1Slices(UploadObjKey);
+        List<String> result = new ArrayList<>();
+
+        for (int i = 0; i < allFileNames.size(); i++)
+        {
+            result.add(UploadObjKey + objKeySha1Slices[i] + "-" + allFileNames.get(i));
+        }
+        return result;
+    }
+
+    public static List<File> GetAllUploadObjectOriginalFilePtr(List<Uri> ImageUriList)
+    {
+        List<File> files = new ArrayList<>();
+        for (int i = 0; i < ImageUriList.size()-1; i++)
+        {
+            files.add(new File(ImageUriList.get(i).getPath()));
+        }
+        return files;
+    }
+
+    public static List<String> GetAllUploadObjectOriginalFilePath(List<Uri> ImageUriList)
+    {
+        List<String> result = new ArrayList<>();
+        for (int i = 0; i < ImageUriList.size()-1; i++)
+        {
+            result.add(ImageUriList.get(i).getPath());
+        }
+        return result;
+    }
+
 }

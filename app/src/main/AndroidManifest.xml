@@ -28,6 +28,7 @@
 
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
+
                 <data android:scheme="tencent101570216"/>
             </intent-filter>
         </activity>
@@ -38,13 +39,10 @@
         <activity
                 android:name=".Activity.SplashActivity"
                 android:theme="@style/SplashScreenTheme">
-
         </activity>
         <activity android:name=".Activity.QQAuthLogin">
-
         </activity>
         <activity android:name=".Activity.DisplayLostThingsWaterfall">
-
         </activity>
         <activity android:name=".Activity.PickupImageActivity">
             <intent-filter>
@@ -52,16 +50,19 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
         <activity
                 android:name="cn.finalteam.rxgalleryfinal.ui.activity.MediaActivity"
-                android:exported="true"
-        />
+                android:exported="true"/>
         <activity
                 android:name="com.yalantis.ucrop.UCropActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/AppTheme"/>
-
+        <activity
+                android:name=".Activity.PreviewSelectedImageActivity"
+                android:launchMode="standard">
+        </activity>
+        <activity android:name=".Activity.TryUploadFilesActivity">
+        </activity>
     </application>
 
 </manifest>

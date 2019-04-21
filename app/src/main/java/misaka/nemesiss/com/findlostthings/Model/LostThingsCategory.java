@@ -19,4 +19,10 @@ public class LostThingsCategory {
     public String getName() {
         return Name;
     }
+
+    @Override
+    public String toString()
+    {
+        return getName();
+    }
 }
