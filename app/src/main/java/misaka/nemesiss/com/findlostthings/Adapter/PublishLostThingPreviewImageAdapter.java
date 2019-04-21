@@ -137,6 +137,8 @@ public class PublishLostThingPreviewImageAdapter extends RecyclerView.Adapter<Pu
     private void CallCameraToTakePhoto()
     {
         File DCIM = new File(AppUtils.GetSystemDCIMPath(), "Camera");
+        if(!DCIM.exists())
+            DCIM.mkdirs();
         File TempFilePath = new File(DCIM, AppUtils.GetTempImageName());
         Uri TempFileUri = Uri.fromFile(TempFilePath);
         ((PickupImageActivity) (activity)).SetTempImageSavedUri(TempFileUri);

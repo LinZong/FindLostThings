@@ -12,10 +12,10 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 import android.util.SparseArray;
-import android.util.SparseIntArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,15 +44,12 @@ import misaka.nemesiss.com.findlostthings.Adapter.SchoolBuildingsCategoryAdapter
 import misaka.nemesiss.com.findlostthings.Adapter.SchoolInfoCategoryAdapter;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.Model.LostThingsCategory;
-import misaka.nemesiss.com.findlostthings.Model.Response.LostThingsCategoryPartition;
 import misaka.nemesiss.com.findlostthings.R;
+import misaka.nemesiss.com.findlostthings.Services.User.LostThingsInfo;
 import misaka.nemesiss.com.findlostthings.Services.User.MySchoolBuildings;
 import misaka.nemesiss.com.findlostthings.Services.User.SchoolInfo;
 import misaka.nemesiss.com.findlostthings.StorageBucket.BucketInfo;
-import misaka.nemesiss.com.findlostthings.Tasks.GetLostThingsCategoryAsyncTask;
-import misaka.nemesiss.com.findlostthings.Tasks.GetLostThingsCategoryPartitionTask;
-import misaka.nemesiss.com.findlostthings.Tasks.GetSchoolBuildingsTask;
-import misaka.nemesiss.com.findlostthings.Tasks.GetSupportSchoolsTask;
+import misaka.nemesiss.com.findlostthings.Tasks.*;
 import misaka.nemesiss.com.findlostthings.Utils.AppUtils;
 import misaka.nemesiss.com.findlostthings.Utils.PermissionsHelper;
 import misaka.nemesiss.com.findlostthings.Utils.UUIDGenerator;
@@ -78,7 +75,7 @@ public class PickupImageActivity extends FindLostThingsActivity
     @BindView(R.id.PublishLostThingToolbar)
     Toolbar PublishLostThingToolbar;
     @BindView(R.id.PublishLostThingsTitle)
-    TextView PublishLostThingsTitle;
+    EditText PublishLostThingsTitle;
     @BindView(R.id.ThingCategorySpinner)
     MaterialSpinner ThingCategorySpinner;//下拉选择
     @BindView(R.id.ThingDetailedSpinner)
@@ -112,10 +109,10 @@ public class PickupImageActivity extends FindLostThingsActivity
     private List<MySchoolBuildings> currentSchoolBuildings = new ArrayList<>();
 
     //配套上面这些List的Adapter
-    private LostThingCategoryAdapter thingsCategoryAdapter = new LostThingCategoryAdapter(PickupImageActivity.this,thingsCategories);
-    private LostThingCategoryAdapter thingsDetailedAdapter = new LostThingCategoryAdapter(PickupImageActivity.this,thingsDetails);
-    private SchoolInfoCategoryAdapter supportedSchoolListAdapter = new SchoolInfoCategoryAdapter(PickupImageActivity.this,allSupportedSchool);
-    private SchoolBuildingsCategoryAdapter currentSchoolBuildingsAdapter = new SchoolBuildingsCategoryAdapter(PickupImageActivity.this,currentSchoolBuildings);
+    private LostThingCategoryAdapter thingsCategoryAdapter = new LostThingCategoryAdapter(PickupImageActivity.this, thingsCategories);
+    private LostThingCategoryAdapter thingsDetailedAdapter = new LostThingCategoryAdapter(PickupImageActivity.this, thingsDetails);
+    private SchoolInfoCategoryAdapter supportedSchoolListAdapter = new SchoolInfoCategoryAdapter(PickupImageActivity.this, allSupportedSchool);
+    private SchoolBuildingsCategoryAdapter currentSchoolBuildingsAdapter = new SchoolBuildingsCategoryAdapter(PickupImageActivity.this, currentSchoolBuildings);
 
 
     //处理失物图片的布局
@@ -130,12 +127,14 @@ public class PickupImageActivity extends FindLostThingsActivity
     private List<String> FinishUploadImageUrl = new ArrayList<>();
 
     //处理当前正在上传的图片的数据结构
-    private Queue<Pair<String,String>> CurrentUploadImageQueue;
+    private Queue<Pair<String, String>> CurrentUploadImageQueue;
     private int CurrentUploadImageIndex = -1;
     private TextView CurrentUploadImageProgressHint;
+    private boolean IsUploadingImages = false;
 
     //处理活动之间来回跳转
     public static final int PREVIEW_ACTIVITY = 1998;
+
     public RxBusResultDisposable<ImageMultipleResultEvent> getMultiImageSelectHandler()
     {
         return new RxBusResultDisposable<ImageMultipleResultEvent>()
@@ -147,9 +146,9 @@ public class PickupImageActivity extends FindLostThingsActivity
                 for (MediaBean mediaBean : mb)
                 {
                     Uri currUri = Uri.fromFile(new File(mediaBean.getOriginalPath()));
-                    AppendImage(currUri,false);
+                    AppendImage(currUri, false);
                 }
-                if(imageAdapter!=null) imageAdapter.notifyDataSetChanged();
+                if (imageAdapter != null) imageAdapter.notifyDataSetChanged();
             }
         };
     }
@@ -160,28 +159,27 @@ public class PickupImageActivity extends FindLostThingsActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pickup_image);
         ButterKnife.bind(this);
-        PermissionsHelper.RequestAllPermissions(PickupImageActivity.this,PickupImageActivity.this);
+        PermissionsHelper.RequestAllPermissions(PickupImageActivity.this, PickupImageActivity.this);
         CurrentPickDateAndTime = Calendar.getInstance(Locale.CHINA);
-        AppUtils.ToolbarShowReturnButton(PickupImageActivity.this,PublishLostThingToolbar);
+        AppUtils.ToolbarShowReturnButton(PickupImageActivity.this, PublishLostThingToolbar);
         InitComponents();
         LoadSpinnerItems();
     }
 
     private void LoadSpinnerItems()
     {
-        new GetLostThingsCategoryAsyncTask((result)->{
-            Log.d("PickupImageActivity","物品种类加载完成");
+        new GetLostThingsCategoryAsyncTask((result) -> {
+            Log.d("PickupImageActivity", "物品种类加载完成");
             thingsCategories.clear();
             thingsCategories.addAll(result);
             thingsCategoryAdapter.notifyDataSetChanged();
-            Log.d("PickupImageActivity",String.valueOf(ThingCategorySpinner.getSelectedIndex()));
+            Log.d("PickupImageActivity", String.valueOf(ThingCategorySpinner.getSelectedIndex()));
         }).execute();
-        new GetSupportSchoolsTask((result)->{
-            Log.d("PickupImageActivity","支持的学校加载完成");
+        new GetSupportSchoolsTask((result) -> {
+            Log.d("PickupImageActivity", "支持的学校加载完成");
             allSupportedSchool.clear();
             allSupportedSchool.addAll(result.getSupportSchools());
             supportedSchoolListAdapter.notifyDataSetChanged();
-
         }).execute();
     }
 
@@ -189,9 +187,10 @@ public class PickupImageActivity extends FindLostThingsActivity
     {
         PickupImagesList.add(AppUtils.ParseResourceIdToUri(R.drawable.add_photo));
 
-        if(gridLayoutManager==null){
-            gridLayoutManager = new GridLayoutManager(PickupImageActivity.this,3);
-            imageAdapter = new PublishLostThingPreviewImageAdapter(PickupImagesList,PickupImageActivity.this);
+        if (gridLayoutManager == null)
+        {
+            gridLayoutManager = new GridLayoutManager(PickupImageActivity.this, 3);
+            imageAdapter = new PublishLostThingPreviewImageAdapter(PickupImagesList, PickupImageActivity.this);
         }
 
         gridLayoutManager.setAutoMeasureEnabled(true);
@@ -210,17 +209,17 @@ public class PickupImageActivity extends FindLostThingsActivity
         int mMinus = ca.get(Calendar.MINUTE);
 
         //绑定日期和时间的点击事件，用以启动对应的Picker
-        datePickerDialog = new DatePickerDialog(PickupImageActivity.this,this::HandleDatePick,mYear, mMonth, mDay);
-        timePickerDialog = new TimePickerDialog(PickupImageActivity.this,this::HandleTimePick,mHour,mMinus,true);
+        datePickerDialog = new DatePickerDialog(PickupImageActivity.this, this::HandleDatePick, mYear, mMonth, mDay);
+        timePickerDialog = new TimePickerDialog(PickupImageActivity.this, this::HandleTimePick, mHour, mMinus, true);
 
         PickDateLayout.setOnClickListener(v -> datePickerDialog.show());
         PickTimeLayout.setOnClickListener(v -> timePickerDialog.show());
 
         //绑定展开/关闭补充说明的点击事件
         ToggleLostThingAdditionalDesc
-                .setOnClickListener(HandleAdditionalDescCollapsing(ToggleLostThingAdditionalDesc,LostThingAdditionalDescEditText));
+                .setOnClickListener(HandleAdditionalDescCollapsing(ToggleLostThingAdditionalDesc, LostThingAdditionalDescEditText));
         ToggleFindLostThingLocationDesc
-                .setOnClickListener(HandleAdditionalDescCollapsing(ToggleFindLostThingLocationDesc,FindLostThingLocationDescEditText));
+                .setOnClickListener(HandleAdditionalDescCollapsing(ToggleFindLostThingLocationDesc, FindLostThingLocationDescEditText));
 
         ThingCategorySpinner.setOnItemSelectedListener(this::HandleUpdateThingsDetailed);
         SchoolAreaSpinner.setOnItemSelectedListener(this::HandleUpdateSchoolBuildings);
@@ -236,73 +235,78 @@ public class PickupImageActivity extends FindLostThingsActivity
     {
 
         int SelectedSchoolID = thingsCategories.get(position).getId();
-        List<MySchoolBuildings> cached = CacheSchoolBuildingsList.get(SelectedSchoolID,null);
-        if(cached == null)
+        List<MySchoolBuildings> cached = CacheSchoolBuildingsList.get(SelectedSchoolID, null);
+        if (cached == null)
         {
-            new GetSchoolBuildingsTask((result)->{
-                CacheSchoolBuildingsList.append(SelectedSchoolID,result.getSchoolBuildings());
+            new GetSchoolBuildingsTask((result) -> {
+                CacheSchoolBuildingsList.append(SelectedSchoolID, result.getSchoolBuildings());
                 currentSchoolBuildings.clear();
                 currentSchoolBuildings.addAll(result.getSchoolBuildings());
-                currentSchoolBuildingsAdapter.notifyDataSetChanged();
-                SchoolBuildingSpinner.setText(SchoolBuildingSpinner.getHint());
+                SchoolBuildingSpinner.setSelectedIndex(0);
+                SchoolBuildingSpinner.setText(result.getSchoolBuildings().get(0).getBuildingName());
             }).execute(SelectedSchoolID);
-        }
-        else {
+        } else
+        {
             currentSchoolBuildings.clear();
             currentSchoolBuildings.addAll(cached);
             currentSchoolBuildingsAdapter.notifyDataSetChanged();
-            SchoolBuildingSpinner.setText(SchoolBuildingSpinner.getHint());
+            SchoolBuildingSpinner.setSelectedIndex(0);
+            SchoolBuildingSpinner.setText(cached.get(0).getBuildingName());
         }
     }
 
     private void HandleUpdateThingsDetailed(MaterialSpinner materialSpinner, int position, long id, Object item)
     {
         int SelectedThingCategoryID = thingsCategories.get(position).getId();
-        List<LostThingsCategory> cached = CacheThingsDetail.get(SelectedThingCategoryID,null);
+        List<LostThingsCategory> cached = CacheThingsDetail.get(SelectedThingCategoryID, null);
 
-        if(cached==null)
+        if (cached == null)
         {
-            new GetLostThingsCategoryPartitionTask((result)->{
-                CacheThingsDetail.append(SelectedThingCategoryID,result.getCategoryDetails());
+            new GetLostThingsCategoryPartitionTask((result) -> {
+                CacheThingsDetail.append(SelectedThingCategoryID, result.getCategoryDetails());
                 thingsDetails.clear();
                 thingsDetails.addAll(result.getCategoryDetails());
                 thingsDetailedAdapter.notifyDataSetChanged();
-                ThingDetailedSpinner.setText(ThingDetailedSpinner.getHint());
+                ThingDetailedSpinner.setSelectedIndex(0);
+                ThingDetailedSpinner.setText(result.getCategoryDetails().get(0).getName());
             }).execute(SelectedThingCategoryID);
-        }
-        else {
+        } else
+        {
+
             thingsDetails.clear();
             thingsDetails.addAll(cached);
             thingsDetailedAdapter.notifyDataSetChanged();
-            ThingDetailedSpinner.setText(ThingDetailedSpinner.getHint());
+            ThingDetailedSpinner.setSelectedIndex(0);
+            ThingDetailedSpinner.setText(cached.get(0).getName());
         }
     }
 
     private void HandleTimePick(TimePicker timePicker, int HourOfDay, int Minus)
     {
-        CurrentPickDateAndTime.set(Calendar.HOUR_OF_DAY,HourOfDay);
-        CurrentPickDateAndTime.set(Calendar.MINUTE,Minus);
+        CurrentPickDateAndTime.set(Calendar.HOUR_OF_DAY, HourOfDay);
+        CurrentPickDateAndTime.set(Calendar.MINUTE, Minus);
 
 
-        TimeTextView.setText(String.format("%d:%02d",HourOfDay,Minus));
+        TimeTextView.setText(String.format("%d:%02d", HourOfDay, Minus));
     }
 
     private void HandleDatePick(DatePicker datePicker, int year, int month, int dayOfMonth)
     {
-        CurrentPickDateAndTime.set(year,month,dayOfMonth);
+        CurrentPickDateAndTime.set(year, month, dayOfMonth);
 
-        DateTextView.setText(year+"-"+(month+1)+"-"+dayOfMonth);
+        DateTextView.setText(year + "-" + (month + 1) + "-" + dayOfMonth);
     }
 
-    private View.OnClickListener HandleAdditionalDescCollapsing(TextView toggle,EditText editor)
+    private View.OnClickListener HandleAdditionalDescCollapsing(TextView toggle, EditText editor)
     {
         AtomicBoolean initStatus = new AtomicBoolean(false);
         return view -> {
-            if(!initStatus.get()){
+            if (!initStatus.get())
+            {
                 toggle.setTextColor(getResources().getColor(R.color.OpenAdditionalInfoColor));
                 editor.setVisibility(View.VISIBLE);
-            }
-            else {
+            } else
+            {
                 toggle.setTextColor(getResources().getColor(R.color.DefaultTextViewColor));
                 editor.setVisibility(View.GONE);
             }
@@ -319,9 +323,9 @@ public class PickupImageActivity extends FindLostThingsActivity
     protected void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        if(TempImageSavedUri!=null)
+        if (TempImageSavedUri != null)
         {
-            outState.putString("TempImageSavedUriString",TempImageSavedUri.getPath());
+            outState.putString("TempImageSavedUriString", TempImageSavedUri.getPath());
         }
         ArrayList<String> PickupImagesStringList = new ArrayList<>();
         int PickLength = PickupImagesList.size() - 1;
@@ -329,22 +333,24 @@ public class PickupImageActivity extends FindLostThingsActivity
         {
             PickupImagesStringList.add(PickupImagesList.get(i).getPath());
         }
-        outState.putStringArrayList("PickupImagesStringList",PickupImagesStringList);
+        outState.putStringArrayList("PickupImagesStringList", PickupImagesStringList);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState)
     {
         super.onRestoreInstanceState(savedInstanceState);
-        String savedTempFilePath = savedInstanceState.getString("TempImageSavedUriString",null);
-        if(savedTempFilePath!=null){
+        String savedTempFilePath = savedInstanceState.getString("TempImageSavedUriString", null);
+        if (savedTempFilePath != null)
+        {
             TempImageSavedUri = Uri.fromFile(new File(savedTempFilePath));
         }
         ArrayList<String> PickupImagesStringList = savedInstanceState.getStringArrayList("PickupImagesStringList");
-        if(PickupImagesStringList!=null){
+        if (PickupImagesStringList != null)
+        {
             for (String s : PickupImagesStringList)
             {
-                AppendImage(Uri.fromFile(new File(s)),false);
+                AppendImage(Uri.fromFile(new File(s)), false);
             }
             imageAdapter.notifyDataSetChanged();
         }
@@ -354,17 +360,30 @@ public class PickupImageActivity extends FindLostThingsActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        getMenuInflater().inflate(R.menu.publish_send,menu);
+        getMenuInflater().inflate(R.menu.publish_send, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId()){
-            case R.id.PublishTickBtn:{
-                Toast.makeText(PickupImageActivity.this,"发送失物信息!", Toast.LENGTH_SHORT).show();
-                BeginUploadImage();
+        switch (item.getItemId())
+        {
+            case R.id.PublishTickBtn:
+            {
+                if (IsUploadingImages)
+                {
+                    Toast.makeText(PickupImageActivity.this, "正在上传图片, 完成后会自动发布，请勿重复点击", Toast.LENGTH_SHORT).show();
+                } else
+                {
+                    if (PickupImagesList.size() == 1)
+                    {
+                        AppUtils.ShowAlertDialog(PickupImageActivity.this, false, "未选择任何图片", "上传失物的图片有助于失主辨认丢失物，确定不上传任何照片吗?")
+                                .setPositiveButton("确定", (d, i) -> ValidateAllFields())
+                                .setNegativeButton("取消", (d, i) -> {
+                                }).show();
+                    } else ValidateAllFields();
+                }
                 break;
             }
         }
@@ -375,41 +394,50 @@ public class PickupImageActivity extends FindLostThingsActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (resultCode){
+        switch (resultCode)
+        {
             case Activity.RESULT_CANCELED:
-            case Activity.RESULT_OK:{
-                switch (requestCode){
-                    case AppUtils.TYPE_CAMERA:{
-                        NotifyImageToCamera(PickupImageActivity.this,TempImageSavedUri);
-                        UCrop of = AppUtils.OpenUCrop(TempImageSavedUri);
-                        of.start(PickupImageActivity.this);
-                        break;
-                    }
-                    case UCrop.REQUEST_CROP:{
-                        if(data!=null){
-                            Uri FinishedCropped = UCrop.getOutput(data);
-                            AppendImage(FinishedCropped,true);
+            case Activity.RESULT_OK:
+            {
+                switch (requestCode)
+                {
+                    case AppUtils.TYPE_CAMERA:
+                    {
+                        if(resultCode!=Activity.RESULT_CANCELED){
+                            NotifyImageToCamera(PickupImageActivity.this, TempImageSavedUri);
+                            UCrop of = AppUtils.OpenUCrop(TempImageSavedUri);
+                            of.start(PickupImageActivity.this);
                         }
-                        else Log.e("PickupImageActivity","UCrop回传的data为null!");
                         break;
                     }
-                    case PREVIEW_ACTIVITY:{
-                        if(data!=null)
+                    case UCrop.REQUEST_CROP:
+                    {
+                        if (data != null)
                         {
-                            boolean shouldDelete = data.getBooleanExtra("ShouldDeleteImage",false);
+                            Uri FinishedCropped = UCrop.getOutput(data);
+                            AppendImage(FinishedCropped, true);
+                        } else Log.e("PickupImageActivity", "UCrop回传的data为null!");
+                        break;
+                    }
+                    case PREVIEW_ACTIVITY:
+                    {
+                        if (data != null)
+                        {
+                            boolean shouldDelete = data.getBooleanExtra("ShouldDeleteImage", false);
                             Uri previewImageUri = data.getParcelableExtra("PreviewImageUri");
-                            int previewIndex = data.getIntExtra("PreviewImageIndex",-1);
-                            if(shouldDelete){
-                                RemoveImage(previewIndex,true);
-                            }
-                            else
+                            int previewIndex = data.getIntExtra("PreviewImageIndex", -1);
+                            if (shouldDelete)
+                            {
+                                RemoveImage(previewIndex, true);
+                            } else
                             {
                                 Uri OldUri = PickupImagesList.get(previewIndex);
-                                if(OldUri.equals(previewImageUri)){
+                                if (OldUri.equals(previewImageUri))
+                                {
                                     return;
-                                }
-                                else {
-                                    PickupImagesList.set(previewIndex,previewImageUri);
+                                } else
+                                {
+                                    PickupImagesList.set(previewIndex, previewImageUri);
                                     imageAdapter.notifyDataSetChanged();
                                 }
                             }
@@ -422,49 +450,55 @@ public class PickupImageActivity extends FindLostThingsActivity
 
     }
 
-    public void AppendImage(Uri imageUri,boolean ShouldNotifyDataSetChanged)
+    public void AppendImage(Uri imageUri, boolean ShouldNotifyDataSetChanged)
     {
         if (PickupImagesList.size() != 10)
         {
-            PickupImagesList.add(PickupImagesList.size()-1,imageUri);
-            if(ShouldNotifyDataSetChanged){
+            PickupImagesList.add(PickupImagesList.size() - 1, imageUri);
+            if (ShouldNotifyDataSetChanged)
+            {
                 imageAdapter.notifyDataSetChanged();
             }
         }
     }
-    public void RemoveImage(int index,boolean ShouldNotifyDataSetChanged)
+
+    public void RemoveImage(int index, boolean ShouldNotifyDataSetChanged)
     {
         PickupImagesList.remove(index);
         recyclerView.removeViewAt(index);
-        if(ShouldNotifyDataSetChanged)
+        if (ShouldNotifyDataSetChanged)
         {
             imageAdapter.notifyDataSetChanged();
         }
 
     }
-    private void NotifyImageToCamera(Context context, Uri uri) {
-        try {
+
+    private void NotifyImageToCamera(Context context, Uri uri)
+    {
+        try
+        {
             File file = new File(uri.getPath());
             MediaStore.Images.Media.insertImage(context.getContentResolver(), file.getAbsolutePath(), file.getName(), null);
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e)
+        {
             e.printStackTrace();
         }
         context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
     }
 
 
-    private COSXMLUploadTask UploadSingleImage(String OriginalFilePath,String CosPath)
+    private COSXMLUploadTask UploadSingleImage(String OriginalFilePath, String CosPath)
     {
         TransferConfig config = new TransferConfig.Builder().build();
-        TransferManager transferManager = new TransferManager(FindLostThingsApplication.getCosXmlService(),config);
+        TransferManager transferManager = new TransferManager(FindLostThingsApplication.getCosXmlService(), config);
 
         //测试文件是否存在
         File file = new File(OriginalFilePath);
-        if(!file.exists())
+        if (!file.exists())
         {
             throw new IllegalArgumentException("待上传的文件不存在!");
         }
-        COSXMLUploadTask uploadTask = transferManager.upload(BucketInfo.BucketName,CosPath,OriginalFilePath,null);
+        COSXMLUploadTask uploadTask = transferManager.upload(BucketInfo.BucketName, CosPath, OriginalFilePath, null);
         uploadTask.setCosXmlProgressListener(this::UploadProgressHandler);
         uploadTask.setCosXmlResultListener(new CosXmlResultListener()
         {
@@ -472,15 +506,16 @@ public class PickupImageActivity extends FindLostThingsActivity
             public void onSuccess(CosXmlRequest request, CosXmlResult result)
             {
                 FinishUploadImageUrl.add(result.accessUrl);
-                Log.d("PickupImageActivity",result.accessUrl);
+                Log.d("PickupImageActivity", result.accessUrl);
                 CurrentUploadImageQueue.remove();
-                runOnUiThread(()-> CurrentUploadImageProgressHint.setVisibility(View.GONE));
+                runOnUiThread(() -> CurrentUploadImageProgressHint.setVisibility(View.GONE));
                 UploadNextImage();
             }
 
             @Override
             public void onFail(CosXmlRequest request, CosXmlClientException exception, CosXmlServiceException serviceException)
             {
+                IsUploadingImages = false;
                 Log.d("PickupImageActivity", "Failed: " + (exception == null ? serviceException.getMessage() : exception.toString()));
             }
         });
@@ -495,7 +530,7 @@ public class PickupImageActivity extends FindLostThingsActivity
 
     private void UploadProgressHandler(long complete, long target)
     {
-        runOnUiThread(()->{
+        runOnUiThread(() -> {
             float progress = 1.0f * complete / target * 100;
             CurrentUploadImageProgressHint.setText(String.format("%d%%", (int) progress));
         });
@@ -505,6 +540,7 @@ public class PickupImageActivity extends FindLostThingsActivity
     //启动上传任务。
     private void BeginUploadImage()
     {
+        IsUploadingImages = true;
         CurrentUploadImageIndex = -1;
         //初始化上传队列
         CurrentUploadImageQueue = new LinkedList<>();
@@ -513,40 +549,42 @@ public class PickupImageActivity extends FindLostThingsActivity
         //本次需要上传的所有图片的本地文件路径
         List<String> AllImagePath = AppUtils.GetAllUploadObjectOriginalFilePath(PickupImagesList);
         //对应完成后存储桶的地址
-        List<String> AllObjectKeys = AppUtils.GetAllUploadObjectKeys(PickupImagesList,36767411659079680L, "C6E131A9-E8C9-4223-9D0B-E92AD01580D0");
+        List<String> AllObjectKeys = AppUtils.GetAllUploadObjectKeys(PickupImagesList, 36767411659079680L, "C6E131A9-E8C9-4223-9D0B-E92AD01580D0");
         int len = AllImagePath.size();
         //把本地文件路径和存储桶路径匹配
         for (int i = 0; i < len; i++)
         {
-            CurrentUploadImageQueue.add(new Pair<>(AllImagePath.get(i),AllObjectKeys.get(i)));
+            CurrentUploadImageQueue.add(new Pair<>(AllImagePath.get(i), AllObjectKeys.get(i)));
         }
         //触发上传
         UploadNextImage();
     }
+
     private void UploadNextImage()
     {
-        if(CurrentUploadImageQueue.isEmpty())
+        if (CurrentUploadImageQueue.isEmpty())
         {
             //没什么可以上传的了，退出。
             runOnUiThread(this::AllImageUploadFinished);
-        }
-        else
+        } else
         {
             //一个接一个上传
             CurrentUploadImageIndex++;
-            runOnUiThread(()->{
+            runOnUiThread(() -> {
                 CurrentUploadImageProgressHint = gridLayoutManager.getChildAt(CurrentUploadImageIndex).findViewById(R.id.UploadProgressHint);
                 CurrentUploadImageProgressHint.setVisibility(View.VISIBLE);
             });
-            Pair<String,String> CurrentUploadItem = CurrentUploadImageQueue.peek();
-            UploadSingleImage(CurrentUploadItem.first,CurrentUploadItem.second);
+            Pair<String, String> CurrentUploadItem = CurrentUploadImageQueue.peek();
+            UploadSingleImage(CurrentUploadItem.first, CurrentUploadItem.second);
         }
     }
+
     private void AllImageUploadFinished()
     {
-        Toast.makeText(PickupImageActivity.this,"全部图片上传完成!准备提交请求!", Toast.LENGTH_SHORT).show();
+        IsUploadingImages = false;
         BuildupPublishThingRequest();
     }
+
     private void BuildupPublishThingRequest()
     {
         String title = PublishLostThingsTitle.getText().toString();
@@ -560,18 +598,92 @@ public class PickupImageActivity extends FindLostThingsActivity
         int SchoolID = allSupportedSchool.get(SchoolInfoSelectedIndex).getId();
         int SchoolBuildingID = currentSchoolBuildings.get(SchoolBuildingSelectedIndex).getId();
 
-        String LostThingAddiDesc = LostThingAdditionalDescEditText.getText().toString();
-        String GetLostThingLocationAddiDesc = FindLostThingLocationDescEditText.getText().toString();
+        String LostThingAddiDesc = LostThingAdditionalDescEditText.getVisibility() == View.VISIBLE ? LostThingAdditionalDescEditText.getText().toString() : "";
+        String GetLostThingLocationAddiDesc = FindLostThingLocationDescEditText.getVisibility() == View.VISIBLE ? FindLostThingLocationDescEditText.getText().toString() : "";
+
 
         long FoundLostThingTimeStamp = AppUtils.Date2UnixStamp(CurrentPickDateAndTime.getTime());
         long PublishLostThingTimeStamp = AppUtils.Date2UnixStamp(new Date());
         Gson gson = new Gson();
-        String UploadedImageUrl = gson.toJson(FinishUploadImageUrl,new TypeToken<List<String>>(){}.getType());
+        String UploadedImageUrl = gson.toJson(FinishUploadImageUrl, new TypeToken<List<String>>()
+        {
+        }.getType());
 
+
+        LostThingsInfo info = new LostThingsInfo();
+        info.setTitle(title);
+        info.setFoundTime(FoundLostThingTimeStamp);
+        info.setPublishTime(PublishLostThingTimeStamp);
+        info.setFoundAddress(SchoolID + "-" + SchoolBuildingID);
+        info.setId(CurrentPublishUUID);
+        info.setThingCatId(CategoryID);
+        info.setThingDetailId(DetailedID);
+        info.setPublisher(36767411659079680L);
+        info.setThingPhotoUrls(UploadedImageUrl);
+        info.setFoundAddrDescription(GetLostThingLocationAddiDesc);
+        info.setThingAddiDescription(LostThingAddiDesc);
+
+        new LostThingsInfoTask((result) -> {
+            Toast.makeText(PickupImageActivity.this, String.valueOf(result), Toast.LENGTH_SHORT).show();
+            Log.d("PickupImageActivity", String.valueOf(result));
+        }).execute(info);
     }
 
     private void ValidateAllFields()
     {
+        boolean refuse = false;
+        ClearErrorFlags();
+        if (TextUtils.isEmpty(PublishLostThingsTitle.getText().toString()))
+        {
+            PublishLostThingsTitle.setError("必须填写发布失物的标题");
+            refuse = true;
+        }
+        if (!ConfirmSpinnerAllSelected(ThingCategorySpinner, ThingDetailedSpinner, SchoolAreaSpinner, SchoolBuildingSpinner))
+        {
+            refuse = true;
+        }
+        if (TextUtils.isEmpty(TimeTextView.getText().toString()))
+        {
+            TimeTextView.setError("必须设置捡到失物的时间");
+            refuse = true;
+        }
+        if (TextUtils.isEmpty(DateTextView.getText().toString()))
+        {
+            DateTextView.setError("必须设置捡到失物的日期");
+            refuse = true;
+        }
+        if (!refuse)
+        {
+            BeginUploadImage();
+        }
+    }
 
+    private void ClearErrorFlags()
+    {
+        PublishLostThingsTitle.setError(null);
+
+        ThingCategorySpinner.setError(null);
+        ThingDetailedSpinner.setError(null);
+        SchoolAreaSpinner.setError(null);
+        SchoolBuildingSpinner.setError(null);
+
+        TimeTextView.setError(null);
+        DateTextView.setError(null);
+    }
+
+    private boolean ConfirmSpinnerAllSelected(MaterialSpinner... spinners)
+    {
+        boolean all = true;
+        for (int i = 0; i < spinners.length; i++)
+        {
+            String t1 = spinners[i].getText().toString();
+            String t2 = spinners[i].getHint().toString();
+            if (TextUtils.isEmpty(t1) || t1.equals(t2))
+            {
+                spinners[i].setError("必须选择一项");
+                all = false;
+            }
+        }
+        return all;
     }
 }

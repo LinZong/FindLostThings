@@ -22,21 +22,23 @@ public class LostThingsInfoTask extends CustomPostExecuteAsyncTask<LostThingsInf
     String EncryptedAccessToken = null;
     Context ctx = FindLostThingsApplication.getContext();
     SharedPreferences preferences = ctx.getSharedPreferences("userIDData", MODE_PRIVATE);
-    long SnowflakeID = preferences.getLong("Snowflake ID", 0);
-
+    //long SnowflakeID = preferences.getLong("Snowflake ID", 0);
+    long SnowflakeID = 36767411659079680L;
     public LostThingsInfoTask(TaskPostExecuteWrapper<Integer> DoInPostExecute)
     {
         super(DoInPostExecute);
-        try
-        {
-            EncryptedAccessToken = APIDocs.encryptionAccessToken();
-        } catch (InvalidKeyException e)
-        {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e)
-        {
-            e.printStackTrace();
-        }
+//        try
+//        {
+            //EncryptedAccessToken = APIDocs.encryptionAccessToken();
+            EncryptedAccessToken = "actkRelax";
+//
+//        } catch (InvalidKeyException e)
+//        {
+//            e.printStackTrace();
+//        } catch (NoSuchAlgorithmException e)
+//        {
+//            e.printStackTrace();
+//        }
     }
 
     @Override
