@@ -12,4 +12,7 @@
     <style name="SplashScreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_bg_drawable</item>
     </style>
+    <style name="ToolbarRemoveElevation" parent="Widget.Design.AppBarLayout">
+        <item name="android:elevation">0dp</item>
+    </style>
 </resources>

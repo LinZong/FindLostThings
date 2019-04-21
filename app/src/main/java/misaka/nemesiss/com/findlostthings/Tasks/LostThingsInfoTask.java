@@ -10,6 +10,9 @@ import misaka.nemesiss.com.findlostthings.Model.Response.CommonResponse;
 import misaka.nemesiss.com.findlostthings.Services.User.APIDocs;
 import misaka.nemesiss.com.findlostthings.Services.User.LostThingsInfo;
 import okhttp3.*;
+
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
 import static android.content.Context.MODE_PRIVATE;
 
@@ -24,7 +27,16 @@ public class LostThingsInfoTask extends CustomPostExecuteAsyncTask<LostThingsInf
     public LostThingsInfoTask(TaskPostExecuteWrapper<Integer> DoInPostExecute)
     {
         super(DoInPostExecute);
-        EncryptedAccessToken = APIDocs.encryptionAccessToken();
+        try
+        {
+            EncryptedAccessToken = APIDocs.encryptionAccessToken();
+        } catch (InvalidKeyException e)
+        {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override

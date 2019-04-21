@@ -42,13 +42,11 @@
         </activity>
         <activity android:name=".Activity.QQAuthLogin">
         </activity>
-
         <activity android:name=".Activity.PickupImageActivity">
         </activity>
         <activity
                 android:name="cn.finalteam.rxgalleryfinal.ui.activity.MediaActivity"
-                android:exported="true"
-                android:theme="@style/AppTheme"/>
+                android:exported="true"/>
         <activity
                 android:name="com.yalantis.ucrop.UCropActivity"
                 android:screenOrientation="portrait"
@@ -56,7 +54,6 @@
         <activity android:name=".Activity.Mypublish">
         </activity>
         <activity android:name=".Activity.SetUp">
-
         </activity>
         <activity android:name=".Activity.ShowOrChangeUserInfo">
             <intent-filter>
@@ -64,6 +61,13 @@
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity
+                android:name=".Activity.PreviewSelectedImageActivity"
+                android:launchMode="standard">
+        </activity>
+        <activity android:name=".Activity.TryUploadFilesActivity">
+
         </activity>
     </application>
 

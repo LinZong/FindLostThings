@@ -19,4 +19,10 @@ public class SchoolInfo {
     public int getId() {
         return Id;
     }
+
+    @Override
+    public String toString()
+    {
+        return getName();
+    }
 }

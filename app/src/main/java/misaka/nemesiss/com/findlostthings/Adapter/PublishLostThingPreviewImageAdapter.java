@@ -1,6 +1,7 @@
 package misaka.nemesiss.com.findlostthings.Adapter;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +16,7 @@ import cn.finalteam.rxgalleryfinal.RxGalleryFinal;
 import cn.finalteam.rxgalleryfinal.imageloader.ImageLoaderType;
 import com.bumptech.glide.Glide;
 import misaka.nemesiss.com.findlostthings.Activity.PickupImageActivity;
+import misaka.nemesiss.com.findlostthings.Activity.PreviewSelectedImageActivity;
 import misaka.nemesiss.com.findlostthings.R;
 import misaka.nemesiss.com.findlostthings.Utils.AppUtils;
 
@@ -126,15 +128,10 @@ public class PublishLostThingPreviewImageAdapter extends RecyclerView.Adapter<Pu
     private void SelectPhotoHandler(int position)
     {
         CurrentSelectPosition = position;
-        View view = activity.getLayoutInflater().inflate(R.layout.select_photo_actions,null);
-        AlertDialog dialog = AppUtils.ShowAlertDialog(activity, true, "请选择一个动作", null)
-                .setView(view)
-                .show();
-        DeletePhotoBtn = view.findViewById(R.id.DeleteImage);
-        DeletePhotoBtn.setOnClickListener(v -> {
-            ((PickupImageActivity)activity).RemoveImage(CurrentSelectPosition,true);
-            dialog.cancel();
-        });
+        Intent it = new Intent(activity, PreviewSelectedImageActivity.class);
+        it.putExtra("PreviewImageIndex",position);
+        it.putExtra("PreviewImageUri",showImages.get(position));
+        activity.startActivityForResult(it,PickupImageActivity.PREVIEW_ACTIVITY);
     }
 
     private void CallCameraToTakePhoto()

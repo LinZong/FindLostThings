@@ -47,4 +47,9 @@ public class MySchoolBuildings {
         return BuildingName;
     }
 
+    @Override
+    public String toString()
+    {
+        return getBuildingName();
+    }
 }

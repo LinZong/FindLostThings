@@ -16,4 +16,7 @@
         <item name="colorPrimaryDark">#ffffff</item>
         <item name="colorAccent">#ffffff</item>
     </style>
+
+    <style name="ToolbarRemoveElevation" parent="Widget.Design.AppBarLayout">
+    </style>
 </resources>
