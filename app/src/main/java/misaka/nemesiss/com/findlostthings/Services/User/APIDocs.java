@@ -3,10 +3,8 @@ package misaka.nemesiss.com.findlostthings.Services.User;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
-import misaka.nemesiss.com.findlostthings.Activity.QQAuthLogin;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.Utils.HMacSha256;
-import okhttp3.*;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;

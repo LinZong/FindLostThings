@@ -1,4 +1,7 @@
 <resources>
+    <string name="PermissionDontShowAgainAlertMessage">您没有授予此程序足够的权限, 程序可能无法正常工作. 请到设置重新设置被拒绝的相应权限</string>
+    <string name="PermissionNoGrantedAlertTitle">未授予权限</string>
+    <string name="PermissionNoGrantedTryAgainTitle">您没有授予此程序足够的权限, 程序可能无法正常工作. 是否重新授权?</string>
     <string name="app_name">朝花夕拾</string>
     <string name="CannotConnectToServer">Cannot connect to server. Please check network status.</string>
 </resources>

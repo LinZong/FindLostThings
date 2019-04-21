@@ -159,7 +159,6 @@ public class PickupImageActivity extends FindLostThingsActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pickup_image);
         ButterKnife.bind(this);
-        PermissionsHelper.RequestAllPermissions(PickupImageActivity.this, PickupImageActivity.this);
         CurrentPickDateAndTime = Calendar.getInstance(Locale.CHINA);
         AppUtils.ToolbarShowReturnButton(PickupImageActivity.this, PublishLostThingToolbar);
         InitComponents();
@@ -386,9 +385,14 @@ public class PickupImageActivity extends FindLostThingsActivity
                 }
                 break;
             }
+            case android.R.id.home:{
+                finish();
+                break;
+            }
         }
         return true;
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)

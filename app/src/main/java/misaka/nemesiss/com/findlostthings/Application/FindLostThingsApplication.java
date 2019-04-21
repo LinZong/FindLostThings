@@ -6,7 +6,10 @@ import android.support.multidex.MultiDexApplication;
 import com.tencent.cos.xml.CosXmlService;
 import com.tencent.cos.xml.CosXmlServiceConfig;
 import com.tencent.qcloud.core.auth.QCloudCredentialProvider;
+import com.tencent.tauth.Tencent;
 import misaka.nemesiss.com.findlostthings.Activity.TryUploadFilesActivity;
+import misaka.nemesiss.com.findlostthings.Model.UserAccount;
+import misaka.nemesiss.com.findlostthings.Services.QQAuth.QQAuthInfo;
 import misaka.nemesiss.com.findlostthings.StorageBucket.BucketInfo;
 import misaka.nemesiss.com.findlostthings.StorageBucket.CustomCredentialProvider;
 
@@ -20,13 +23,18 @@ public class FindLostThingsApplication extends MultiDexApplication
     private static CosXmlServiceConfig cosXmlServiceConfig;
     private static QCloudCredentialProvider credentialProvider;
     private static CosXmlService cosXmlService;
+    private static Tencent QQAuthService;
     //Define global variables
+
+    private static UserAccount LoginUserAccount;
 
     @Override
     public void onCreate()
     {
         super.onCreate();
         context = getApplicationContext();
+        LoginUserAccount = new UserAccount();
+        QQAuthService = Tencent.createInstance(QQAuthInfo.APPID,context);
         cosXmlServiceConfig = new CosXmlServiceConfig.Builder()
                 .setAppidAndRegion(BucketInfo.AppID,BucketInfo.Region)
                 .isHttps(true)
@@ -52,5 +60,20 @@ public class FindLostThingsApplication extends MultiDexApplication
     public static QCloudCredentialProvider getCredentialProvider()
     {
         return credentialProvider;
+    }
+
+    public static Tencent getQQAuthService()
+    {
+        return QQAuthService;
+    }
+
+    public static UserAccount getLoginUserAccount()
+    {
+        return LoginUserAccount;
+    }
+
+    public static void setLoginUserAccount(UserAccount loginUserAccount)
+    {
+        LoginUserAccount = loginUserAccount;
     }
 }

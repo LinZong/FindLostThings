@@ -16,9 +16,20 @@ public class PermissionsHelper
 {
     private static ArrayList<String> NeedAllPermissions = new ArrayList<>();
     public static final int GRANT_ALL_PERMISSION_CODE = 9999;
+    private static boolean DontShowAgain = false;
 
     static {
         InitRequestedPermissionsList();
+    }
+
+    public static boolean GetDontShowAgain()
+    {
+        return DontShowAgain;
+    }
+
+    public static void SetDontShowAgain(boolean value)
+    {
+        DontShowAgain = value;
     }
 
     private static void InitRequestedPermissionsList()

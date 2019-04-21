@@ -10,25 +10,22 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.tencent.connect.UserInfo;
 import com.tencent.connect.auth.QQToken;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
-import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.TaskPostExecuteWrapper;
+import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.R;
-import misaka.nemesiss.com.findlostthings.Services.User.LostThingsInfo;
-import misaka.nemesiss.com.findlostthings.Services.User.MySchoolBuildings;
-import misaka.nemesiss.com.findlostthings.Tasks.GetSchoolBuildingsTask;
-import misaka.nemesiss.com.findlostthings.Tasks.LostThingsInfoTask;
 import misaka.nemesiss.com.findlostthings.Tasks.PostInformationAsyncTask;
+import misaka.nemesiss.com.findlostthings.Utils.AppUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import static java.lang.System.currentTimeMillis;
 
-public class QQAuthLogin extends FindLostThingsActivity
+public class QQAuthLoginActivity extends FindLostThingsActivity
 {
     private Button login, logout;
     private ImageView img;
@@ -52,18 +49,15 @@ public class QQAuthLogin extends FindLostThingsActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qqauth_login);
         init();
-
-        //LogThingsCategory1();
-        //LogThingsCategory();
     }
 
     private void init()
     {
+        mTencent = FindLostThingsApplication.getQQAuthService();
         img = (ImageView) findViewById(R.id.iv_img);
         nickName = (TextView) findViewById(R.id.tv_nickname);
         login = (Button) findViewById(R.id.btn_login);
         logout = (Button) findViewById(R.id.btn_logout);
-        CheckIfDateValid();
         //初始化登陆回调Listener
         if (mListener == null)
         {
@@ -119,7 +113,8 @@ public class QQAuthLogin extends FindLostThingsActivity
         public void onComplete(Object o)
         { //登录成功
             parseResult(o);
-            setUserInfo();
+            PersistUserInfo();
+            ReportUserProfile();
         }
 
         @Override
@@ -144,54 +139,22 @@ public class QQAuthLogin extends FindLostThingsActivity
             openID = jsonObject.getString("openid"); //用户标识
             access_token = jsonObject.getString("access_token"); //登录信息
             expires = jsonObject.getString("expires_in"); //token有效期
-            SaveUserInfo();
-            CheckIfDateValid();
 
-        }
-        catch (JSONException e)
+
+        } catch (JSONException e)
         {
             e.printStackTrace();
         }
     }
 
-    private Boolean CheckIfDateValid()
-    {
-        SharedPreferences preferences = getSharedPreferences("LoginReturnData", MODE_PRIVATE);
-
-        Boolean HaveUserIdentity = preferences.getBoolean("HaveStoredUserIdentity", false);
-        if (HaveUserIdentity)
-        {
-            String openID = preferences.getString("openID", "");
-            String access_token = preferences.getString("access_token", "");
-            String expires = preferences.getString("expires", "");
-
-            if ((Long.parseLong(expires) - currentTimeMillis()) / 1000 > 0)
-            {
-                mTencent = Tencent.createInstance(APPID, this);
-                mTencent.setOpenId(openID);
-                mTencent.setAccessToken(access_token, String.valueOf((Long.parseLong(expires) - currentTimeMillis()) / 1000));
-                if(mTencent.isSessionValid())
-                {
-                    Intent intent=new Intent(QQAuthLogin.this,MainActivity.class);
-                    startActivity(intent);
-                }
-                setUserInfo();
-                return true;
-            }
-            else
-            {
-                Toast.makeText(QQAuthLogin.this, "当前用户已过期，请重新登录", Toast.LENGTH_SHORT).show();
-
-            }
-        }
-        mTencent = Tencent.createInstance(APPID, this);
-        return false;
-    }
-
-    private void SaveUserInfo()//将返回的openid、access_token、expires_in三个参数保存在本地
+    private void PersistUserInfo()//将返回的openid、access_token、expires_in三个参数保存在本地
     {
         String tokenInvalidDate = String.valueOf(currentTimeMillis() + Long.parseLong(expires) * 1000);//token的失效日期
-        Context ctx = QQAuthLogin.this;
+        Context ctx = QQAuthLoginActivity.this;
+
+        mTencent.setOpenId(openID);
+        mTencent.setAccessToken(access_token,tokenInvalidDate);
+
         SharedPreferences.Editor editor = ctx.getSharedPreferences("LoginReturnData", MODE_PRIVATE).edit();
         editor.putBoolean("HaveStoredUserIdentity", true);
         editor.putString("openID", openID);
@@ -200,7 +163,7 @@ public class QQAuthLogin extends FindLostThingsActivity
         editor.apply();
     }
 
-    private void setUserInfo()
+    private void ReportUserProfile()
     {
         //用户信息获取与展示
         QQToken qqToken = mTencent.getQQToken();
@@ -210,6 +173,12 @@ public class QQAuthLogin extends FindLostThingsActivity
             mInfoListener = new GetInfoListener();
         }
         userInfo.getUserInfo(mInfoListener);
+        JumpToMainActivity();
+    }
+
+    private void JumpToMainActivity()
+    {
+        startActivity(new Intent(QQAuthLoginActivity.this, MainActivity.class));
     }
 
     //获取用户信息回调
@@ -223,13 +192,17 @@ public class QQAuthLogin extends FindLostThingsActivity
             {
                 name = jsonObject.getString("nickname");
                 imgUrl = jsonObject.getString("figureurl_qq_2");  //头像url
-                nickName.setText(name);
-                Glide.with(QQAuthLogin.this).load(imgUrl).into(img);
+
                 new PostInformationAsyncTask((res) ->
                 {
-                }).execute(openID, name, getAndroidId(QQAuthLogin.this));
-            }
-            catch (Exception e)
+                    if (res.getStatusCode() != 0)
+                    {
+                        Log.d("QQAuthLoginActivity", "上报数据给服务器出现异常!，活动退出.");
+                    }
+                    Log.d("QQAuthLoginActivity", "成功上报数据给服务器，活动退出.");
+                    QQAuthLoginActivity.this.finish();
+                }).execute(openID, name, AppUtils.getAndroidId(QQAuthLoginActivity.this));
+            } catch (Exception e)
             {
                 e.printStackTrace();
             }
@@ -238,68 +211,26 @@ public class QQAuthLogin extends FindLostThingsActivity
         @Override
         public void onError(UiError uiError)
         { //获取失败
-
+            Log.d("QQAuthLoginActivity", "获取个人信息出现异常!程序退出!");
+            AppUtils.ShowAlertDialog(QQAuthLoginActivity.this,false,"获取个人信息失败", "应用程序遇到了严重错误，无法获取您的个人信息，即将退出。").show();
+            runOnUiThread(QQAuthLoginActivity.this::finish);
         }
 
         @Override
         public void onCancel()
         {
+            AppUtils.ShowAlertDialog(QQAuthLoginActivity.this,false,"您取消了授权", "应用程序无法获取您的个人信息, 可能影响您使用发布失物信息和找回失物等功能!").show();
 
         }
     }
 
     //获取登录设备的安卓ID
-    public static String getAndroidId(Context context)
-    {
-        String ANDROID_ID = Settings.System.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-        return ANDROID_ID;
-    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         mTencent.onActivityResultData(requestCode, resultCode, data, mListener);
-    }
-
-    private void LogThingsCategory()
-    {
-        LostThingsInfo lostThingsInfo = new LostThingsInfo();
-        lostThingsInfo.setFoundTime(111);
-        lostThingsInfo.setGivenTime(222);
-        lostThingsInfo.setGiven(22);
-        lostThingsInfo.setPublisher(333);
-        lostThingsInfo.setIsgiven(1);
-        lostThingsInfo.setGivenContacts("a2");
-        lostThingsInfo.setThingAddiDescription("sbpy");
-        lostThingsInfo.setPublisherContacts("sbpt");
-        lostThingsInfo.setThingPhotoUrls("121");
-        lostThingsInfo.setFoundAddrDescription("2324");
-        lostThingsInfo.setFoundAddress("45w");
-        lostThingsInfo.setId("444");
-        lostThingsInfo.setPublishTime(2131);
-        lostThingsInfo.setTitle("2323");
-        lostThingsInfo.setThingCatId(131241);
-        lostThingsInfo.setThingDetailId(2);
-
-        new LostThingsInfoTask(new TaskPostExecuteWrapper<Integer>()
-        {
-            @Override
-            public void DoOnPostExecute(Integer TaskRet)
-            {
-                Log.d("CategoryLog", TaskRet.toString());
-            }
-        }).execute(lostThingsInfo);
-    }
-
-    private void LogThingsCategory1()
-    {
-        new GetSchoolBuildingsTask(TaskRet ->
-        {
-            for (MySchoolBuildings sb : TaskRet.getSchoolBuildings())
-            {
-                Log.d("QQAuthLogin", sb.getBuildingName());
-            }
-        }).execute(1);
     }
 }
 

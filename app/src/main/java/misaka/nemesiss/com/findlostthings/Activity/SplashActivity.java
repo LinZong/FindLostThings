@@ -1,10 +1,12 @@
 package misaka.nemesiss.com.findlostthings.Activity;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -14,6 +16,10 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import misaka.nemesiss.com.findlostthings.R;
+import misaka.nemesiss.com.findlostthings.Services.QQAuth.QQAuthCredentials;
+import misaka.nemesiss.com.findlostthings.Utils.PermissionsHelper;
+
+import java.util.ArrayList;
 
 public class SplashActivity extends FindLostThingsActivity
 {
@@ -31,11 +37,10 @@ public class SplashActivity extends FindLostThingsActivity
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         HideNavigationBar();
         LoadSchoolNameAnimation();
-        Handler handler = new Handler();
-        handler.postDelayed(()->{
-            startActivity(new Intent(SplashActivity.this,MainActivity.class));
-            SplashActivity.this.finish();
-        }, 4000);
+        if(PermissionsHelper.RequestAllPermissions(SplashActivity.this, SplashActivity.this))
+        {
+            InitApplication();
+        }
     }
 
     private void HideNavigationBar()
@@ -53,6 +58,20 @@ public class SplashActivity extends FindLostThingsActivity
         }
     }
 
+    private void InitApplication()
+    {
+        if(QQAuthCredentials.Validate())
+        {
+            //TODO 进入主界面
+            startActivity(new Intent(SplashActivity.this,MainActivity.class));
+        }
+        else
+        {
+            //TODO 跳到QQ登陆界面
+            startActivity(new Intent(SplashActivity.this, QQAuthLoginActivity.class));
+        }
+        finish();
+    }
     @Override
     protected void onResume()
     {
@@ -65,5 +84,62 @@ public class SplashActivity extends FindLostThingsActivity
         Animation animation = AnimationUtils.loadAnimation(SplashActivity.this,R.anim.school_name_anim);
         animation.setStartOffset(800);
         SchoolName.startAnimation(animation);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+    {
+        ArrayList<String> StillNeedPermission = new ArrayList<>();
+        switch (requestCode){
+            case PermissionsHelper.GRANT_ALL_PERMISSION_CODE:{
+                if(grantResults.length > 0){
+                    for (int i = 0; i < permissions.length; i++)
+                    {
+                        if(grantResults[i] != PackageManager.PERMISSION_GRANTED){
+                            StillNeedPermission.add(permissions[i]);
+                            boolean checked = ActivityCompat.shouldShowRequestPermissionRationale(SplashActivity.this,permissions[i]);
+                            if(checked) PermissionsHelper.SetDontShowAgain(true);
+                        }
+                    }
+
+                    if(StillNeedPermission.size() <= 0) {
+                        InitApplication();
+                    }
+                    else {
+                        if(PermissionsHelper.GetDontShowAgain()){
+                            AlertDialog.Builder builder =  ShowPermissionAlert(R.string.PermissionNoGrantedAlertTitle,
+                                    R.string.PermissionNoGrantedAlertTitle,false);
+                            builder.setPositiveButton("OK", (dialogInterface, i) -> finish());
+                            builder.show();
+                        }
+                        else {
+                            AlertDialog.Builder builder = ShowPermissionAlert(R.string.PermissionNoGrantedAlertTitle,
+                                    R.string.PermissionNoGrantedTryAgainTitle,false);
+                            builder.setPositiveButton("OK", (dialogInterface, i) -> {
+                                PermissionsHelper.RequestPermissions(SplashActivity.this,SplashActivity.this,StillNeedPermission);
+                            });
+                            builder.setNegativeButton("Cancel", (dialogInterface, i) -> {
+
+                                AlertDialog.Builder exitDialog =  ShowPermissionAlert(R.string.PermissionNoGrantedAlertTitle,
+                                        R.string.PermissionNoGrantedAlertTitle,false);
+                                exitDialog.setCancelable(false);
+                                exitDialog.setPositiveButton("OK", (d, ig) -> finish());
+                                exitDialog.show();
+
+                            });
+                            builder.show();
+                        }
+                    }
+                }
+            }
+        }
+    }
+    private AlertDialog.Builder ShowPermissionAlert(int TitleId,int MessageId,boolean Cancelable)
+    {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(SplashActivity.this);
+        alertDialog.setTitle(R.string.PermissionNoGrantedAlertTitle);
+        alertDialog.setMessage(R.string.PermissionDontShowAgainAlertMessage);
+        alertDialog.setCancelable(Cancelable);
+        return alertDialog;
     }
 }
