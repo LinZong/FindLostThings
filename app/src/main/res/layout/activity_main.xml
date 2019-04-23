@@ -20,8 +20,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                android:background="@drawable/toolbar_background_color"
+                app:popupTheme="@style/AppTheme"
                 app:contentInsetStart="0dp"
         >
 
@@ -52,16 +51,16 @@
              />
      </android.support.v4.widget.SwipeRefreshLayout>
 
-        <android.support.design.widget.FloatingActionButton
-                android:id="@+id/float_ab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:layout_margin="16dp"
-                android:src="@drawable/ic_add_white_36dp"
-                android:scaleType="center"
-                app:elevation="6dp"
-        />
+      <android.support.design.widget.FloatingActionButton
+              android:id="@+id/float_ab"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="bottom|end"
+              android:layout_margin="16dp"
+              android:src="@drawable/ic_add_white_36dp"
+              android:scaleType="center"
+              app:elevation="6dp"
+              app:layout_anchorGravity="right|bottom" app:layout_anchor="@+id/swipe_refresh"/>
 
     </android.support.design.widget.CoordinatorLayout>
 
