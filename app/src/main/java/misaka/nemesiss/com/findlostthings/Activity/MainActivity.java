@@ -42,11 +42,9 @@ public class MainActivity extends FindLostThingsActivity
 
     @BindView(R.id.ToolbarUserAvatar)
     CircleImageView ToolbarUserAvatar;
-    @BindView(R.id.float_ab)
-    FloatingActionButton PublishLostThingBtn;
-
+//    @BindView(R.id.float_ab)
+    //FloatingActionButton PublishLostThingBtn;
     TextView NickNameTextView;
-
     CircleImageView NavigationHeaderBigAvatar;
 
     private DrawerLayout mDrawerLayout;
@@ -70,7 +68,6 @@ public class MainActivity extends FindLostThingsActivity
 //            actionBar.setDisplayHomeAsUpEnabled(true);
 //        }
 //        actionBar.setHomeAsUpIndicator()
-        // navigationView.setCheckedItem(R.id.set_up);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener()
         {
             @Override
@@ -123,10 +120,10 @@ public class MainActivity extends FindLostThingsActivity
         });
 
         LoadUserAccountInfo();
-        ToolbarUserAvatar.setOnClickListener(this::ClickAvatarToOpenDrawers);
-        PublishLostThingBtn.setOnClickListener(v ->{
-            startActivity(new Intent(MainActivity.this,PickupImageActivity.class));
-        });
+     //   ToolbarUserAvatar.setOnClickListener(this::ClickAvatarToOpenDrawers);
+//        PublishLostThingBtn.setOnClickListener(v ->{
+//            startActivity(new Intent(MainActivity.this,PickupImageActivity.class));
+//        });
     }
 
     private void ClickAvatarToOpenDrawers(View view)
@@ -167,8 +164,21 @@ public class MainActivity extends FindLostThingsActivity
         getMenuInflater().inflate(R.menu.toolbar, menu);
         return true;
     }
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch(item.getItemId())
+        {
+            case R.id.publish:
+                startActivity(new Intent(MainActivity.this,PickupImageActivity.class));
+                break;
+            case R.id.search:
+                break;
+            default:
+                break;
 
-
+        }
+        return  true;
+    }
     public void initLostThingsInfo()
     {
         LostThingsInfo lostThingsInfo1 = new LostThingsInfo();

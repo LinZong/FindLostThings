@@ -56,7 +56,7 @@ public class QQAuthLoginActivity extends FindLostThingsActivity
         img = (ImageView) findViewById(R.id.iv_img);
         nickName = (TextView) findViewById(R.id.tv_nickname);
         login = (Button) findViewById(R.id.btn_login);
-        logout = (Button) findViewById(R.id.btn_logout);
+       // logout = (Button) findViewById(R.id.btn_logout);
         //初始化登陆回调Listener
         if (mListener == null)
         {
@@ -72,14 +72,14 @@ public class QQAuthLoginActivity extends FindLostThingsActivity
             }
         });
         //退出按钮点击事件
-        logout.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                QQLogout();
-            }
-        });
+//        logout.setOnClickListener(new View.OnClickListener()
+//        {
+//            @Override
+//            public void onClick(View v)
+//            {
+//                QQLogout();
+//            }
+//        });
     }
 
     private void QQLogin()
@@ -90,20 +90,20 @@ public class QQAuthLoginActivity extends FindLostThingsActivity
         }
     }
 
-    private void QQLogout()
-    {
-        if (mTencent.isSessionValid())
-        {
-            mTencent.logout(this);
-            //修改UI
-            img.setImageResource(R.mipmap.ic_launcher);
-            nickName.setText("未登录");
-
-            SharedPreferences.Editor editor = getSharedPreferences("LoginReturnData", MODE_PRIVATE).edit();
-            editor.putBoolean("HaveStoredUserIdentity", false);
-            editor.apply();
-        }
-    }
+//    private void QQLogout()
+//    {
+//        if (mTencent.isSessionValid())
+//        {
+//            mTencent.logout(this);
+//            //修改UI
+//            img.setImageResource(R.mipmap.ic_launcher);
+//            nickName.setText("未登录");
+//
+//            SharedPreferences.Editor editor = getSharedPreferences("LoginReturnData", MODE_PRIVATE).edit();
+//            editor.putBoolean("HaveStoredUserIdentity", false);
+//            editor.apply();
+//        }
+//    }
 
     private class QQLoginListener implements IUiListener
     {
