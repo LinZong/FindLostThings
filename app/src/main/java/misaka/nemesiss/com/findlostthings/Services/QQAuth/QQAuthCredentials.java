@@ -75,4 +75,19 @@ public class QQAuthCredentials
 
         }).execute(OpenID, NickName, AppUtils.getAndroidId(ctx));
     }
+
+    public static void ClearStoredIdentity() {
+        SharedPreferences.Editor editSp = preferences.edit();
+        editSp.putBoolean("HaveStoredUserIdentity",false);
+        editSp.apply();
+    }
+
+    public static void PersistIdentity(String OpenID,String AccessToken,String TokenInvaildDate) {
+        SharedPreferences.Editor editor = ctx.getSharedPreferences("LoginReturnData", MODE_PRIVATE).edit();
+        editor.putBoolean("HaveStoredUserIdentity", true);
+        editor.putString("openID", OpenID);
+        editor.putString("access_token", AccessToken);
+        editor.putString("expires", TokenInvaildDate);
+        editor.apply();
+    }
 }

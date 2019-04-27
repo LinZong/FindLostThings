@@ -21,7 +21,5 @@ public class AboutMe extends FindLostThingsActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);//左侧添加一个默认的返回图标
         getSupportActionBar().setHomeButtonEnabled(true); //设置返回键可用
 
-        TextView version=(TextView)findViewById(R.id.text3);
-        version.setText("版本号："+BuildConfig.VERSION_NAME);
     }
 }

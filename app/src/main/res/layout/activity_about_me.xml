@@ -1,69 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools" android:id="@+id/linear_layout"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<android.support.constraint.ConstraintLayout android:layout_width="match_parent"
+                                             android:layout_height="match_parent"
+                                             xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <android.support.design.widget.AppBarLayout
-            android:id="@+id/app_bar_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        <android.support.v7.widget.Toolbar
-                app:title=" "
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                android:background="@drawable/toolbar_background_color">
-
-            <TextView android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:layout_gravity="center"
-                      android:text="关于朝花夕拾"
-                      android:textSize="20sp"
-            />
-        </android.support.v7.widget.Toolbar>
-    </android.support.design.widget.AppBarLayout>
-
-    <TextView
-            android:id="@+id/text1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16dp"
-            android:layout_margin="10dp"
-            android:text="      这是一款基于android开发的手机端app，基本业务功能主要有两个：
-（1）捡到物品的同学在平台上发布物品信息，如物品名称、捡到时间、地点，外观描述等，以此建立数据库。
-（2）丢失物品的同学可以在这app上查找自己所丢物品，并联系拾到同学取回。
-        此app的主要特色：
-（1）app调用用户qq登录，无需注册，方便快捷；
-（2）鉴于app拥有的通知功能，当有同学发布拾到物品信息，用户可以实时获取；
+    <TextView android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:textSize="16sp"
+              android:singleLine="false"
+              android:text="      这是一个大学失物招领平台App，基本业务功能有两个:\n
+（1）捡到物品的同学在平台上发布物品信息，如物品名称、捡到时间、地点，外观描述等，以此建立数据库。\n
+（2）丢失物品的同学可以在这app上查找自己所丢物品，并联系拾到同学取回。\n
+      此App的主要特色：\n
+（1）App调用用户qq登录，无需注册，方便快捷；\n
+（2）鉴于App拥有的通知功能，当有同学发布拾到物品信息，用户可以实时获取；\n
 （3）基于强大的数据库，对丢失物进行精确的分类，用户可以进行准确查找，也可根据时间进行查找。
 "
-    />
-    <TextView
-            android:id="@+id/text2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:textSize="20dp"
-            android:text="开发者：
- 林晟熠  郑泽明  苏希烔  郑炜俊
-"
-    />
-    <TextView
-            android:id="@+id/text3"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textSize="20dp"
-            android:layout_margin="20dp"
-            android:gravity="center_horizontal"
-            android:text=""
-    />
-</LinearLayout>
+              android:layout_marginTop="24dp"
+              app:layout_constraintTop_toBottomOf="@+id/imageView2"
+              app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+              android:id="@+id/textView7" android:layout_marginStart="8dp"
+              android:layout_marginEnd="8dp">
 
+    </TextView>
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" app:srcCompat="@mipmap/icon"
+            android:id="@+id/imageView2"
+            android:layout_marginTop="24dp" app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"/>
+        <TextView
+                android:text="版本号:"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView2" app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintEnd_toStartOf="@+id/VersionCode"
+                app:layout_constraintHorizontal_chainStyle="packed"/>
+        <TextView
+                android:text="1.0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/VersionCode" app:layout_constraintStart_toEndOf="@+id/textView2"
+                android:layout_marginStart="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="8dp" app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintBottom_toBottomOf="@+id/textView2"/>
+        <TextView
+                android:text="开发人员"
+                android:textSize="16sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView5"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@+id/textView7" android:layout_marginStart="8dp"
+                app:layout_constraintStart_toStartOf="parent" android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toEndOf="parent"/>
+        <TextView
+                android:text="林晟熠  郑泽明  苏希烔  郑炜俊"
+                android:textSize="18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView11" android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@+id/textView5" app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="8dp"/>
+    </android.support.constraint.ConstraintLayout>
 
 
 

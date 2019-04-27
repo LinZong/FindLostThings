@@ -50,9 +50,7 @@ public class QQAuthLoginActivity extends FindLostThingsActivity {
 
     private void ClearInValidateUserAccountInfo() {
         //既然跳到了这个页面，说明之前的登陆信息是无效的，需要清除。
-        SharedPreferences.Editor editor = getSharedPreferences("LoginReturnData", MODE_PRIVATE).edit();
-        editor.putBoolean("HaveStoredUserIdentity", false);
-        editor.apply();
+        QQAuthCredentials.ClearStoredIdentity();
     }
 
     private void init() {
@@ -114,13 +112,7 @@ public class QQAuthLoginActivity extends FindLostThingsActivity {
 
         mTencent.setOpenId(openID);
         mTencent.setAccessToken(access_token, tokenInvalidDate);
-
-        SharedPreferences.Editor editor = ctx.getSharedPreferences("LoginReturnData", MODE_PRIVATE).edit();
-        editor.putBoolean("HaveStoredUserIdentity", true);
-        editor.putString("openID", openID);
-        editor.putString("access_token", access_token);
-        editor.putString("expires", tokenInvalidDate);
-        editor.apply();
+        QQAuthCredentials.PersistIdentity(openID,access_token,tokenInvalidDate);
     }
 
 

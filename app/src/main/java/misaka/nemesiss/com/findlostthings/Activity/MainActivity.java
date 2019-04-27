@@ -56,6 +56,9 @@ public class MainActivity extends FindLostThingsActivity {
     private Runnable ShouldHandleMenuClicked = null;
     private float CurrentSlideOffset = 0.0f;
 
+    //再按一次退出相关
+    private long LastPressedMillSeconds = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -270,4 +273,21 @@ public class MainActivity extends FindLostThingsActivity {
 
         }
     };
+
+    @Override
+    public void onBackPressed() {
+        if(mDrawerLayout.isDrawerOpen(Gravity.START)){
+            mDrawerLayout.closeDrawers();
+        }
+        else {
+            long curr = System.currentTimeMillis();
+            if(curr - LastPressedMillSeconds <= 1000) {
+                finish();
+            }
+            else{
+                LastPressedMillSeconds = curr;
+                Toast.makeText(MainActivity.this,"再按一次退出程序", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 }

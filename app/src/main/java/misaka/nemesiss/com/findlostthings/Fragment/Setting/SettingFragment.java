@@ -1,6 +1,8 @@
 package misaka.nemesiss.com.findlostthings.Fragment.Setting;
 
 import android.content.Context;
+import android.content.Intent;
+import android.icu.lang.UScript;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,9 +16,14 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import cn.jpush.android.api.JPushInterface;
+import com.tencent.tauth.Tencent;
+import misaka.nemesiss.com.findlostthings.Activity.FindLostThingsActivity;
+import misaka.nemesiss.com.findlostthings.Activity.QQAuthLoginActivity;
 import misaka.nemesiss.com.findlostthings.Activity.SettingActivity;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.R;
+import misaka.nemesiss.com.findlostthings.Services.QQAuth.QQAuthCredentials;
+import misaka.nemesiss.com.findlostthings.Services.User.UserService;
 
 /**
  *  什么时候需要可以跳转页面(Fragment)的设置项?（二级设置项）
@@ -96,5 +103,21 @@ public class SettingFragment extends SettingBaseFragment {
     @OnClick({R.id.EnterSetPhotoStoreLocation})
     public void EnterSetPhotoStoreLocation(View v) {
         SettingActivity.ToNextFragment(new PhotoSaveLocationFragment(),"照片存储位置",null);
+    }
+
+
+    @OnClick({R.id.LogoutAccountBtn})
+    public void LogoutAccount(View v){
+        Tencent tencent = FindLostThingsApplication.getQQAuthService();
+        tencent.logout(context);
+        UserService.RemoveAlias();
+        QQAuthCredentials.ClearStoredIdentity();
+        FindLostThingsActivity.FinishAllActivities();
+        startActivity(new Intent(getContext(), QQAuthLoginActivity.class));
+    }
+
+    @OnClick({R.id.EnterAboutMe})
+    public void EnterAboutMe(View v) {
+        SettingActivity.ToNextFragment(new AboutMeFragment(),"关于朝花夕拾",null);
     }
 }
