@@ -33,7 +33,6 @@ public class PreviewSelectedImageActivity extends FindLostThingsActivity
 
     private Uri CurrentPreviewImageUri;
     private int CurrentPreviewImageFromGridIndex = 0;
-    private boolean IsModifyPic = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -57,7 +56,6 @@ public class PreviewSelectedImageActivity extends FindLostThingsActivity
 
     private void HandleEnterUCrop(View v)
     {
-        IsModifyPic = true;
         AppUtils.OpenUCrop(CurrentPreviewImageUri)
                 .start(PreviewSelectedImageActivity.this);
     }

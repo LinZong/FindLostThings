@@ -1,5 +1,5 @@
 package misaka.nemesiss.com.findlostthings.Model.Response;
-import misaka.nemesiss.com.findlostthings.Services.User.MyResponse;
+import misaka.nemesiss.com.findlostthings.Model.MyResponse;
 
 public class GetStoreBucketKeyResponse extends CommonResponse {
     private String FullBucketName;

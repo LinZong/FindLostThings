@@ -5,7 +5,7 @@ import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtension
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.TaskPostExecuteWrapper;
 import misaka.nemesiss.com.findlostthings.Model.LostThingsCategory;
 import misaka.nemesiss.com.findlostthings.Model.Response.LostThingsCategoryResponse;
-import misaka.nemesiss.com.findlostthings.Services.User.APIDocs;
+import misaka.nemesiss.com.findlostthings.Services.APIDocs;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;

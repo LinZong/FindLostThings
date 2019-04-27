@@ -2,7 +2,7 @@ package misaka.nemesiss.com.findlostthings.Tasks;
 
 import com.google.gson.Gson;
 import misaka.nemesiss.com.findlostthings.Model.Response.GetStoreBucketKeyResponse;
-import misaka.nemesiss.com.findlostthings.Services.User.APIDocs;
+import misaka.nemesiss.com.findlostthings.Services.APIDocs;
 import misaka.nemesiss.com.findlostthings.Utils.AppUtils;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

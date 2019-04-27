@@ -34,24 +34,22 @@ import com.tencent.cos.xml.listener.CosXmlResultListener;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
 import com.tencent.cos.xml.transfer.COSXMLUploadTask;
-import com.tencent.cos.xml.transfer.TransferConfig;
-import com.tencent.cos.xml.transfer.TransferManager;
 import com.tencent.cos.xml.transfer.TransferState;
 import com.yalantis.ucrop.UCrop;
 import misaka.nemesiss.com.findlostthings.Adapter.LostThingCategoryAdapter;
 import misaka.nemesiss.com.findlostthings.Adapter.PublishLostThingPreviewImageAdapter;
 import misaka.nemesiss.com.findlostthings.Adapter.SchoolBuildingsCategoryAdapter;
 import misaka.nemesiss.com.findlostthings.Adapter.SchoolInfoCategoryAdapter;
-import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.Model.LostThingsCategory;
 import misaka.nemesiss.com.findlostthings.R;
-import misaka.nemesiss.com.findlostthings.Services.User.LostThingsInfo;
-import misaka.nemesiss.com.findlostthings.Services.User.MySchoolBuildings;
-import misaka.nemesiss.com.findlostthings.Services.User.SchoolInfo;
-import misaka.nemesiss.com.findlostthings.StorageBucket.BucketInfo;
+import misaka.nemesiss.com.findlostthings.Services.StorageBucket.BucketFileOperation;
+import misaka.nemesiss.com.findlostthings.Model.LostThingsInfo;
+import misaka.nemesiss.com.findlostthings.Model.MySchoolBuildings;
+import misaka.nemesiss.com.findlostthings.Model.SchoolInfo;
 import misaka.nemesiss.com.findlostthings.Tasks.*;
 import misaka.nemesiss.com.findlostthings.Utils.AppUtils;
 import misaka.nemesiss.com.findlostthings.Utils.UUIDGenerator;
+import misaka.nemesiss.com.findlostthings.View.PercentageProgressBar;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -128,7 +126,7 @@ public class PickupImageActivity extends FindLostThingsActivity
     //处理当前正在上传的图片的数据结构
     private Queue<Pair<String, String>> CurrentUploadImageQueue;
     private int CurrentUploadImageIndex = -1;
-    private TextView CurrentUploadImageProgressHint;
+    private PercentageProgressBar CurrentUploadImageProgress;
     private boolean IsUploadingImages = false;
 
     //处理活动之间来回跳转
@@ -492,16 +490,7 @@ public class PickupImageActivity extends FindLostThingsActivity
 
     private COSXMLUploadTask UploadSingleImage(String OriginalFilePath, String CosPath)
     {
-        TransferConfig config = new TransferConfig.Builder().build();
-        TransferManager transferManager = new TransferManager(FindLostThingsApplication.getCosXmlService(), config);
-
-        //测试文件是否存在
-        File file = new File(OriginalFilePath);
-        if (!file.exists())
-        {
-            throw new IllegalArgumentException("待上传的文件不存在!");
-        }
-        COSXMLUploadTask uploadTask = transferManager.upload(BucketInfo.BucketName, CosPath, OriginalFilePath, null);
+        COSXMLUploadTask uploadTask = BucketFileOperation.UploadFile(OriginalFilePath, CosPath);
         uploadTask.setCosXmlProgressListener(this::UploadProgressHandler);
         uploadTask.setCosXmlResultListener(new CosXmlResultListener()
         {
@@ -511,7 +500,7 @@ public class PickupImageActivity extends FindLostThingsActivity
                 FinishUploadImageUrl.add(result.accessUrl);
                 Log.d("PickupImageActivity", result.accessUrl);
                 CurrentUploadImageQueue.remove();
-                runOnUiThread(() -> CurrentUploadImageProgressHint.setVisibility(View.GONE));
+                runOnUiThread(() -> CurrentUploadImageProgress.setVisibility(View.GONE));
                 UploadNextImage();
             }
 
@@ -534,8 +523,8 @@ public class PickupImageActivity extends FindLostThingsActivity
     private void UploadProgressHandler(long complete, long target)
     {
         runOnUiThread(() -> {
-            float progress = 1.0f * complete / target * 100;
-            CurrentUploadImageProgressHint.setText(String.format("%d%%", (int) progress));
+            int progress = (int)(complete / target * 100);
+            CurrentUploadImageProgress.setPercentage(progress);
         });
     }
 
@@ -574,8 +563,8 @@ public class PickupImageActivity extends FindLostThingsActivity
             //一个接一个上传
             CurrentUploadImageIndex++;
             runOnUiThread(() -> {
-                CurrentUploadImageProgressHint = gridLayoutManager.getChildAt(CurrentUploadImageIndex).findViewById(R.id.UploadProgressHint);
-                CurrentUploadImageProgressHint.setVisibility(View.VISIBLE);
+                CurrentUploadImageProgress = gridLayoutManager.getChildAt(CurrentUploadImageIndex).findViewById(R.id.UploadProgressHint);
+                CurrentUploadImageProgress.setVisibility(View.VISIBLE);
             });
             Pair<String, String> CurrentUploadItem = CurrentUploadImageQueue.peek();
             UploadSingleImage(CurrentUploadItem.first, CurrentUploadItem.second);
@@ -626,7 +615,7 @@ public class PickupImageActivity extends FindLostThingsActivity
         info.setFoundAddrDescription(GetLostThingLocationAddiDesc);
         info.setThingAddiDescription(LostThingAddiDesc);
 
-        new LostThingsInfoTask((result) -> {
+        new PublishLostThingsInfoTask((result) -> {
             Toast.makeText(PickupImageActivity.this, String.valueOf(result), Toast.LENGTH_SHORT).show();
             Log.d("PickupImageActivity", String.valueOf(result));
         }).execute(info);

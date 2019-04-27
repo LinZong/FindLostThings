@@ -1,6 +1,6 @@
 package misaka.nemesiss.com.findlostthings.Model.Response;
 
-import misaka.nemesiss.com.findlostthings.Services.User.LostThingsInfo;
+import misaka.nemesiss.com.findlostthings.Model.LostThingsInfo;
 
 import java.util.List;
 

@@ -2,7 +2,7 @@ package misaka.nemesiss.com.findlostthings.Adapter;
 
 import android.content.Context;
 import com.jaredrummler.materialspinner.MaterialSpinnerAdapter;
-import misaka.nemesiss.com.findlostthings.Services.User.MySchoolBuildings;
+import misaka.nemesiss.com.findlostthings.Model.MySchoolBuildings;
 
 import java.util.List;
 

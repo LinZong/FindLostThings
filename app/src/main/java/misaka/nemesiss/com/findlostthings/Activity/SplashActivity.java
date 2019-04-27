@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
@@ -15,6 +16,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
+import misaka.nemesiss.com.findlostthings.Manifest;
 import misaka.nemesiss.com.findlostthings.R;
 import misaka.nemesiss.com.findlostthings.Services.QQAuth.QQAuthCredentials;
 import misaka.nemesiss.com.findlostthings.Utils.PermissionsHelper;
@@ -39,6 +42,7 @@ public class SplashActivity extends FindLostThingsActivity
         LoadSchoolNameAnimation();
         if(PermissionsHelper.RequestAllPermissions(SplashActivity.this, SplashActivity.this))
         {
+            //new Handler().postDelayed(this::InitApplication, 800);
             InitApplication();
         }
     }
@@ -69,7 +73,7 @@ public class SplashActivity extends FindLostThingsActivity
         {
             //TODO 跳到QQ登陆界面
             startActivity(new Intent(SplashActivity.this, QQAuthLoginActivity.class));
-        }
+       }
         finish();
     }
     @Override
@@ -81,9 +85,8 @@ public class SplashActivity extends FindLostThingsActivity
 
     private void LoadSchoolNameAnimation()
     {
-        Animation animation = AnimationUtils.loadAnimation(SplashActivity.this,R.anim.school_name_anim);
-        animation.setStartOffset(800);
-        SchoolName.startAnimation(animation);
+//        Animation animation = AnimationUtils.loadAnimation(SplashActivity.this,R.anim.school_name_anim);
+//        SchoolName.startAnimation(animation);
     }
 
     @Override
@@ -95,7 +98,9 @@ public class SplashActivity extends FindLostThingsActivity
                 if(grantResults.length > 0){
                     for (int i = 0; i < permissions.length; i++)
                     {
+
                         if(grantResults[i] != PackageManager.PERMISSION_GRANTED){
+
                             StillNeedPermission.add(permissions[i]);
                             boolean checked = ActivityCompat.shouldShowRequestPermissionRationale(SplashActivity.this,permissions[i]);
                             if(checked) PermissionsHelper.SetDontShowAgain(true);

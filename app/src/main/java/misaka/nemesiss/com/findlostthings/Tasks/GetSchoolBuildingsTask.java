@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.CustomPostExecuteAsyncTask;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.TaskPostExecuteWrapper;
 import misaka.nemesiss.com.findlostthings.Model.Response.SchoolBuildingsResponse;
-import misaka.nemesiss.com.findlostthings.Services.User.APIDocs;
+import misaka.nemesiss.com.findlostthings.Services.APIDocs;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;

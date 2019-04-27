@@ -6,9 +6,11 @@ import com.google.gson.Gson;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.CustomPostExecuteAsyncTask;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.TaskPostExecuteWrapper;
-import misaka.nemesiss.com.findlostthings.Services.User.APIDocs;
-import misaka.nemesiss.com.findlostthings.Services.User.LostThingsInfo;
-import misaka.nemesiss.com.findlostthings.Services.User.WaterfallThingsInfo;
+import misaka.nemesiss.com.findlostthings.Services.APIDocs;
+import misaka.nemesiss.com.findlostthings.Model.LostThingsInfo;
+import misaka.nemesiss.com.findlostthings.Model.WaterfallThingsInfo;
+import misaka.nemesiss.com.findlostthings.Services.QQAuth.QQAuthCredentials;
+import misaka.nemesiss.com.findlostthings.Services.User.UserService;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -24,9 +26,9 @@ public class WaterfallThingsInfoTask extends CustomPostExecuteAsyncTask<Waterfal
 {
     private OkHttpClient okHttpClient;
     String EncryptedAccessToken = null;
-    Context ctx = FindLostThingsApplication.getContext();
-    SharedPreferences preferences = ctx.getSharedPreferences("userIDData", MODE_PRIVATE);
-    long SnowflakeID = preferences.getLong("Snowflake ID", 0);
+    private UserService userService = FindLostThingsApplication.getUserService();
+    long SnowflakeID = userService.GetUserID();
+
     final String s1="EndItemId=";
     final String s2="&";
     final String s3="HaveFetchedItemCount=";
@@ -36,7 +38,7 @@ public class WaterfallThingsInfoTask extends CustomPostExecuteAsyncTask<Waterfal
         super(DoInPostExecute);
         try
         {
-            EncryptedAccessToken= APIDocs.encryptionAccessToken();
+            EncryptedAccessToken= QQAuthCredentials.GetEncryptedAccessToken();
         } catch (InvalidKeyException e)
         {
             e.printStackTrace();

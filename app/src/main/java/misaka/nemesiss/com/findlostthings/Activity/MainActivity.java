@@ -3,7 +3,6 @@ package misaka.nemesiss.com.findlostthings.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,34 +15,34 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
-import com.tencent.connect.UserInfo;
-import com.tencent.connect.auth.QQToken;
 import com.tencent.tauth.IUiListener;
-import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
 import de.hdodenhof.circleimageview.CircleImageView;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
-import misaka.nemesiss.com.findlostthings.Model.UserAccount;
 import misaka.nemesiss.com.findlostthings.R;
-import misaka.nemesiss.com.findlostthings.Services.User.LostThingsInfo;
-import misaka.nemesiss.com.findlostthings.Services.User.LostThingsInfoAdapter;
-import misaka.nemesiss.com.findlostthings.Tasks.PostInformationAsyncTask;
+import misaka.nemesiss.com.findlostthings.Model.LostThingsInfo;
+import misaka.nemesiss.com.findlostthings.Adapter.LostThingsInfoAdapter;
+import misaka.nemesiss.com.findlostthings.Services.QQAuth.QQAuthCredentials;
+import misaka.nemesiss.com.findlostthings.Services.User.UserService;
+import misaka.nemesiss.com.findlostthings.Tasks.PostUserInformationAsyncTask;
 import misaka.nemesiss.com.findlostthings.Utils.AppUtils;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class MainActivity extends FindLostThingsActivity
-{
+public class MainActivity extends FindLostThingsActivity {
 
     @BindView(R.id.ToolbarUserAvatar)
     CircleImageView ToolbarUserAvatar;
-//    @BindView(R.id.float_ab)
-    //FloatingActionButton PublishLostThingBtn;
+    @BindView(R.id.nav_view)
+    NavigationView navigationView;
+
     TextView NickNameTextView;
     CircleImageView NavigationHeaderBigAvatar;
 
@@ -52,51 +51,22 @@ public class MainActivity extends FindLostThingsActivity
     private LostThingsInfoAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
 
+
+    //Drawer动画相关
+    private Runnable ShouldHandleMenuClicked = null;
+    private float CurrentSlideOffset = 0.0f;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-//        ActionBar actionBar = getSupportActionBar();
-//        if (actionBar != null)
-//        {
-//            actionBar.setDisplayHomeAsUpEnabled(true);
-//        }
-//        actionBar.setHomeAsUpIndicator()
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener()
-        {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item)
-            {
-
-                switch (item.getItemId())
-                {
-                    case R.id.my_find:
-                       //
-                        Intent intent=new Intent(MainActivity.this,Mypublish.class);
-                        startActivity(intent);
-                        break;
-                    case R.id.set_up:
-                        //mDrawerLayout.closeDrawers();
-                        Intent intent1=new Intent(MainActivity.this,SetUp.class);
-                        startActivity(intent1);
-                        break;
-                    case R.id.user_nickNameAndImage:
-                        Intent intent2=new Intent(MainActivity.this,ShowOrChangeUserInfo.class);
-                        startActivity(intent2);
-                        break;
-                        default:
-                            mDrawerLayout.closeDrawers();
-                            break;
-                }
-                return true;
-            }
-        });
+        navigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
 
         NickNameTextView = navigationView.getHeaderView(0).findViewById(R.id.nick_name);
         NavigationHeaderBigAvatar = navigationView.getHeaderView(0).findViewById(R.id.head_photo);
@@ -108,68 +78,99 @@ public class MainActivity extends FindLostThingsActivity
         adapter = new LostThingsInfoAdapter(LostThingsInfoList);
         recyclerView.setAdapter(adapter);
 
+
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
+        swipeRefreshLayout.setOnRefreshListener(this::refreshLostThingsInfo);
+        LoadUserAccountInfo();
+        ToolbarUserAvatar.setOnClickListener(this::ClickAvatarToOpenDrawers);
+
+        mDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener()
         {
             @Override
-            public void onRefresh()
+            public void onDrawerSlide(View drawerView, float slideOffset)
             {
-                refreshLostThingsInfo();
+
+                super.onDrawerSlide(drawerView, slideOffset);
+
+                if(CurrentSlideOffset > slideOffset && slideOffset < 0.015f && ShouldHandleMenuClicked != null){
+                    ShouldHandleMenuClicked.run();
+                    ShouldHandleMenuClicked=null;
+                    runOnUiThread(()->{
+                        navigationView.setCheckedItem(R.id.menu_none);
+                    });
+                }
+                CurrentSlideOffset = slideOffset;
             }
         });
 
-        LoadUserAccountInfo();
-     //   ToolbarUserAvatar.setOnClickListener(this::ClickAvatarToOpenDrawers);
-//        PublishLostThingBtn.setOnClickListener(v ->{
-//            startActivity(new Intent(MainActivity.this,PickupImageActivity.class));
-//        });
     }
 
-    private void ClickAvatarToOpenDrawers(View view)
-    {
+
+    private boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.my_find:
+                //
+                ShouldHandleMenuClicked = () -> {
+                    Intent intent = new Intent(MainActivity.this, MyPublishActivity.class);
+                    startActivity(intent);
+                };
+                break;
+            case R.id.set_up:
+                //mDrawerLayout.closeDrawers();
+                ShouldHandleMenuClicked = () -> {
+                    Intent intent1 = new Intent(MainActivity.this, SettingActivity.class);
+                    startActivity(intent1);
+                };
+                break;
+            case R.id.user_nickNameAndImage:
+                ShouldHandleMenuClicked = () -> {
+                    Intent intent2 = new Intent(MainActivity.this, ShowOrChangeUserInfo.class);
+                    startActivity(intent2);
+                };
+                break;
+            default:
+                break;
+        }
+        mDrawerLayout.closeDrawers();
+        return true;
+    }
+
+
+    private void ClickAvatarToOpenDrawers(View view) {
         mDrawerLayout.openDrawer(Gravity.START);
     }
 
-    public void refreshLostThingsInfo()
-    {
-        new Thread(new Runnable()
-        {
+    public void refreshLostThingsInfo() {
+        new Thread(new Runnable() {
             @Override
-            public void run()
-            {
-                try
-                {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
-                runOnUiThread(new Runnable()
-                {
+            public void run() {
+//                try {
+//                    //TODO 在这里获取最新的瀑布流
+//                }
+                runOnUiThread(new Runnable() {
                     @Override
-                    public void run()
-                    {
-                        initLostThingsInfo();
-                        adapter.notifyDataSetChanged();
-                        swipeRefreshLayout.setRefreshing(false);
+                    public void run() {
+                        // TODO 在这里把获取到的数据SET到View上。
+//                        initLostThingsInfo();
+//                        adapter.notifyDataSetChanged();
+//                        swipeRefreshLayout.setRefreshing(false);
                     }
                 });
             }
         }).start();
     }
 
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar, menu);
         return true;
     }
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        switch(item.getItemId())
-        {
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
             case R.id.publish:
-                startActivity(new Intent(MainActivity.this,PickupImageActivity.class));
+                startActivity(new Intent(MainActivity.this, PickupImageActivity.class));
                 break;
             case R.id.search:
                 break;
@@ -177,10 +178,10 @@ public class MainActivity extends FindLostThingsActivity
                 break;
 
         }
-        return  true;
+        return true;
     }
-    public void initLostThingsInfo()
-    {
+
+    public void initLostThingsInfo() {
         LostThingsInfo lostThingsInfo1 = new LostThingsInfo();
         lostThingsInfo1.setTitle("zm");
         lostThingsInfo1.setPhotoUrl(R.mipmap.fake_avatar);
@@ -200,24 +201,13 @@ public class MainActivity extends FindLostThingsActivity
         LostThingsInfo[] lostThingsInfos = {lostThingsInfo1, lostThingsInfo2, lostThingsInfo3, lostThingsInfo4};
 
         LostThingsInfoList.clear();
-        for (int i = 0; i < 20; i++)
-        {
+        for (int i = 0; i < 20; i++) {
             Random random = new Random();
             int index = random.nextInt(lostThingsInfos.length);
             LostThingsInfoList.add(lostThingsInfos[index]);
         }
-//
-//        WaterfallThingsInfo waterfallThingsInfo = new WaterfallThingsInfo();
-//        waterfallThingsInfo.setCount(10);
-//        waterfallThingsInfo.setHaveFetchedItemCount(0);
-//        waterfallThingsInfo.setEndItemId("[Guid(\"EB41C40D-C17E-4641-9524-BD543BC95042\")]");
-//        new WaterfallThingsInfoTask(TaskRet ->
-//        {
-//            for (LostThingsInfo sb : TaskRet)
-//            {
-//                LostThingsInfoList.add(sb);
-//            }
-//        }).execute(waterfallThingsInfo);
+
+
     }
 
 
@@ -241,54 +231,42 @@ public class MainActivity extends FindLostThingsActivity
 //    }
 
 
-    private void LoadUserAccountInfo()
-    {
-        Tencent tencent = FindLostThingsApplication.getQQAuthService();
-        QQToken qqToken = tencent.getQQToken();
-        UserInfo ua = new UserInfo(MainActivity.this, qqToken);
-        ua.getUserInfo(CommonUserInfoListener);
+    private void LoadUserAccountInfo() {
+        if (!FindLostThingsApplication.JumpOutQQLogin) {
+
+            UserService
+                    .LoadUserQQProfile()
+                    .getUserInfo(CommonUserInfoListener);
+        }
     }
 
-    private IUiListener CommonUserInfoListener = new IUiListener()
-    {
+    private IUiListener CommonUserInfoListener = new IUiListener() {
         @Override
-        public void onComplete(Object o)
-        {
+        public void onComplete(Object o) {
             JSONObject jsonObject = (JSONObject) o;
-            try
-            {
+            try {
                 String name = jsonObject.getString("nickname");
                 String imgUrl = jsonObject.getString("figureurl_qq_2");  //头像url
                 String openID = FindLostThingsApplication.getQQAuthService().getOpenId();
-                UserAccount ua = FindLostThingsApplication.getLoginUserAccount();
-                ua.setImageUrl(imgUrl);
-                ua.setNickname(name);
                 NickNameTextView.setText(name);
                 Glide.with(MainActivity.this).load(imgUrl).into(ToolbarUserAvatar);
                 Glide.with(MainActivity.this).load(imgUrl).into(NavigationHeaderBigAvatar);
-                new PostInformationAsyncTask((res) ->
-                {
-                    if (res.getStatusCode() != 0)
-                    {
-                        Log.d("QQAuthLoginActivity", "上报数据给服务器出现异常!.");
-                    }
-                    Log.d("QQAuthLoginActivity", "成功上报数据给服务器.");
-                }).execute(openID, name, AppUtils.getAndroidId(FindLostThingsApplication.getContext()));
-            } catch (Exception e)
-            {
+
+                QQAuthCredentials.PushLoginInfoToBackend(openID,name);
+
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
         @Override
-        public void onError(UiError uiError)
-        {
-            Log.d("QQAuthLoginActivity", "获取个人信息出现异常!.");
+        public void onError(UiError uiError) {
+            Log.d("QQAuthLoginActivity", "获取个人信息出现异常!." + uiError.errorMessage);
+            Toast.makeText(MainActivity.this, "获取个人信息出现异常!", Toast.LENGTH_SHORT).show();
         }
 
         @Override
-        public void onCancel()
-        {
+        public void onCancel() {
 
         }
     };

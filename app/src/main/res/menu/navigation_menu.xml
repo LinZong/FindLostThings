@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
-        <item
+        <item android:id="@+id/menu_none"
             android:title=""
             android:visible="false"/>
         <item
@@ -13,6 +13,5 @@
             android:id="@+id/set_up"
             android:title="设置"/>
     </group>
-
 
 </menu>

@@ -8,7 +8,7 @@ import android.widget.TextView;
 import misaka.nemesiss.com.findlostthings.BuildConfig;
 import misaka.nemesiss.com.findlostthings.R;
 
-public class AboutMe extends AppCompatActivity
+public class AboutMe extends FindLostThingsActivity
 {
 
     @Override

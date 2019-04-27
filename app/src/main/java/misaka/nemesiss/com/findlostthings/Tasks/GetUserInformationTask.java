@@ -7,7 +7,9 @@ import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.CustomPostExecuteAsyncTask;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.TaskPostExecuteWrapper;
 import misaka.nemesiss.com.findlostthings.Model.Response.UserInfoResponse;
-import misaka.nemesiss.com.findlostthings.Services.User.APIDocs;
+import misaka.nemesiss.com.findlostthings.Services.APIDocs;
+import misaka.nemesiss.com.findlostthings.Services.QQAuth.QQAuthCredentials;
+import misaka.nemesiss.com.findlostthings.Services.User.UserService;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -20,9 +22,8 @@ import static android.content.Context.MODE_PRIVATE;
 public class GetUserInformationTask extends CustomPostExecuteAsyncTask<Void,Void, UserInfoResponse> {
     private OkHttpClient okHttpClient;
 
-    Context ctx = FindLostThingsApplication.getContext();
-    SharedPreferences preferences = ctx.getSharedPreferences("userIDData", MODE_PRIVATE);
-    long SnowflakeID = preferences.getLong("Snowflake ID", 0);
+    private UserService userService = FindLostThingsApplication.getUserService();
+    long SnowflakeID = userService.GetUserID();
 
     String EncryptedAccessToken = null;
 
@@ -31,7 +32,7 @@ public class GetUserInformationTask extends CustomPostExecuteAsyncTask<Void,Void
         super(DoInPostExecute);
         try
         {
-            EncryptedAccessToken= APIDocs.encryptionAccessToken();
+            EncryptedAccessToken= QQAuthCredentials.GetEncryptedAccessToken();
         } catch (InvalidKeyException e)
         {
             e.printStackTrace();

@@ -4,6 +4,7 @@ public class UserInformation {
     private long Id;
     private String Nickname;
     private int RealPersonValid;
+    private String RealPersonIdentity;
     private String QQ;
     private String WxID;
     private String PhoneNumber;
@@ -63,5 +64,13 @@ public class UserInformation {
 
     public void setEmail(String email) {
         Email = email;
+    }
+
+    public String getRealPersonIdentity() {
+        return RealPersonIdentity;
+    }
+
+    public void setRealPersonIdentity(String realPersonIdentity) {
+        RealPersonIdentity = realPersonIdentity;
     }
 }

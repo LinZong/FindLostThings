@@ -40,6 +40,11 @@ public class PermissionsHelper
             if (info.requestedPermissions != null) {
                 Collections.addAll(NeedAllPermissions, info.requestedPermissions);
             }
+            //清除掉极光推送不应该申请的权限.
+            NeedAllPermissions.remove("android.permission.RECEIVE_USER_PRESENT");
+            NeedAllPermissions.remove("android.permission.MOUNT_UNMOUNT_FILESYSTEMS");
+            NeedAllPermissions.remove("android.permission.WRITE_SETTINGS");
+            NeedAllPermissions.remove("android.permission.SYSTEM_ALERT_WINDOW");
         } catch (Exception e) {
             e.printStackTrace();
         }

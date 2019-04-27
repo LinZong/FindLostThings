@@ -1,17 +1,20 @@
 package misaka.nemesiss.com.findlostthings.Application;
 
-import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDexApplication;
+import cn.jpush.android.api.JPushInterface;
 import com.tencent.cos.xml.CosXmlService;
 import com.tencent.cos.xml.CosXmlServiceConfig;
 import com.tencent.qcloud.core.auth.QCloudCredentialProvider;
 import com.tencent.tauth.Tencent;
-import misaka.nemesiss.com.findlostthings.Activity.TryUploadFilesActivity;
+import misaka.nemesiss.com.findlostthings.Model.AppSettings;
 import misaka.nemesiss.com.findlostthings.Model.UserAccount;
+import misaka.nemesiss.com.findlostthings.Services.Common.AppService;
+import misaka.nemesiss.com.findlostthings.Services.QQAuth.QQAuthCredentials;
 import misaka.nemesiss.com.findlostthings.Services.QQAuth.QQAuthInfo;
-import misaka.nemesiss.com.findlostthings.StorageBucket.BucketInfo;
-import misaka.nemesiss.com.findlostthings.StorageBucket.CustomCredentialProvider;
+import misaka.nemesiss.com.findlostthings.Services.StorageBucket.BucketInfo;
+import misaka.nemesiss.com.findlostthings.Services.StorageBucket.CustomCredentialProvider;
+import misaka.nemesiss.com.findlostthings.Services.User.UserService;
 
 public class FindLostThingsApplication extends MultiDexApplication
 {
@@ -19,29 +22,40 @@ public class FindLostThingsApplication extends MultiDexApplication
     private static Context context;
 
     //Define global services
-
+    // 3rd-party services.
     private static CosXmlServiceConfig cosXmlServiceConfig;
     private static QCloudCredentialProvider credentialProvider;
     private static CosXmlService cosXmlService;
     private static Tencent QQAuthService;
+
+    //our app services.
+    private static UserService userService;
+    private static AppService appService;
     //Define global variables
 
-    private static UserAccount LoginUserAccount;
+    //修改这个标志位可以跳过QQ登陆直接进入界面。但是相应功能会被屏蔽
+    public static boolean JumpOutQQLogin = false;
+
 
     @Override
     public void onCreate()
     {
         super.onCreate();
         context = getApplicationContext();
-        LoginUserAccount = new UserAccount();
         QQAuthService = Tencent.createInstance(QQAuthInfo.APPID,context);
         cosXmlServiceConfig = new CosXmlServiceConfig.Builder()
                 .setAppidAndRegion(BucketInfo.AppID,BucketInfo.Region)
                 .isHttps(true)
                 .setDebuggable(true)
                 .builder();
-        credentialProvider = new CustomCredentialProvider("actkRelax","36767411659079680");
+        credentialProvider = new CustomCredentialProvider();
         cosXmlService = new CosXmlService(context, getCosXmlServiceConfig(), credentialProvider);
+        JPushInterface.init(this);
+        JPushInterface.setDebugMode(true);
+
+        //加载此App自己的服务.
+        userService = new UserService();
+        appService = new AppService();
     }
     public static Context getContext()
     {
@@ -67,13 +81,23 @@ public class FindLostThingsApplication extends MultiDexApplication
         return QQAuthService;
     }
 
-    public static UserAccount getLoginUserAccount()
-    {
-        return LoginUserAccount;
+    public static UserService getUserService() {
+        return userService;
     }
 
-    public static void setLoginUserAccount(UserAccount loginUserAccount)
+    public static AppService getAppService() {
+        return appService;
+    }
+
+    public static void ReloadAfterLogin()
     {
-        LoginUserAccount = loginUserAccount;
+        //这里放置一些在完成全部Login操作之后需要执行的语句.
+        ((CustomCredentialProvider)credentialProvider).LoadAccessTokenAndUserID();
+        UserService.LoadUserProfile();
+    }
+
+    public static void ReloadAfterNetworkChanged()
+    {
+        //这里放置一些检测到网络状态变化之后需要执行的语句。
     }
 }
