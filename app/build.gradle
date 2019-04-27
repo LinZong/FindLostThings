@@ -5,7 +5,7 @@ android {
         签名 {
             keyAlias 'Nemesiss'
             keyPassword 'lznb008828'
-            storeFile file('E:/SSHKey/AndroidDev/Nemesiss.jks')
+            storeFile file('../BuildSignature/Nemesiss.jks')
             storePassword 'lznb008828'
         }
     }
@@ -18,14 +18,20 @@ android {
         versionName "1.0"
         //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+
+        ndk {
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+        }
+        manifestPlaceholders = [
+                JPUSH_PKGNAME: applicationId,
+                JPUSH_APPKEY : "7c8f19b47c083bb672f1d4df", //JPush 上注册的包名对应的 Appkey.
+                JPUSH_CHANNEL: "developer-default"
+        ]
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.签名
-        }
-        debug {
             signingConfig signingConfigs.签名
         }
         debug {
@@ -64,18 +70,20 @@ dependencies {
     implementation 'com.jaeger.statusbaruitl:library:1.0.0'
     implementation 'com.squareup.okhttp3:okhttp:3.4.1'
     implementation 'com.google.code.gson:gson:2.7'
+    implementation 'com.github.ikidou:FragmentBackHandler:2.1'
     implementation('com.tencent.qcloud:cosxml:5.4.21') {
         exclude group: 'com.tencent.qcloud', module: 'mtaUtils'
     }
-
     implementation 'com.github.prolificinteractive:material-calendarview:1.6.0'
     implementation 'cn.finalteam.rxgalleryfinal:library:1.1.3'
     implementation 'com.android.support:design:26.0.0'
     implementation 'de.hdodenhof:circleimageview:2.1.0'
     implementation 'com.android.support:cardview-v7:26.0.0'
     implementation 'com.github.bumptech.glide:glide:3.7.0'
-
-
+    implementation 'cn.jiguang.sdk:jpush:3.2.0'
+    // 此处以JPush 3.2.0 版本为例。
+    implementation 'cn.jiguang.sdk:jcore:1.2.7'
+    // 此处以JCore 1.2.7 版本为例。
     //    testImplementation 'junit:junit:4.12'
     //    androidTestImplementation 'com.android.support.test:runner:1.0.2'
     //    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
