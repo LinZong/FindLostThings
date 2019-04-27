@@ -24,6 +24,7 @@
                       android:layout_gravity="center"
                       android:textSize="20sp"
                       android:id="@+id/SettingTitleTextView"
+                      android:textColor="#fff"
             />
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
