@@ -126,6 +126,7 @@ public class QQAuthLoginActivity extends FindLostThingsActivity {
 
     private void JumpToMainActivity() {
         startActivity(new Intent(QQAuthLoginActivity.this, MainActivity.class));
+        finish();
     }
 
 

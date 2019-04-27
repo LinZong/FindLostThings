@@ -52,9 +52,7 @@ public class SettingFragment extends SettingBaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
-
 
     @Nullable
     @Override

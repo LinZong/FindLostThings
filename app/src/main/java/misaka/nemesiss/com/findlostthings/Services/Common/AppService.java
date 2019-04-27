@@ -27,7 +27,6 @@ public class AppService {
         Log.d("AppService","成功保存AppSettings.");
     }
     public AppSettings GetAppSettings() {
-
         return appSettings;
     }
     private void LoadAppSettings() {

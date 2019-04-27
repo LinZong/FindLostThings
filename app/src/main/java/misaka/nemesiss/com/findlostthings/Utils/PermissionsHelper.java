@@ -45,6 +45,7 @@ public class PermissionsHelper
             NeedAllPermissions.remove("android.permission.MOUNT_UNMOUNT_FILESYSTEMS");
             NeedAllPermissions.remove("android.permission.WRITE_SETTINGS");
             NeedAllPermissions.remove("android.permission.SYSTEM_ALERT_WINDOW");
+            NeedAllPermissions.remove("android.permission.CHANGE_NETWORK_STATE");
         } catch (Exception e) {
             e.printStackTrace();
         }
