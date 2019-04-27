@@ -3,8 +3,6 @@
           package="misaka.nemesiss.com.findlostthings">
 
 
-
-
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
@@ -83,7 +81,7 @@
         <receiver android:name=".Services.Notifications.JPushActionResultReceiver">
             <intent-filter>
                 <action android:name="cn.jpush.android.intent.RECEIVE_MESSAGE"/>
-                <category android:name="${applicationId}"/>
+                <category android:name="misaka.nemesiss.com.findlostthings"/>
             </intent-filter>
         </receiver>
 
@@ -97,7 +95,7 @@
                 <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED"/> <!--Required  用户接收SDK通知栏信息的intent-->
                 <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED"/> <!--Required  用户打开自定义通知栏的intent-->
                 <action android:name="cn.jpush.android.intent.CONNECTION"/><!-- 接收网络变化 连接/断开 since 1.6.3 -->
-                <category android:name="nemesiss.scheduler.change.chargescheduler"/>
+                <category android:name="misaka.nemesiss.com.findlostthings"/>
             </intent-filter>
         </receiver>
 
