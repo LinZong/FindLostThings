@@ -69,6 +69,7 @@
 
         </activity>
         <activity android:name=".Activity.ShowOrChangeUserInfo">
+
         </activity>
         <activity
                 android:name=".Activity.PreviewSelectedImageActivity"

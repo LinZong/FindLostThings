@@ -4,12 +4,7 @@
                 android:layout_height="180dp"
                 android:padding="10dp"
                 android:id="@+id/user_nickNameAndImage"
-                android:background="?attr/colorPrimary">
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/head_photo"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_centerInParent="true"/>
+                android:background="@drawable/scut">
 
     <TextView
             android:id="@+id/nick_name"
@@ -18,5 +13,11 @@
             android:layout_alignParentBottom="true"
             android:textColor="#FFF"
             android:textSize="14sp"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/head_photo"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_above="@+id/nick_name"/>
 
 </RelativeLayout>
