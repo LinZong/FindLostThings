@@ -43,4 +43,12 @@ public class FindLostThingsActivity extends AppCompatActivity
             }
         }
     }
+    public static Activity GetActivity(Class<? extends FindLostThingsActivity> activityClass) {
+        for (Activity activity : activities) {
+            if(activity.getClass().equals(activityClass)){
+                return activity;
+            }
+        }
+        return null;
+    }
 }

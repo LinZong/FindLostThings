@@ -5,13 +5,12 @@
             android:title=""
             android:visible="false"/>
         <item
-            android:icon="@drawable/add_photo"
+            android:icon="@drawable/my_publish_icon_24dp"
             android:id="@+id/my_find"
             android:title="我发布的"/>
         <item
-            android:icon="@drawable/ic_search_slightly_gray_24dp"
+            android:icon="@drawable/settings_icon_24dp"
             android:id="@+id/set_up"
             android:title="设置"/>
     </group>
-
 </menu>

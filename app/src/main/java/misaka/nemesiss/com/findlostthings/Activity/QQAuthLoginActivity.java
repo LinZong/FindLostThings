@@ -108,8 +108,6 @@ public class QQAuthLoginActivity extends FindLostThingsActivity {
     private void PersistUserInfo()//将返回的openid、access_token、expires_in三个参数保存在本地
     {
         String tokenInvalidDate = String.valueOf(currentTimeMillis() + Long.parseLong(expires) * 1000);//token的失效日期
-        Context ctx = QQAuthLoginActivity.this;
-
         mTencent.setOpenId(openID);
         mTencent.setAccessToken(access_token, tokenInvalidDate);
         QQAuthCredentials.PersistIdentity(openID,access_token,tokenInvalidDate);

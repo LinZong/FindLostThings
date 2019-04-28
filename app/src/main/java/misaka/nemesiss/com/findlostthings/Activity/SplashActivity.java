@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
@@ -24,10 +26,17 @@ public class SplashActivity extends FindLostThingsActivity
     @BindView(R.id.SplashActivity_SchoolName)
     TextView SchoolName;
 
+    public static Handler GoToMainActivityHandler;
+
+    public static final int CAN_GOTO_MAINACTIVITY = 1;
+    public static final int OVERTIME_GOTO_MAINACTIVITY = 2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        GoToMainActivityHandler = new Handler(this::SplashMessageHandler);
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_splash);
         ButterKnife.bind(this);
@@ -37,9 +46,25 @@ public class SplashActivity extends FindLostThingsActivity
         LoadSchoolNameAnimation();
         if(PermissionsHelper.RequestAllPermissions(SplashActivity.this, SplashActivity.this))
         {
-            //new Handler().postDelayed(this::InitApplication, 800);
             InitApplication();
         }
+    }
+
+    private boolean SplashMessageHandler(Message message) {
+        switch (message.what) {
+            case CAN_GOTO_MAINACTIVITY:{
+                GoToMainActivityHandler.removeMessages(OVERTIME_GOTO_MAINACTIVITY);
+                startActivity(new Intent(SplashActivity.this,MainActivity.class));
+                finish();
+                break;
+            }
+            case OVERTIME_GOTO_MAINACTIVITY:{
+                startActivity(new Intent(SplashActivity.this,MainActivity.class));
+                finish();
+                break;
+            }
+        }
+        return true;
     }
 
     private void HideNavigationBar()
@@ -57,20 +82,21 @@ public class SplashActivity extends FindLostThingsActivity
         }
     }
 
+
     private void InitApplication()
     {
         if(QQAuthCredentials.Validate())
         {
-            //TODO 进入主界面
-            startActivity(new Intent(SplashActivity.this,MainActivity.class));
+            GoToMainActivityHandler.sendEmptyMessageDelayed(OVERTIME_GOTO_MAINACTIVITY,6000);
+            QQAuthCredentials.LoadUserAccountInfo();
         }
         else
         {
-            //TODO 跳到QQ登陆界面
             startActivity(new Intent(SplashActivity.this, QQAuthLoginActivity.class));
+            finish();
        }
-        finish();
     }
+
     @Override
     protected void onResume()
     {
@@ -80,8 +106,7 @@ public class SplashActivity extends FindLostThingsActivity
 
     private void LoadSchoolNameAnimation()
     {
-//        Animation animation = AnimationUtils.loadAnimation(SplashActivity.this,R.anim.school_name_anim);
-//        SchoolName.startAnimation(animation);
+
     }
 
     @Override
