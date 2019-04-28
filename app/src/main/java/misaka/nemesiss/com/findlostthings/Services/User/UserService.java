@@ -45,6 +45,7 @@ public class UserService {
         MyProfile = myProfile;
     }
 
+
     public UserAccount getUserAccount() {
         return userAccount;
     }

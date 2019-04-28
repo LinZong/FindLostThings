@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.support.v7.widget.Toolbar;
+import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.Model.UserAccount;
@@ -29,11 +30,31 @@ public class ShowOrChangeUserInfo extends AppCompatActivity
         ConstraintLayout weChat=( ConstraintLayout)findViewById(R.id.weChat);
         ConstraintLayout tel=( ConstraintLayout)findViewById(R.id.tel);
         ConstraintLayout email=( ConstraintLayout)findViewById(R.id.email);
+        ConstraintLayout realNameAuthentication=(ConstraintLayout)findViewById(R.id.RealNameAuthentication);
+        TextView realNameText=(TextView)findViewById(R.id.realNameText);
+        ImageView imageView1=(ImageView)findViewById(R.id.imageView);
+
         UserAccount userAccount= FindLostThingsApplication.getUserService().getUserAccount();
         Glide.with(ShowOrChangeUserInfo.this)
                 .load(userAccount.getImageUrl())
                 .into(imageView);
         AppUtils.ToolbarShowReturnButton(this,toolbar);
+
+        int realPersonValid=FindLostThingsApplication.getUserService().getMyProfile().getRealPersonValid();
+        switch (realPersonValid)
+        {
+            case 0://未认证
+                realNameText.setText("未实名认证");
+                imageView1.setImageResource(R.drawable.ic_keyboard_arrow_right_black_24dp);
+                break;
+            case 1://已认证
+                realNameText.setText("实名认证成功");
+                break;
+            case 2://认证失败
+                realNameText.setText("实名认证失败");
+                imageView1.setImageResource(R.drawable.ic_keyboard_arrow_right_black_24dp);
+                break;
+        }
 
     }
 
@@ -48,4 +69,5 @@ public class ShowOrChangeUserInfo extends AppCompatActivity
         }
         return  true;
     }
+
 }
