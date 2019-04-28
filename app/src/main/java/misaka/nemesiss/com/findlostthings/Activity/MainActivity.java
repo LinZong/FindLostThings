@@ -24,6 +24,7 @@ import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.UiError;
 import de.hdodenhof.circleimageview.CircleImageView;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
+import misaka.nemesiss.com.findlostthings.Model.UserAccount;
 import misaka.nemesiss.com.findlostthings.R;
 import misaka.nemesiss.com.findlostthings.Model.LostThingsInfo;
 import misaka.nemesiss.com.findlostthings.Adapter.LostThingsInfoAdapter;
@@ -86,7 +87,6 @@ public class MainActivity extends FindLostThingsActivity {
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         swipeRefreshLayout.setOnRefreshListener(this::refreshLostThingsInfo);
-        LoadUserAccountInfo();
         ToolbarUserAvatar.setOnClickListener(this::ClickAvatarToOpenDrawers);
         NavigationHeaderBigAvatar.setOnClickListener(new View.OnClickListener()
         {
@@ -116,6 +116,7 @@ public class MainActivity extends FindLostThingsActivity {
             }
         });
 
+        LoadNickNameAndAvatar();
     }
 
 
@@ -236,46 +237,17 @@ public class MainActivity extends FindLostThingsActivity {
 //
 //    }
 
+    private void LoadNickNameAndAvatar() {
+        UserAccount ua = FindLostThingsApplication.getUserService().getUserAccount();
+        if(ua != null) {
+            String NickName = ua.getNickname();
+            String AvatarUrl = ua.getImageUrl();
 
-    private void LoadUserAccountInfo() {
-        if (!FindLostThingsApplication.JumpOutQQLogin) {
-
-            UserService
-                    .LoadUserQQProfile()
-                    .getUserInfo(CommonUserInfoListener);
+            NickNameTextView.setText(NickName);
+            Glide.with(MainActivity.this).load(AvatarUrl).into(ToolbarUserAvatar);
+            Glide.with(MainActivity.this).load(AvatarUrl).into(NavigationHeaderBigAvatar);
         }
     }
-
-    private IUiListener CommonUserInfoListener = new IUiListener() {
-        @Override
-        public void onComplete(Object o) {
-            JSONObject jsonObject = (JSONObject) o;
-            try {
-                String name = jsonObject.getString("nickname");
-                String imgUrl = jsonObject.getString("figureurl_qq_2");  //头像url
-                String openID = FindLostThingsApplication.getQQAuthService().getOpenId();
-                NickNameTextView.setText(name);
-                Glide.with(MainActivity.this).load(imgUrl).into(ToolbarUserAvatar);
-                Glide.with(MainActivity.this).load(imgUrl).into(NavigationHeaderBigAvatar);
-
-                QQAuthCredentials.PushLoginInfoToBackend(openID,name);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void onError(UiError uiError) {
-            Log.d("QQAuthLoginActivity", "获取个人信息出现异常!." + uiError.errorMessage);
-            Toast.makeText(MainActivity.this, "获取个人信息出现异常!", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onCancel() {
-
-        }
-    };
 
     @Override
     public void onBackPressed() {

@@ -4,12 +4,20 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
+import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
+import com.tencent.tauth.UiError;
+import misaka.nemesiss.com.findlostthings.Activity.MainActivity;
 import misaka.nemesiss.com.findlostthings.Activity.QQAuthLoginActivity;
+import misaka.nemesiss.com.findlostthings.Activity.SplashActivity;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
+import misaka.nemesiss.com.findlostthings.Model.UserAccount;
+import misaka.nemesiss.com.findlostthings.Services.User.UserService;
 import misaka.nemesiss.com.findlostthings.Tasks.PostUserInformationAsyncTask;
 import misaka.nemesiss.com.findlostthings.Utils.AppUtils;
 import misaka.nemesiss.com.findlostthings.Utils.HMacSha256;
+import org.json.JSONObject;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -69,8 +77,10 @@ public class QQAuthCredentials
             }
             //将服务器返回的UserID存入UserService对象。
             FindLostThingsApplication.getUserService().SetUserID(res.getUserID());
-            Log.d("QQAuthCredentials", "成功上报数据给服务器，活动退出.");
-            //根据登录后获得到的全部内容，继续完成关键部件的加载。
+            Log.d("QQAuthCredentials", "成功上报数据给服务器.");
+
+            SplashActivity.GoToMainActivityHandler.sendEmptyMessage(SplashActivity.CAN_GOTO_MAINACTIVITY);
+
             FindLostThingsApplication.ReloadAfterLogin();
 
         }).execute(OpenID, NickName, AppUtils.getAndroidId(ctx));
@@ -90,4 +100,41 @@ public class QQAuthCredentials
         editor.putString("expires", TokenInvaildDate);
         editor.apply();
     }
+
+    public static void LoadUserAccountInfo() {
+        UserService
+                .LoadUserQQProfile()
+                .getUserInfo(CommonUserInfoListener);
+    }
+
+    public static IUiListener CommonUserInfoListener = new IUiListener() {
+        @Override
+        public void onComplete(Object o) {
+            JSONObject jsonObject = (JSONObject) o;
+            try {
+                String name = jsonObject.getString("nickname");
+                String imgUrl = jsonObject.getString("figureurl_qq_2");  //头像url
+                String openID = FindLostThingsApplication.getQQAuthService().getOpenId();
+                FindLostThingsApplication
+                        .getUserService()
+                        .setUserAccount(new UserAccount(name,imgUrl));
+
+                QQAuthCredentials.PushLoginInfoToBackend(openID,name);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onError(UiError uiError) {
+            Log.d("QQAuthCredentials", "获取个人信息出现异常!" + uiError.errorMessage);
+            Toast.makeText(FindLostThingsApplication.getContext(), "获取个人信息出现异常!" + uiError.errorMessage, Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onCancel() {
+
+        }
+    };
 }

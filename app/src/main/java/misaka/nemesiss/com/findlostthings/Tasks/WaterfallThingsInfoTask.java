@@ -52,7 +52,7 @@ public class WaterfallThingsInfoTask extends CustomPostExecuteAsyncTask<Waterfal
         try {
             if(waterfallThingsInfos[0].getStatus()==0)
             {
-                String s5=APIDocs.FullThingList+s1+waterfallThingsInfos[0].getEndItemId()+s2+s3+
+                s5=APIDocs.FullThingList+s1+waterfallThingsInfos[0].getEndItemId()+s2+s3+
                     waterfallThingsInfos[0].getHaveFetchedItemCount()+s4+waterfallThingsInfos[0].getCount();
             }
             else

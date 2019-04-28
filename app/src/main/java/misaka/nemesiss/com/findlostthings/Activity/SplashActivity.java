@@ -1,9 +1,13 @@
 package misaka.nemesiss.com.findlostthings.Activity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
@@ -13,6 +17,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.R;
 import misaka.nemesiss.com.findlostthings.Services.QQAuth.QQAuthCredentials;
 import misaka.nemesiss.com.findlostthings.Utils.PermissionsHelper;
@@ -24,10 +29,19 @@ public class SplashActivity extends FindLostThingsActivity
     @BindView(R.id.SplashActivity_SchoolName)
     TextView SchoolName;
 
+    // 注意，这个Handler只能在App运行的时候使用。从Service启动Activity需要拿context去起，不能用这个Handler。
+
+    public static Handler GoToMainActivityHandler;
+
+    public static final int CAN_GOTO_MAINACTIVITY = 1;
+    public static final int OVERTIME_GOTO_MAINACTIVITY = 2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        GoToMainActivityHandler = new Handler(this::SplashMessageHandler);
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_splash);
         ButterKnife.bind(this);
@@ -37,9 +51,31 @@ public class SplashActivity extends FindLostThingsActivity
         LoadSchoolNameAnimation();
         if(PermissionsHelper.RequestAllPermissions(SplashActivity.this, SplashActivity.this))
         {
-            //new Handler().postDelayed(this::InitApplication, 800);
             InitApplication();
         }
+    }
+
+    private boolean SplashMessageHandler(Message message) {
+
+        if (message.what == CAN_GOTO_MAINACTIVITY) {
+            //计时器还没有超时，正常返回结果，所以取消掉计时器。
+            GoToMainActivityHandler.removeMessages(OVERTIME_GOTO_MAINACTIVITY);
+        }
+
+        ArrayList<Activity> BackStack = FindLostThingsActivity.GetAllActivities();
+        if(BackStack.isEmpty()) {
+            // 以NEW TASK 方式启动
+            Context context = FindLostThingsApplication.getContext();
+            Intent intent = new Intent(context,MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        }
+        else {
+            Activity topActivity = BackStack.get(BackStack.size() - 1);
+            topActivity.startActivity(new Intent(topActivity,MainActivity.class));
+            topActivity.finish();
+        }
+        return true;
     }
 
     private void HideNavigationBar()
@@ -57,20 +93,21 @@ public class SplashActivity extends FindLostThingsActivity
         }
     }
 
+
     private void InitApplication()
     {
         if(QQAuthCredentials.Validate())
         {
-            //TODO 进入主界面
-            startActivity(new Intent(SplashActivity.this,MainActivity.class));
+            GoToMainActivityHandler.sendEmptyMessageDelayed(OVERTIME_GOTO_MAINACTIVITY,6000);
+            QQAuthCredentials.LoadUserAccountInfo();
         }
         else
         {
-            //TODO 跳到QQ登陆界面
             startActivity(new Intent(SplashActivity.this, QQAuthLoginActivity.class));
+            finish();
        }
-        finish();
     }
+
     @Override
     protected void onResume()
     {
@@ -80,8 +117,7 @@ public class SplashActivity extends FindLostThingsActivity
 
     private void LoadSchoolNameAnimation()
     {
-//        Animation animation = AnimationUtils.loadAnimation(SplashActivity.this,R.anim.school_name_anim);
-//        SchoolName.startAnimation(animation);
+
     }
 
     @Override

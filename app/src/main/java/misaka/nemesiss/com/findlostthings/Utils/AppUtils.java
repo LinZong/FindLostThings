@@ -7,6 +7,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -20,10 +22,14 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.widget.Toast;
+import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.yalantis.ucrop.UCrop;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.BuildConfig;
 import misaka.nemesiss.com.findlostthings.R;
+import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
 
@@ -63,6 +69,7 @@ public class AppUtils
     {
         Toast.makeText(FindLostThingsApplication.getContext(), R.string.CannotConnectToServer, Toast.LENGTH_SHORT).show();
     }
+
 
     public static List<Pair<String, String>> BearerAuthRequestHeaders(String token) //暂时用不到
     {
@@ -143,6 +150,14 @@ public class AppUtils
         return false;
     }
 
+    public static String GetAppCachePath() {
+        File[] CacheDirList = ContextCompat.getExternalCacheDirs(FindLostThingsApplication.getContext());
+        if(CacheDirList.length > 1) {
+            return CacheDirList[0].getAbsolutePath();
+        }
+        return null;
+    }
+
     public static String GetSystemDCIMPath()
     {
         //  /storage/emulated/0/DCIM/Camera
@@ -156,6 +171,18 @@ public class AppUtils
         File[] MountedSdcardPrefix = ContextCompat.getExternalFilesDirs(FindLostThingsApplication.getContext(), null);
         File Path = new File(MountedSdcardPrefix.length > 1 ? MountedSdcardPrefix[1] : MountedSdcardPrefix[0], Environment.DIRECTORY_DCIM);
         return Path.getAbsolutePath();
+    }
+
+    public static String GetDCIMPath() {
+        int LocationFlag = FindLostThingsApplication.getAppService().GetAppSettings().getTakePhotoStoreLocation();
+        switch (LocationFlag) {
+            case 0:
+                return GetSystemDCIMPath();
+            case 1:
+                return GetAppDataDCIMPath();
+            default:
+                return GetSystemDCIMPath();
+        }
     }
 
     public static Uri ParseResourceIdToUri(int resId)
@@ -299,4 +326,18 @@ public class AppUtils
     {
         return Settings.System.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
+
+    public boolean IfNetworkConnected(Context context) {
+        if (context != null) {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
+            if (mNetworkInfo != null) {
+                return mNetworkInfo.isAvailable();
+            }
+        }
+        return false;
+    }
+
+
 }

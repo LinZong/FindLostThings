@@ -1,10 +1,14 @@
 package misaka.nemesiss.com.findlostthings.Activity;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -22,6 +26,7 @@ import android.view.View;
 import android.widget.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import cn.finalteam.rxgalleryfinal.bean.MediaBean;
 import cn.finalteam.rxgalleryfinal.rxbus.RxBusResultDisposable;
 import cn.finalteam.rxgalleryfinal.rxbus.event.ImageMultipleResultEvent;
@@ -54,17 +59,23 @@ import misaka.nemesiss.com.findlostthings.View.PercentageProgressBar;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PickupImageActivity extends FindLostThingsActivity
 {
     //绑定UI控件。
     @BindView(R.id.previewImageRecyclerView)
     RecyclerView recyclerView;
-    @BindView(R.id.ToggleFindLostThingLocationDesc)
-    TextView ToggleFindLostThingLocationDesc;
-    @BindView(R.id.ToggleLostThingAdditionalDesc)
-    TextView ToggleLostThingAdditionalDesc;
+
+//    @BindView(R.id.ToggleFindLostThingLocationDesc)
+//    TextView ToggleFindLostThingLocationDesc;
+//    @BindView(R.id.ToggleLostThingAdditionalDesc)
+//    TextView ToggleLostThingAdditionalDesc;
+
+    @BindView(R.id.AdditionalDescLayout)
+    LinearLayout AdditionalDescLayout;
+    @BindView(R.id.AdditionalDescCollapsing)
+    TextView AdditionalDescCollapsing;
+
     @BindView(R.id.LostThingAdditionalDescEditText)
     EditText LostThingAdditionalDescEditText;
     @BindView(R.id.FindLostThingLocationDescEditText)
@@ -132,6 +143,9 @@ public class PickupImageActivity extends FindLostThingsActivity
     //处理活动之间来回跳转
     public static final int PREVIEW_ACTIVITY = 1998;
 
+
+
+
     public RxBusResultDisposable<ImageMultipleResultEvent> getMultiImageSelectHandler()
     {
         return new RxBusResultDisposable<ImageMultipleResultEvent>()
@@ -196,6 +210,11 @@ public class PickupImageActivity extends FindLostThingsActivity
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(imageAdapter);
 
+        // 动态绑定UI 元素。
+
+        AdditionalDescArrow = AdditionalDescCollapsing.getCompoundDrawables()[2];
+
+        AdditionalDescLayoutHeight = Dp2Px(AdditionalDescLayoutExpandedDp);
 
         Calendar ca = Calendar.getInstance(Locale.CHINA);
         int mYear = ca.get(Calendar.YEAR);
@@ -211,11 +230,6 @@ public class PickupImageActivity extends FindLostThingsActivity
         PickDateLayout.setOnClickListener(v -> datePickerDialog.show());
         PickTimeLayout.setOnClickListener(v -> timePickerDialog.show());
 
-        //绑定展开/关闭补充说明的点击事件
-        ToggleLostThingAdditionalDesc
-                .setOnClickListener(HandleAdditionalDescCollapsing(ToggleLostThingAdditionalDesc, LostThingAdditionalDescEditText));
-        ToggleFindLostThingLocationDesc
-                .setOnClickListener(HandleAdditionalDescCollapsing(ToggleFindLostThingLocationDesc, FindLostThingLocationDescEditText));
 
         ThingCategorySpinner.setOnItemSelectedListener(this::HandleUpdateThingsDetailed);
         SchoolAreaSpinner.setOnItemSelectedListener(this::HandleUpdateSchoolBuildings);
@@ -293,22 +307,22 @@ public class PickupImageActivity extends FindLostThingsActivity
         DateTextView.setText(year + "-" + (month + 1) + "-" + dayOfMonth);
     }
 
-    private View.OnClickListener HandleAdditionalDescCollapsing(TextView toggle, EditText editor)
-    {
-        AtomicBoolean initStatus = new AtomicBoolean(false);
-        return view -> {
-            if (!initStatus.get())
-            {
-                toggle.setTextColor(getResources().getColor(R.color.OpenAdditionalInfoColor));
-                editor.setVisibility(View.VISIBLE);
-            } else
-            {
-                toggle.setTextColor(getResources().getColor(R.color.DefaultTextViewColor));
-                editor.setVisibility(View.GONE);
-            }
-            initStatus.set(!initStatus.get());
-        };
-    }
+//    private View.OnClickListener HandleAdditionalDescCollapsing(TextView toggle, EditText editor)
+//    {
+//        AtomicBoolean initStatus = new AtomicBoolean(false);
+//        return view -> {
+//            if (!initStatus.get())
+//            {
+//                toggle.setTextColor(getResources().getColor(R.color.OpenAdditionalInfoColor));
+//                editor.setVisibility(View.VISIBLE);
+//            } else
+//            {
+//                toggle.setTextColor(getResources().getColor(R.color.DefaultTextViewColor));
+//                editor.setVisibility(View.GONE);
+//            }
+//            initStatus.set(!initStatus.get());
+//        };
+//    }
 
     public void SetTempImageSavedUri(Uri uri)
     {
@@ -677,5 +691,87 @@ public class PickupImageActivity extends FindLostThingsActivity
             }
         }
         return all;
+    }
+
+
+
+    /*
+    * 展开/关闭补充说明框动画控制相关
+    * */
+
+    private boolean IsAdditionalDescCollapsed = true;
+    private Drawable AdditionalDescArrow;
+    private int AnimationDuration = 300;
+    private int AdditionalDescLayoutHeight;
+    private int AdditionalDescLayoutExpandedDp = 163;
+
+    @OnClick({R.id.AdditionalDescCollapsing})
+    public void SwitchAdditionalDescCollapsing(View v) {
+        int ArrowBegin = IsAdditionalDescCollapsed ? 0 : 10000;
+        int ArrowEnd = IsAdditionalDescCollapsed ? 10000 : 0;
+        int LayoutBegin = IsAdditionalDescCollapsed ? 1 : AdditionalDescLayoutHeight;
+        int LayoutEnd = IsAdditionalDescCollapsed ? AdditionalDescLayoutHeight : 1;
+
+
+        if(IsAdditionalDescCollapsed) {
+            AdditionalDescLayout.setVisibility(View.VISIBLE);
+        }
+
+        ObjectAnimator arrowAnimator = ObjectAnimator.ofInt(AdditionalDescArrow,"level",ArrowBegin,ArrowEnd);
+        ValueAnimator layoutAnimator = ValueAnimator.ofInt(LayoutBegin,LayoutEnd);
+
+        arrowAnimator.addListener(ArrowAnimatorListener);
+        layoutAnimator.addUpdateListener(AdditionalDescLayoutAnimatorListener);
+
+        arrowAnimator.setDuration(AnimationDuration);
+        layoutAnimator.setDuration(AnimationDuration);
+        arrowAnimator.start();
+        layoutAnimator.start();
+
+        IsAdditionalDescCollapsed = !IsAdditionalDescCollapsed;
+    }
+
+    private ValueAnimator.AnimatorUpdateListener AdditionalDescLayoutAnimatorListener = new ValueAnimator.AnimatorUpdateListener() {
+        @Override
+        public void onAnimationUpdate(ValueAnimator valueAnimator) {
+
+            Log.d("PickupImageActivity",String.valueOf(AdditionalDescLayout.getHeight()));
+            ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) AdditionalDescLayout.getLayoutParams();
+            lp.height = (Integer) valueAnimator.getAnimatedValue();
+            AdditionalDescLayout.setLayoutParams(lp);
+        }
+    };
+
+
+    private ObjectAnimator.AnimatorListener ArrowAnimatorListener = new ObjectAnimator.AnimatorListener(){
+
+        @Override
+        public void onAnimationStart(Animator animator) {
+
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animator) {
+            if(IsAdditionalDescCollapsed) {
+                AdditionalDescLayout.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animator) {
+
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animator) {
+
+        }
+    };
+
+
+    private int Dp2Px(int dp)
+    {
+        final float scale = getResources().getDisplayMetrics().density;
+        return (int)(dp*scale+0.5f);
     }
 }

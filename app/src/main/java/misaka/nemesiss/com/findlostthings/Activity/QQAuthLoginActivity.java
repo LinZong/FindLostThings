@@ -76,7 +76,7 @@ public class QQAuthLoginActivity extends FindLostThingsActivity {
         public void onComplete(Object o) { //登录成功
             parseResult(o);
             PersistUserInfo();
-            JumpToMainActivity();
+            PrepareToMainActivity();
         }
 
         @Override
@@ -108,19 +108,15 @@ public class QQAuthLoginActivity extends FindLostThingsActivity {
     private void PersistUserInfo()//将返回的openid、access_token、expires_in三个参数保存在本地
     {
         String tokenInvalidDate = String.valueOf(currentTimeMillis() + Long.parseLong(expires) * 1000);//token的失效日期
-        Context ctx = QQAuthLoginActivity.this;
-
         mTencent.setOpenId(openID);
         mTencent.setAccessToken(access_token, tokenInvalidDate);
         QQAuthCredentials.PersistIdentity(openID,access_token,tokenInvalidDate);
     }
 
-
-    private void JumpToMainActivity() {
-        startActivity(new Intent(QQAuthLoginActivity.this, MainActivity.class));
-        finish();
+    private void PrepareToMainActivity() {
+        SplashActivity.GoToMainActivityHandler.sendEmptyMessageDelayed(SplashActivity.OVERTIME_GOTO_MAINACTIVITY,6000);
+        QQAuthCredentials.LoadUserAccountInfo();
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

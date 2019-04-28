@@ -2,6 +2,15 @@ package misaka.nemesiss.com.findlostthings.Model;
 
 public class UserAccount
 {
+    public UserAccount() {
+
+    }
+
+    public UserAccount(String nickName,String imageUrl) {
+        Nickname = nickName;
+        ImageUrl = imageUrl;
+    }
+
     private String Nickname;
     private String ImageUrl;
 
