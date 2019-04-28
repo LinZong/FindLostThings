@@ -2,8 +2,6 @@
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/linear_layout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -23,36 +21,50 @@
             <TextView android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
                       android:layout_gravity="center"
-                      android:text="编辑个人信息"
+                      android:text="个人信息"
                       android:textSize="20sp"
             />
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
+
+
+        <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/QQImage"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:layout_gravity="center_horizontal"
+               />
+
 
     <android.support.constraint.ConstraintLayout android:layout_width="match_parent"
                                                  android:layout_height="36dp"
                                                  android:background="@drawable/setting_item_press_bg"
                                                  android:clickable="true"
                                                  android:focusable="true"
+                                                 android:id="@+id/qq"
     >
         <TextView android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:textSize="14sp"
                   android:text="QQ号"
                   android:textColor="#000"
-                  android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
                   app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="8dp"
                   app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="12dp"
-                  android:id="@+id/textView14"/>
+                  android:id="@+id/textView14" app:layout_constraintBottom_toBottomOf="parent"
+                  android:layout_marginBottom="8dp"/>
         <EditText
                 android:id="@+id/qq_number"
                 android:layout_width="0dp"
-                  android:layout_height="wrap_content"
-                  android:layout_weight="1"
-                  android:textColor="#000"
-                  android:textSize="16sp"
-                  app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-                  app:layout_constraintStart_toEndOf="@+id/textView14" android:layout_marginStart="8dp"/>
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#000"
+                android:background="@null"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+                app:layout_constraintStart_toEndOf="@+id/textView14" android:layout_marginStart="8dp"
+                app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="8dp"/>
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout android:layout_width="match_parent"
@@ -60,6 +72,7 @@
                                                  android:background="@drawable/setting_item_press_bg"
                                                  android:clickable="true"
                                                  android:focusable="true"
+                                                 android:id="@+id/weChat"
     >
         <TextView android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
@@ -73,12 +86,14 @@
         <EditText
                 android:id="@+id/weChat_number"
                 android:layout_width="0dp"
-                  android:layout_height="wrap_content"
-                  android:layout_weight="1"
-                  android:textColor="#000"
-                  android:textSize="16sp"
-                  app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-                  app:layout_constraintStart_toEndOf="@+id/textView13" android:layout_marginStart="8dp"/>
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#000"
+                android:background="@null"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+                app:layout_constraintStart_toEndOf="@+id/textView13" android:layout_marginStart="8dp"
+                app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="8dp"/>
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout android:layout_width="match_parent"
@@ -86,6 +101,7 @@
                                                  android:background="@drawable/setting_item_press_bg"
                                                  android:clickable="true"
                                                  android:focusable="true"
+                                                 android:id="@+id/tel"
     >
         <TextView android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
@@ -99,12 +115,14 @@
         <EditText
                 android:id="@+id/phone_number"
                 android:layout_width="0dp"
-                  android:layout_height="wrap_content"
-                  android:layout_weight="1"
-                  android:textColor="#000"
-                  android:textSize="16sp"
-                  app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-                  app:layout_constraintStart_toEndOf="@+id/textView10" android:layout_marginStart="8dp"/>
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#000"
+                android:textSize="16sp"
+                android:background="@null"
+                app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+                app:layout_constraintStart_toEndOf="@+id/textView10" android:layout_marginStart="8dp"
+                app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="8dp"/>
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout android:layout_width="match_parent"
@@ -112,6 +130,7 @@
                                                  android:background="@drawable/setting_item_press_bg"
                                                  android:clickable="true"
                                                  android:focusable="true"
+                                                 android:id="@+id/email"
     >
         <TextView android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
@@ -125,19 +144,15 @@
         <EditText
                 android:id="@+id/emil"
                 android:layout_width="0dp"
-                  android:layout_height="wrap_content"
-                  android:layout_weight="1"
-                  android:textColor="#000"
-                  android:textSize="16sp"
-                  app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-                  app:layout_constraintStart_toEndOf="@+id/textView12" android:layout_marginStart="8dp"/>
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#000"
+                android:background="@null"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+                app:layout_constraintStart_toEndOf="@+id/textView12" android:layout_marginStart="8dp"
+                app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="8dp"/>
     </android.support.constraint.ConstraintLayout>
-    <Button
-            android:text="保存修改"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:id="@+id/save_change"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginLeft="16dp" android:layout_marginStart="16dp"/>
 
 </LinearLayout>
 

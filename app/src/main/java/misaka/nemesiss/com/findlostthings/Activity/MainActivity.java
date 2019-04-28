@@ -14,6 +14,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.BindView;
@@ -64,7 +65,7 @@ public class MainActivity extends FindLostThingsActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
+        //RelativeLayout imageAndQQnick=(RelativeLayout)findViewById(R.id.user_nickNameAndImage);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -87,7 +88,15 @@ public class MainActivity extends FindLostThingsActivity {
         swipeRefreshLayout.setOnRefreshListener(this::refreshLostThingsInfo);
         LoadUserAccountInfo();
         ToolbarUserAvatar.setOnClickListener(this::ClickAvatarToOpenDrawers);
-
+        NavigationHeaderBigAvatar.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Intent intent2 = new Intent(MainActivity.this, ShowOrChangeUserInfo.class);
+                startActivity(intent2);
+            }
+        });
         mDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener()
         {
             @Override
@@ -125,12 +134,6 @@ public class MainActivity extends FindLostThingsActivity {
                 ShouldHandleMenuClicked = () -> {
                     Intent intent1 = new Intent(MainActivity.this, SettingActivity.class);
                     startActivity(intent1);
-                };
-                break;
-            case R.id.user_nickNameAndImage:
-                ShouldHandleMenuClicked = () -> {
-                    Intent intent2 = new Intent(MainActivity.this, ShowOrChangeUserInfo.class);
-                    startActivity(intent2);
                 };
                 break;
             default:

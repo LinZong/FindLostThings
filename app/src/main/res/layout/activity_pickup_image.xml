@@ -45,12 +45,13 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
                         android:background="@null"
                         android:inputType="textMultiLine"
                         android:lines="1"
                         android:maxLines="1"
                         android:ellipsize="end"
-                        android:textSize="15sp" app:layout_constraintStart_toStartOf="parent"
+                        android:textSize="15sp"
                         android:hint="此处填写失物标题"
                 />
             </android.support.constraint.ConstraintLayout>
