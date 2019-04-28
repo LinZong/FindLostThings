@@ -46,9 +46,9 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
                         android:background="@null"
-                        android:inputType="textMultiLine"
+                        android:inputType="text"
                         android:lines="1"
-                        android:maxLines="1"
+                        android:ems="10"
                         android:ellipsize="end"
                         android:textSize="15sp" app:layout_constraintStart_toStartOf="parent"
                         android:hint="此处填写失物标题"
@@ -81,33 +81,74 @@
                                                               app:layout_constraintEnd_toEndOf="parent"
                                                               android:layout_marginEnd="8dp"
                                                               app:layout_constraintHorizontal_bias="0.0"/>
-            <EditText
-                    android:paddingStart="3dp"
-                    android:paddingEnd="3dp"
-                    android:visibility="gone"
-                    android:layout_width="0dp"
-                    android:layout_height="120dp"
-                    android:inputType="textMultiLine"
-                    android:ems="10"
-                    android:id="@+id/LostThingAdditionalDescEditText"
-                    android:background="@android:color/white"
-                    android:textSize="15sp"
-                    android:gravity="start|top"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginStart="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginEnd="8dp"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    android:layout_marginTop="8dp"
-                    app:layout_constraintTop_toBottomOf="@+id/ToggleLostThingAdditionalDesc"/>
-            <TextView
-                    android:textColor="@color/DefaultTextViewColor"
-                    android:text="对失物的补充说明"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/ToggleLostThingAdditionalDesc" app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginStart="8dp" android:layout_marginTop="8dp"
-                    app:layout_constraintTop_toBottomOf="@+id/ThingCategorySpinner"/>
+
+
+            <TextView android:layout_width="match_parent"
+                      android:layout_height="38dp"
+                      android:text="补充说明"
+                      android:background="#fff"
+                      android:gravity="start|center"
+                      android:paddingStart="18dp"
+                      android:paddingEnd="16dp"
+                      android:paddingTop="10dp"
+                      android:paddingBottom="10dp"
+                      android:clickable="true"
+                      android:focusable="true"
+                      android:drawableRight="@drawable/rotate_arrow"
+                      app:layout_constraintTop_toBottomOf="@+id/SchoolAreaSpinner"
+                      android:layout_marginTop="8dp" app:layout_constraintStart_toStartOf="parent"
+                      app:layout_constraintEnd_toEndOf="parent" android:layout_marginStart="8dp"
+                      android:layout_marginEnd="8dp" android:id="@+id/AdditionalDescCollapsing"/>
+
+
+            <LinearLayout android:layout_width="match_parent"
+                          android:layout_height="1px"
+                          android:orientation="vertical"
+                          android:visibility="gone"
+                          android:layout_marginTop="8dp"
+                          app:layout_constraintTop_toBottomOf="@+id/AdditionalDescCollapsing"
+                          android:id="@+id/AdditionalDescLayout">
+                <EditText
+                        android:hint="对失物的补充说明"
+                        android:paddingStart="3dp"
+                        android:paddingEnd="3dp"
+                        android:visibility="visible"
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        android:inputType="textMultiLine"
+                        android:ems="10"
+                        android:id="@+id/LostThingAdditionalDescEditText"
+                        android:background="@android:color/white"
+                        android:textSize="15sp"
+                        android:gravity="start|top"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:layout_marginStart="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginEnd="8dp"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        tools:layout_editor_absoluteY="205dp"/>
+                <EditText
+                        android:hint="对发现失物地点的补充说明"
+                        android:paddingStart="3dp"
+                        android:paddingEnd="3dp"
+                        android:visibility="visible"
+                        android:textSize="15sp"
+                        android:background="@android:color/white"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:inputType="text"
+                        android:lines="1"
+                        android:ems="10"
+                        android:id="@+id/FindLostThingLocationDescEditText"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginStart="8dp" android:layout_marginEnd="8dp"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintTop_toBottomOf="@+id/LostThingAdditionalDescEditText"/>
+            </LinearLayout>
+
+
             <com.jaredrummler.materialspinner.MaterialSpinner android:layout_width="124dp"
                                                               android:maxLines="1"
                                                               android:ellipsize="end"
@@ -122,7 +163,7 @@
                                                               android:layout_marginStart="8dp"
                                                               android:id="@+id/SchoolAreaSpinner"
                                                               android:layout_marginTop="8dp"
-                                                              app:layout_constraintTop_toBottomOf="@+id/LostThingAdditionalDescEditText"/>
+                                                              app:layout_constraintTop_toBottomOf="@+id/ThingCategorySpinner"/>
             <com.jaredrummler.materialspinner.MaterialSpinner android:layout_width="0dp"
                                                               android:layout_height="35dp"
                                                               android:hint="选择发现失物的地点..."
@@ -136,31 +177,8 @@
                                                               android:id="@+id/SchoolBuildingSpinner"
                                                               app:layout_constraintEnd_toEndOf="parent"
                                                               android:layout_marginEnd="8dp"/>
-            <EditText
-                    android:paddingStart="3dp"
-                    android:paddingEnd="3dp"
-                    android:visibility="gone"
-                    android:textSize="15sp"
-                    android:background="@android:color/white"
-                    android:layout_width="0dp"
-                    android:layout_height="35dp"
-                    android:inputType="text"
-                    android:lines="1"
-                    android:ems="10"
-                    android:id="@+id/FindLostThingLocationDescEditText"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginStart="8dp" android:layout_marginEnd="8dp"
-                    app:layout_constraintHorizontal_bias="0.0" android:layout_marginTop="8dp"
-                    app:layout_constraintTop_toBottomOf="@+id/ToggleFindLostThingLocationDesc"/>
-            <TextView
-                    android:textColor="@color/DefaultTextViewColor"
-                    android:text="对发现失物地点的补充说明"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/ToggleFindLostThingLocationDesc" android:layout_marginTop="8dp"
-                    app:layout_constraintTop_toBottomOf="@+id/SchoolAreaSpinner"
-                    app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"/>
+
+
             <TextView
                     android:text="失物图片"
                     android:layout_width="wrap_content"
@@ -192,11 +210,11 @@
                     android:background="@android:color/white"
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
-                    app:layout_constraintTop_toBottomOf="@id/FindLostThingLocationDescEditText"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" android:id="@+id/PickDateLayout"
                     app:layout_constraintHorizontal_bias="0.0"
-                    android:layout_marginTop="8dp" android:layout_marginStart="8dp" android:layout_marginEnd="8dp">
+                    android:layout_marginStart="8dp" android:layout_marginEnd="8dp"
+                    android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/AdditionalDescLayout">
 
                 <TextView
                         android:textColor="#000"

@@ -15,7 +15,7 @@ public class PercentageProgressBar extends View
     private Paint TextPaint;
     private Paint ArcPaint;
     private int Percentage = 0;
-    private float StrokeWidth = 9f;
+    private float StrokeWidth = 10f;
     private float FontSize = 40f;
 
     public PercentageProgressBar(Context context)

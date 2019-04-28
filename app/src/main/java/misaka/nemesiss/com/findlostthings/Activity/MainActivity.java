@@ -236,12 +236,14 @@ public class MainActivity extends FindLostThingsActivity {
 
     private void LoadNickNameAndAvatar() {
         UserAccount ua = FindLostThingsApplication.getUserService().getUserAccount();
-        String NickName = ua.getNickname();
-        String AvatarUrl = ua.getImageUrl();
+        if(ua != null) {
+            String NickName = ua.getNickname();
+            String AvatarUrl = ua.getImageUrl();
 
-        NickNameTextView.setText(NickName);
-        Glide.with(MainActivity.this).load(AvatarUrl).into(ToolbarUserAvatar);
-        Glide.with(MainActivity.this).load(AvatarUrl).into(NavigationHeaderBigAvatar);
+            NickNameTextView.setText(NickName);
+            Glide.with(MainActivity.this).load(AvatarUrl).into(ToolbarUserAvatar);
+            Glide.with(MainActivity.this).load(AvatarUrl).into(NavigationHeaderBigAvatar);
+        }
     }
 
     @Override

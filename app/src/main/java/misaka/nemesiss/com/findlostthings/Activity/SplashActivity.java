@@ -1,5 +1,7 @@
 package misaka.nemesiss.com.findlostthings.Activity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -15,6 +17,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.R;
 import misaka.nemesiss.com.findlostthings.Services.QQAuth.QQAuthCredentials;
 import misaka.nemesiss.com.findlostthings.Utils.PermissionsHelper;
@@ -25,6 +28,8 @@ public class SplashActivity extends FindLostThingsActivity
 {
     @BindView(R.id.SplashActivity_SchoolName)
     TextView SchoolName;
+
+    // 注意，这个Handler只能在App运行的时候使用。从Service启动Activity需要拿context去起，不能用这个Handler。
 
     public static Handler GoToMainActivityHandler;
 
@@ -51,18 +56,24 @@ public class SplashActivity extends FindLostThingsActivity
     }
 
     private boolean SplashMessageHandler(Message message) {
-        switch (message.what) {
-            case CAN_GOTO_MAINACTIVITY:{
-                GoToMainActivityHandler.removeMessages(OVERTIME_GOTO_MAINACTIVITY);
-                startActivity(new Intent(SplashActivity.this,MainActivity.class));
-                finish();
-                break;
-            }
-            case OVERTIME_GOTO_MAINACTIVITY:{
-                startActivity(new Intent(SplashActivity.this,MainActivity.class));
-                finish();
-                break;
-            }
+
+        if (message.what == CAN_GOTO_MAINACTIVITY) {
+            //计时器还没有超时，正常返回结果，所以取消掉计时器。
+            GoToMainActivityHandler.removeMessages(OVERTIME_GOTO_MAINACTIVITY);
+        }
+
+        ArrayList<Activity> BackStack = FindLostThingsActivity.GetAllActivities();
+        if(BackStack.isEmpty()) {
+            // 以NEW TASK 方式启动
+            Context context = FindLostThingsApplication.getContext();
+            Intent intent = new Intent(context,MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        }
+        else {
+            Activity topActivity = BackStack.get(BackStack.size() - 1);
+            topActivity.startActivity(new Intent(topActivity,MainActivity.class));
+            topActivity.finish();
         }
         return true;
     }

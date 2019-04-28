@@ -76,7 +76,7 @@ public class QQAuthLoginActivity extends FindLostThingsActivity {
         public void onComplete(Object o) { //登录成功
             parseResult(o);
             PersistUserInfo();
-            JumpToMainActivity();
+            PrepareToMainActivity();
         }
 
         @Override
@@ -113,12 +113,10 @@ public class QQAuthLoginActivity extends FindLostThingsActivity {
         QQAuthCredentials.PersistIdentity(openID,access_token,tokenInvalidDate);
     }
 
-
-    private void JumpToMainActivity() {
-        startActivity(new Intent(QQAuthLoginActivity.this, MainActivity.class));
-        finish();
+    private void PrepareToMainActivity() {
+        SplashActivity.GoToMainActivityHandler.sendEmptyMessageDelayed(SplashActivity.OVERTIME_GOTO_MAINACTIVITY,6000);
+        QQAuthCredentials.LoadUserAccountInfo();
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

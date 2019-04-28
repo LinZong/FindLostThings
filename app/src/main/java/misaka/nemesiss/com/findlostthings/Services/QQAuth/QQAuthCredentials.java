@@ -128,8 +128,8 @@ public class QQAuthCredentials
 
         @Override
         public void onError(UiError uiError) {
-            Log.d("QQAuthCredentials", "获取个人信息出现异常!." + uiError.errorMessage);
-            Toast.makeText(FindLostThingsApplication.getContext(), "获取个人信息出现异常!", Toast.LENGTH_SHORT).show();
+            Log.d("QQAuthCredentials", "获取个人信息出现异常!" + uiError.errorMessage);
+            Toast.makeText(FindLostThingsApplication.getContext(), "获取个人信息出现异常!" + uiError.errorMessage, Toast.LENGTH_SHORT).show();
         }
 
         @Override

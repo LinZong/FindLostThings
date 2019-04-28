@@ -55,6 +55,7 @@
         <activity android:name=".Activity.QQAuthLoginActivity">
         </activity>
         <activity android:name=".Activity.PickupImageActivity">
+
         </activity>
         <activity
                 android:name="cn.finalteam.rxgalleryfinal.ui.activity.MediaActivity"
