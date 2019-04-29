@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".Activity.RealPersonValidActivity">
+
+    <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <android.support.v7.widget.Toolbar
+                app:title=" "
+                android:id="@+id/RealPersonValidToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                android:background="@color/colorPrimary">
+
+            <TextView android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:layout_gravity="center"
+                      android:textSize="20sp"
+                      android:textColor="#fff"
+                      android:text="实名认证"
+            />
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+    <android.support.constraint.ConstraintLayout android:layout_width="match_parent"
+                                                 android:layout_height="match_parent"
+                                                 app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <TextView android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="当前账号状态:" android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent"
+                  app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+                  android:id="@+id/textView15">
+        </TextView>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/IdentifyStatus" app:layout_constraintStart_toEndOf="@+id/textView15"
+                app:layout_constraintBottom_toBottomOf="@+id/textView15" android:layout_marginStart="2dp"/>
+
+        <ImageView android:layout_width="200dp"
+                   android:layout_height="200dp"
+                   android:layout_marginTop="24dp"
+                   app:layout_constraintTop_toBottomOf="@+id/textView15"
+                   app:layout_constraintStart_toStartOf="parent"
+                   android:layout_marginStart="8dp"
+                   app:layout_constraintEnd_toEndOf="parent"
+                   android:layout_marginEnd="8dp"
+                   android:id="@+id/IdentifyImagePreview">
+        </ImageView>
+        <TextView android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  app:layout_constraintStart_toStartOf="parent"
+                  android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent"
+                  android:layout_marginEnd="8dp"
+                  app:layout_constraintHorizontal_bias="0.5"
+                  android:id="@+id/IdentifyDescription" android:layout_marginTop="24dp"
+                  app:layout_constraintTop_toBottomOf="@+id/IdentifyImagePreview"/>
+
+        <android.support.constraint.ConstraintLayout android:layout_width="179dp"
+                                                     android:layout_height="wrap_content"
+                                                     android:layout_marginTop="32dp"
+                                                     app:layout_constraintTop_toBottomOf="@+id/IdentifyDescription"
+                                                     app:layout_constraintStart_toStartOf="parent"
+                                                     android:layout_marginStart="8dp"
+                                                     app:layout_constraintEnd_toEndOf="parent"
+                                                     android:layout_marginEnd="8dp"
+                                                     android:background="@drawable/login_button_radius"
+                                                     android:id="@+id/TakeIdentifyPhotoButton"
+                                                     android:clickable="true"
+                                                     android:focusable="true"
+        >
+            <ImageView android:layout_width="27dp" android:layout_height="33dp"
+                       android:src="@drawable/ic_camera_white_48dp" android:layout_marginBottom="8dp"
+                       app:layout_constraintBottom_toBottomOf="parent" android:layout_marginTop="8dp"
+                       app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
+                       android:id="@+id/imageView3" android:layout_marginStart="8dp"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="25dp"
+                      android:textSize="16sp"
+                      android:text="拍摄身份认证信息"
+                      android:textColor="#fff"
+                      android:gravity="center"
+                      android:id="@+id/TakeIdentifyPhotoButtonTips"
+                      android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
+                      android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent"
+                      app:layout_constraintVertical_bias="0.523" app:layout_constraintStart_toEndOf="@+id/imageView3"
+                      android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent"
+                      android:layout_marginEnd="8dp"/>
+        </android.support.constraint.ConstraintLayout>
+        <TextView
+                android:text="实名认证信息用于发布失物信息和认领失物时确认您的真实身份。请上传能够验证您身份的相关信息。如学生证，学生卡等。但请不要上传身份证。我们会将这些信息加密后存储在安全可靠的位置。我们保证绝不会将您的身份信息用于未事先声明的用途。"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView17" app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="16dp" app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="16dp" android:layout_marginBottom="24dp"
+                app:layout_constraintBottom_toBottomOf="parent" android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/TakeIdentifyPhotoButton" app:layout_constraintVertical_bias="1.0"/>
+        <Button
+                android:visibility="gone"
+                android:background="@drawable/login_button_radius"
+                android:textColor="#fff"
+                android:textSize="15sp"
+                android:text="上传照片"
+                android:minWidth="114dp"
+                android:layout_width="wrap_content"
+                android:layout_height="41dp"
+                android:id="@+id/UploadImageButton" android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@+id/TakeIdentifyPhotoButton"
+                app:layout_constraintStart_toStartOf="@+id/TakeIdentifyPhotoButton"
+                app:layout_constraintEnd_toEndOf="@+id/TakeIdentifyPhotoButton"/>
+
+    </android.support.constraint.ConstraintLayout>
+</android.support.design.widget.CoordinatorLayout>

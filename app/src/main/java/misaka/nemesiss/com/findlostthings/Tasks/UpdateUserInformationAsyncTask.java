@@ -1,13 +1,11 @@
 package misaka.nemesiss.com.findlostthings.Tasks;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import com.google.gson.Gson;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.CustomPostExecuteAsyncTask;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.TaskPostExecuteWrapper;
 import misaka.nemesiss.com.findlostthings.Model.Request.LoginAccountInfo.UserInformation;
-import misaka.nemesiss.com.findlostthings.Model.Response.UserInfoUpdateResponse;
+import misaka.nemesiss.com.findlostthings.Model.Response.CommonResponse;
 import misaka.nemesiss.com.findlostthings.Services.APIDocs;
 import misaka.nemesiss.com.findlostthings.Services.QQAuth.QQAuthCredentials;
 import misaka.nemesiss.com.findlostthings.Services.User.UserService;
@@ -16,15 +14,14 @@ import okhttp3.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
-import static android.content.Context.MODE_PRIVATE;
 
-public class UpdateUserInformationAsyncTask extends CustomPostExecuteAsyncTask<String,Void, UserInfoUpdateResponse>{
+public class UpdateUserInformationAsyncTask extends CustomPostExecuteAsyncTask<UserInformation,Void, CommonResponse>{
     private OkHttpClient okHttpClient;
     String EncryptedAccessToken = null;
     private UserService userService = FindLostThingsApplication.getUserService();
     long SnowflakeID = userService.GetUserID();
 
-    public UpdateUserInformationAsyncTask(TaskPostExecuteWrapper<UserInfoUpdateResponse> DoInPostExecute) {
+    public UpdateUserInformationAsyncTask(TaskPostExecuteWrapper<CommonResponse> DoInPostExecute) {
         super(DoInPostExecute);
         try
         {
@@ -40,15 +37,11 @@ public class UpdateUserInformationAsyncTask extends CustomPostExecuteAsyncTask<S
 
 
     @Override
-    protected UserInfoUpdateResponse doInBackground(String... information) {
+    protected CommonResponse doInBackground(UserInformation... us) {
         try {
-            UserInformation userInfo = new UserInformation();
-            userInfo.setQQ(information[0]);
-            userInfo.setWxID(information[1]);
-            userInfo.setPhoneNumber(information[2]);
-            userInfo.setEmail(information[3]);
+
             Gson gson = new Gson();
-            String result = gson.toJson(userInfo, UserInformation.class);
+            String result = gson.toJson(us[0], UserInformation.class);
             RequestBody requestBody = FormBody.create(MediaType.parse("application/json"), result);
             Request request = new Request.Builder()
                     .url(APIDocs.FullUserInfo)
@@ -59,7 +52,7 @@ public class UpdateUserInformationAsyncTask extends CustomPostExecuteAsyncTask<S
             Response response = okHttpClient.newCall(request).execute();
             if (response.isSuccessful()) {
                 String responseData = response.body().string();
-                UserInfoUpdateResponse userInfoResponse = gson.fromJson(responseData, UserInfoUpdateResponse.class);
+                CommonResponse userInfoResponse = gson.fromJson(responseData, CommonResponse.class);
                 return userInfoResponse;
             }
         } catch (Exception e) {
