@@ -15,8 +15,11 @@ import com.tencent.cos.xml.listener.CosXmlProgressListener;
 import com.tencent.cos.xml.listener.CosXmlResultListener;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
+import com.tencent.cos.xml.model.object.GetObjectACLRequest;
+import com.tencent.cos.xml.model.object.GetObjectACLResult;
 import com.tencent.cos.xml.transfer.*;
 import com.tencent.qcloud.core.auth.QCloudCredentialProvider;
+import com.tencent.qcloud.core.auth.ShortTimeCredentialProvider;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.R;
 import misaka.nemesiss.com.findlostthings.Services.StorageBucket.BucketInfo;
@@ -40,6 +43,7 @@ public class TryDoDownload extends AppCompatActivity {
         CosXmlServiceConfig cosXmlServiceConfig = new CosXmlServiceConfig.Builder()
                 .setAppidAndRegion(BucketInfo.AppID,BucketInfo.Region)
                 .setDebuggable(true)
+                .isHttps(true)
                 .builder();
 
         cosXmlService = new CosXmlService(TryDoDownload.this, cosXmlServiceConfig, credentialProvider);
@@ -55,13 +59,9 @@ public class TryDoDownload extends AppCompatActivity {
         String bucketName = "nemesiss";
         String cosPath = "/lost/upload/things/36767411659079680/201904/C6E131A9-E8C9-4223-9D0B-E92AD01580D0/068a-1555695849005.jpg";
 
-        Context applicationContext = getApplicationContext();
-        String bucket = bucketName;
-
         String savedDirPath = "/sdcard/";
-        String savedFileName = null;//若不填（null）,则与cos上的文件名一样
-        COSXMLDownloadTask cosxmlDownloadTask = transferManager.download(applicationContext, bucket, cosPath, savedDirPath, savedFileName);
-
+        COSXMLDownloadTask cosxmlDownloadTask = transferManager.download(getApplicationContext(), bucketName, cosPath, savedDirPath, null);
+//设置下载进度回调
         cosxmlDownloadTask.setCosXmlProgressListener(new CosXmlProgressListener() {
             @Override
             public void onProgress(long complete, long target) {
