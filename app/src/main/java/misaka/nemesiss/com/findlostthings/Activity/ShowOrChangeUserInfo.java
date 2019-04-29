@@ -1,29 +1,33 @@
 package misaka.nemesiss.com.findlostthings.Activity;
 
 import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
+import misaka.nemesiss.com.findlostthings.Model.Request.LoginAccountInfo.UserInformation;
 import misaka.nemesiss.com.findlostthings.Model.UserAccount;
 import misaka.nemesiss.com.findlostthings.R;
+import misaka.nemesiss.com.findlostthings.Services.User.UserService;
 import misaka.nemesiss.com.findlostthings.Utils.AppUtils;
 
 public class ShowOrChangeUserInfo extends AppCompatActivity
 {
-
+    EditText qqEditText=(EditText)findViewById(R.id.qq_number);
+    EditText weChatEditText=(EditText)findViewById(R.id.weChat_number);
+    EditText telEditText=(EditText)findViewById(R.id.phone_number);
+    EditText emailEditText=(EditText)findViewById(R.id.emailEditText);
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_or_change_user_info);
+
         Toolbar toolbar=(Toolbar)findViewById(R.id.toolbar);
         ImageView imageView=(ImageView)findViewById(R.id.QQImage);
         ConstraintLayout qq=(ConstraintLayout)findViewById(R.id.qq);
@@ -33,6 +37,17 @@ public class ShowOrChangeUserInfo extends AppCompatActivity
         ConstraintLayout realNameAuthentication=(ConstraintLayout)findViewById(R.id.RealNameAuthentication);
         TextView realNameText=(TextView)findViewById(R.id.realNameText);
         ImageView imageView1=(ImageView)findViewById(R.id.imageView);
+
+
+        String qqStr=FindLostThingsApplication.getUserService().getMyProfile().getQQ();
+        String weChatStr=FindLostThingsApplication.getUserService().getMyProfile().getWxID();
+        String telStr=FindLostThingsApplication.getUserService().getMyProfile().getPhoneNumber();
+        String emailStr=FindLostThingsApplication.getUserService().getMyProfile().getEmail();
+        qqEditText.setText(qqStr);
+        weChatEditText.setText(weChatStr);
+        telEditText.setText(telStr);
+        emailEditText.setText(emailStr);
+
 
         UserAccount userAccount= FindLostThingsApplication.getUserService().getUserAccount();
         Glide.with(ShowOrChangeUserInfo.this)
@@ -63,6 +78,11 @@ public class ShowOrChangeUserInfo extends AppCompatActivity
     {
         switch (item.getItemId()){
             case android.R.id.home:{
+                UserInformation userInformation=FindLostThingsApplication.getUserService().getMyProfile();
+                userInformation.setEmail(emailEditText.getText().toString());
+                userInformation.setQQ(qqEditText.getText().toString());
+                userInformation.setWxID(weChatEditText.getText().toString());
+                userInformation.setPhoneNumber(telEditText.getText().toString());
                 finish();
                 break;
             }
