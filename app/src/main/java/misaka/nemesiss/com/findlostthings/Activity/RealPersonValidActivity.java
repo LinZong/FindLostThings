@@ -1,11 +1,14 @@
 package misaka.nemesiss.com.findlostthings.Activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -33,7 +36,6 @@ import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.Model.Request.LoginAccountInfo.UserInformation;
 import misaka.nemesiss.com.findlostthings.R;
 import misaka.nemesiss.com.findlostthings.Services.StorageBucket.BucketFileOperation;
-import misaka.nemesiss.com.findlostthings.Tasks.PostUserInformationAsyncTask;
 import misaka.nemesiss.com.findlostthings.Tasks.UpdateUserInformationAsyncTask;
 import misaka.nemesiss.com.findlostthings.Utils.AppUtils;
 
@@ -64,41 +66,62 @@ public class RealPersonValidActivity extends AppCompatActivity {
     private String[] CosImagePath;
     private COSXMLDownloadTask DownloadImageTask;
     private boolean IsUploadingInfo = false;
+    private boolean IsReturnFromCamera = false;
+
+    private SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_real_person_valid);
         ButterKnife.bind(this);
+
+        sp = FindLostThingsApplication.getContext().getSharedPreferences("PersistActivityState",MODE_PRIVATE);
+
         CosImagePath = new String[1];
         AppUtils.ToolbarShowReturnButton(RealPersonValidActivity.this,toolbar);
+        // 为低内存垃圾设备还原Activity状态。
+        RestoreActivityState();
         InitComponents();
     }
 
+
     private void InitComponents() {
+
         userInformation = FindLostThingsApplication.getUserService().getMyProfile();
         RealPersonValidStatus = userInformation.getRealPersonValid();
 
 
-        String ValidImageUrlJson = userInformation.getRealPersonIdentity();
-        if(!TextUtils.isEmpty(ValidImageUrlJson)) {
-            Gson gson = new Gson();
-            List<String> ValidImageUrlList = gson.fromJson(ValidImageUrlJson,new TypeToken<List<String>>(){}.getType());
-            if(!ValidImageUrlList.isEmpty()) {
 
-                IdentifyDescription.setText("实名认证信息已上传，请等待认证通过。");
+        if(!IsReturnFromCamera) {
+            String ValidImageUrlJson = userInformation.getRealPersonIdentity();
+            if(!TextUtils.isEmpty(ValidImageUrlJson)) {
+                Gson gson = new Gson();
+                List<String> ValidImageUrlList = gson.fromJson(ValidImageUrlJson,new TypeToken<List<String>>(){}.getType());
+                if(!ValidImageUrlList.isEmpty()) {
 
-                //TODO 调用存储桶下载该文件，缓存到本地打开.
-                String CosObjectKey = ValidImageUrlList.get(0);
+                    IdentifyDescription.setText("实名认证信息已上传，请等待认证通过。");
 
-                //  /storage/emulated/0/Android/data/com.example.myapplication/cache
-                String[] namez = CosObjectKey.split("/");
+                    //TODO 调用存储桶下载该文件，缓存到本地打开.
+                    String CosObjectKey = ValidImageUrlList.get(0);
 
-                LocalImagePath = AppUtils.GetAppCachePath() + "/" + namez[namez.length - 1];
-                DownloadImageTask = BucketFileOperation.DownloadFile(LocalImagePath,CosObjectKey);
-                DownloadImageTask.setCosXmlResultListener(DownloadTaskResultListener);
+                    //  /storage/emulated/0/Android/data/com.example.myapplication/cache
+                    String[] namez = CosObjectKey.split("/");
+
+                    LocalImagePath = AppUtils.GetAppCachePath() + "/" + namez[namez.length - 1];
+                    File file = new File(LocalImagePath);
+                    if(file.exists()) {
+                        // 不需要启动下载，直接加载
+                        Glide.with(RealPersonValidActivity.this).load(Uri.fromFile(file)).into(IdentifyImagePreview);
+                    }
+                    else {
+                        DownloadImageTask = BucketFileOperation.DownloadFile(LocalImagePath,CosObjectKey);
+                        DownloadImageTask.setCosXmlResultListener(DownloadTaskResultListener);
+                    }
+                }
             }
         }
+
         IdentifyDescription.setText("请上传实名认证信息。");
         switch (RealPersonValidStatus) {
             case 0:
@@ -120,7 +143,7 @@ public class RealPersonValidActivity extends AppCompatActivity {
         @Override
         public void onSuccess(CosXmlRequest request, CosXmlResult result) {
             Log.d("RealPersonValidActivity","用户已经上传的身份认证图片下载完成。准备加载到ImageView。");
-            Glide.with(RealPersonValidActivity.this).load(Uri.fromFile(new File(LocalImagePath))).into(IdentifyImagePreview);
+            runOnUiThread(() -> Glide.with(RealPersonValidActivity.this).load(Uri.fromFile(new File(LocalImagePath))).into(IdentifyImagePreview));
         }
 
         @Override
@@ -163,6 +186,8 @@ public class RealPersonValidActivity extends AppCompatActivity {
         }
     };
 
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode) {
@@ -170,17 +195,23 @@ public class RealPersonValidActivity extends AppCompatActivity {
                 switch (requestCode){
                     case AppUtils.TYPE_CAMERA:{
                         // TODO 处理相机返回的照片。
-                        Glide.with(RealPersonValidActivity.this).load(Uri.fromFile(new File(LocalImagePath))).into(IdentifyImagePreview);
-                        UploadImageButton.setVisibility(View.VISIBLE);
-                        UploadImageButton.setText("上传照片");
-                        UploadImageButton.setEnabled(true);
+                        runOnUiThread(() -> {
+                            Glide.with(RealPersonValidActivity.this).load(Uri.fromFile(new File(LocalImagePath))).into(IdentifyImagePreview);
+                            UploadImageButton.setVisibility(View.VISIBLE);
+                            UploadImageButton.setText("上传照片");
+                            UploadImageButton.setEnabled(true);
+                        });
                         break;
                     }
                     case PickupImageActivity.PREVIEW_ACTIVITY :{
                         boolean shouldDelete = data.getBooleanExtra("ShouldDeleteImage", false);
                         if(shouldDelete) {
-                           IdentifyImagePreview.setImageDrawable(null);
-                           UploadImageButton.setVisibility(View.GONE);
+
+                            runOnUiThread(() -> {
+                                IdentifyImagePreview.setImageDrawable(null);
+                                LocalImagePath = null;
+                                UploadImageButton.setVisibility(View.GONE);
+                            });
                         }
                         break;
                     }
@@ -218,21 +249,27 @@ public class RealPersonValidActivity extends AppCompatActivity {
 
     @OnClick({R.id.TakeIdentifyPhotoButton})
     public void CallCameraToTakePhoto(View v) {
+
         String cachePath = AppUtils.GetAppCachePath();
         String tempFileName = AppUtils.GetTempImageName();
         LocalImagePath = cachePath + "/" + tempFileName;
-        File file = new File(new File(cachePath),tempFileName);
 
+        //解决一些低内存设备来不及保存Activity状态就被杀掉，回来没有拍照路径的问题。
+        PersistActivityState();
+
+        File file = new File(new File(cachePath),tempFileName);
         AppUtils.OpenCamera(Uri.fromFile(file),RealPersonValidActivity.this);
     }
 
 
     @OnClick({R.id.IdentifyImagePreview})
     public void EnterPreview(View v) {
-        Intent it = new Intent(RealPersonValidActivity.this, PreviewSelectedImageActivity.class);
-        it.putExtra("PreviewImageUri",Uri.fromFile(new File(LocalImagePath)));
-        it.putExtra("IsNormalPreview",true);
-        startActivityForResult(it,PickupImageActivity.PREVIEW_ACTIVITY);
+        if(!TextUtils.isEmpty(LocalImagePath)) {
+            Intent it = new Intent(RealPersonValidActivity.this, PreviewSelectedImageActivity.class);
+            it.putExtra("PreviewImageUri",Uri.fromFile(new File(LocalImagePath)));
+            it.putExtra("IsNormalPreview",true);
+            startActivityForResult(it,PickupImageActivity.PREVIEW_ACTIVITY);
+        }
     }
 
     @Override
@@ -282,5 +319,33 @@ public class RealPersonValidActivity extends AppCompatActivity {
             }
             else Toast.makeText(RealPersonValidActivity.this,"更新用户实名认证状态失败, 无网络。", Toast.LENGTH_SHORT).show();
         }).execute(userInformation);
+    }
+
+    private void PersistActivityState() {
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("LocalImagePath",LocalImagePath);
+        editor.putBoolean("IsReturnFromCamera",true);
+        editor.apply();
+    }
+
+    private void ClearState() {
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putBoolean("IsReturnFromCamera",false);
+        editor.putString("LocalImagePath",null);
+        editor.apply();
+    }
+    private void RestoreActivityState() {
+
+        IsReturnFromCamera = sp.getBoolean("IsReturnFromCamera",false);
+        if(IsReturnFromCamera) {
+            LocalImagePath = sp.getString("LocalImagePath",null);
+        }
+        ClearState();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ClearState();
     }
 }

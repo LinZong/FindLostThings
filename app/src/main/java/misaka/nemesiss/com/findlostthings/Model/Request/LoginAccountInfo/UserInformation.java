@@ -1,6 +1,8 @@
 package misaka.nemesiss.com.findlostthings.Model.Request.LoginAccountInfo;
 
-public class UserInformation {
+import java.io.Serializable;
+
+public class UserInformation implements Serializable {
     private long Id;
     private String Nickname;
     private int RealPersonValid;
