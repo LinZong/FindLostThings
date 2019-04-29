@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="misaka.nemesiss.com.findlostthings">
 
-
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
@@ -10,12 +9,12 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT"/>
 
     <permission
             android:name="misaka.nemesiss.com.findlostthings.permission.JPUSH_MESSAGE"
-            android:protectionLevel="signature" />
+            android:protectionLevel="signature"/>
 
     <application
             android:name=".Application.FindLostThingsApplication"
@@ -25,6 +24,15 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
+        <activity android:name=".Activity.TryDoDownload">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".Activity.RealPersonValidActivity">
+        </activity>
         <activity android:name=".Activity.MainActivity">
         </activity>
         <activity
@@ -47,15 +55,10 @@
         <activity
                 android:name=".Activity.SplashActivity"
                 android:theme="@style/SplashScreenTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
         <activity android:name=".Activity.QQAuthLoginActivity">
         </activity>
         <activity android:name=".Activity.PickupImageActivity">
-
         </activity>
         <activity
                 android:name="cn.finalteam.rxgalleryfinal.ui.activity.MediaActivity"
@@ -67,10 +70,8 @@
         <activity android:name=".Activity.MyPublishActivity">
         </activity>
         <activity android:name=".Activity.SettingActivity">
-
         </activity>
         <activity android:name=".Activity.ShowOrChangeUserInfo">
-
         </activity>
         <activity
                 android:name=".Activity.PreviewSelectedImageActivity"
@@ -79,28 +80,26 @@
         <activity android:name=".Activity.AboutMe">
         </activity>
 
-
         <receiver android:name=".Services.Notifications.JPushActionResultReceiver">
             <intent-filter>
                 <action android:name="cn.jpush.android.intent.RECEIVE_MESSAGE"/>
+
                 <category android:name="misaka.nemesiss.com.findlostthings"/>
             </intent-filter>
         </receiver>
-
         <receiver
                 android:name=".Services.Notifications.JPushNotificationReceiver"
-                android:exported="false"
-                android:enabled="true">
+                android:enabled="true"
+                android:exported="false">
             <intent-filter>
-                <action android:name="cn.jpush.android.intent.REGISTRATION"/> <!--Required  用户注册SDK的intent-->
-                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED"/> <!--Required  用户接收SDK消息的intent-->
-                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED"/> <!--Required  用户接收SDK通知栏信息的intent-->
-                <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED"/> <!--Required  用户打开自定义通知栏的intent-->
-                <action android:name="cn.jpush.android.intent.CONNECTION"/><!-- 接收网络变化 连接/断开 since 1.6.3 -->
+                <action android:name="cn.jpush.android.intent.REGISTRATION"/> <!-- Required  用户注册SDK的intent -->
+                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED"/> <!-- Required  用户接收SDK消息的intent -->
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED"/> <!-- Required  用户接收SDK通知栏信息的intent -->
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED"/> <!-- Required  用户打开自定义通知栏的intent -->
+                <action android:name="cn.jpush.android.intent.CONNECTION"/> <!-- 接收网络变化 连接/断开 since 1.6.3 -->
                 <category android:name="misaka.nemesiss.com.findlostthings"/>
             </intent-filter>
         </receiver>
-
     </application>
 
 </manifest>

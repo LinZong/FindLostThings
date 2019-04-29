@@ -33,7 +33,7 @@ public class PreviewSelectedImageActivity extends FindLostThingsActivity
 
     private Uri CurrentPreviewImageUri;
     private int CurrentPreviewImageFromGridIndex = 0;
-
+    private boolean IsNormalPreview = false;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -44,6 +44,12 @@ public class PreviewSelectedImageActivity extends FindLostThingsActivity
 
         CurrentPreviewImageFromGridIndex = getIntent().getIntExtra("PreviewImageIndex",-1);
         CurrentPreviewImageUri = getIntent().getParcelableExtra("PreviewImageUri");
+
+        IsNormalPreview = getIntent().getBooleanExtra("IsNormalPreview",false);
+        if(IsNormalPreview) {
+
+            EditBtn.setVisibility(View.GONE);
+        }
         RequestRenderImage(CurrentPreviewImageUri);
     }
 

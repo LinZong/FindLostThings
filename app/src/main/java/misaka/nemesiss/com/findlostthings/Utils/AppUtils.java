@@ -152,10 +152,7 @@ public class AppUtils
 
     public static String GetAppCachePath() {
         File[] CacheDirList = ContextCompat.getExternalCacheDirs(FindLostThingsApplication.getContext());
-        if(CacheDirList.length > 1) {
-            return CacheDirList[0].getAbsolutePath();
-        }
-        return null;
+        return CacheDirList[0].getAbsolutePath();
     }
 
     public static String GetSystemDCIMPath()
@@ -248,6 +245,10 @@ public class AppUtils
                 .append(CurrentPublishUUID)
                 .append("/");
         return builder.toString();
+    }
+
+    public static String GetUploadRealPersonIdentifyImagePath(long UserID) {
+        return "lost/upload/idvalidate/" + UserID + "/";
     }
 
     public static String[] GetPathSha1Slices(String ImagePath)
