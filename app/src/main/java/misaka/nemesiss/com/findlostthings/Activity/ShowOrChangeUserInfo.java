@@ -23,56 +23,56 @@ import misaka.nemesiss.com.findlostthings.Services.User.UserService;
 import misaka.nemesiss.com.findlostthings.Tasks.UpdateUserInformationAsyncTask;
 import misaka.nemesiss.com.findlostthings.Utils.AppUtils;
 
-public class ShowOrChangeUserInfo extends AppCompatActivity
-{
+import java.io.File;
+
+public class ShowOrChangeUserInfo extends AppCompatActivity {
     private EditText qqEditText;
     private EditText weChatEditText;
     private EditText telEditText;
     private EditText emailEditText;
 
     private int realPersonValid;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_or_change_user_info);
         UserService.LoadUserProfile();
         ButterKnife.bind(this);
-        Toolbar toolbar=(Toolbar)findViewById(R.id.toolbar);
-        ImageView imageView=(ImageView)findViewById(R.id.QQImage);
-        ConstraintLayout qq=(ConstraintLayout)findViewById(R.id.qq);
-        ConstraintLayout weChat=( ConstraintLayout)findViewById(R.id.weChat);
-        ConstraintLayout tel=( ConstraintLayout)findViewById(R.id.tel);
-        ConstraintLayout email=( ConstraintLayout)findViewById(R.id.email);
-        ConstraintLayout realNameAuthentication=(ConstraintLayout)findViewById(R.id.RealNameAuthentication);
-        TextView realNameText=(TextView)findViewById(R.id.realNameText);
-        ImageView imageView1=(ImageView)findViewById(R.id.imageView);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ImageView imageView = (ImageView) findViewById(R.id.QQImage);
+        ConstraintLayout qq = (ConstraintLayout) findViewById(R.id.qq);
+        ConstraintLayout weChat = (ConstraintLayout) findViewById(R.id.weChat);
+        ConstraintLayout tel = (ConstraintLayout) findViewById(R.id.tel);
+        ConstraintLayout email = (ConstraintLayout) findViewById(R.id.email);
+        ConstraintLayout realNameAuthentication = (ConstraintLayout) findViewById(R.id.RealNameAuthentication);
+        TextView realNameText = (TextView) findViewById(R.id.realNameText);
+        ImageView imageView1 = (ImageView) findViewById(R.id.imageView);
 
-         qqEditText=(EditText)findViewById(R.id.qq_number);
-         weChatEditText=(EditText)findViewById(R.id.weChat_number);
-         telEditText=(EditText)findViewById(R.id.phone_number);
-         emailEditText=(EditText)findViewById(R.id.emailEditText);
+        qqEditText = (EditText) findViewById(R.id.qq_number);
+        weChatEditText = (EditText) findViewById(R.id.weChat_number);
+        telEditText = (EditText) findViewById(R.id.phone_number);
+        emailEditText = (EditText) findViewById(R.id.emailEditText);
 
 
-        String qqStr=FindLostThingsApplication.getUserService().getMyProfile().getQQ();
-        String weChatStr=FindLostThingsApplication.getUserService().getMyProfile().getWxID();
-        String telStr=FindLostThingsApplication.getUserService().getMyProfile().getPhoneNumber();
-        String emailStr=FindLostThingsApplication.getUserService().getMyProfile().getEmail();
+        String qqStr = FindLostThingsApplication.getUserService().getMyProfile().getQQ();
+        String weChatStr = FindLostThingsApplication.getUserService().getMyProfile().getWxID();
+        String telStr = FindLostThingsApplication.getUserService().getMyProfile().getPhoneNumber();
+        String emailStr = FindLostThingsApplication.getUserService().getMyProfile().getEmail();
         qqEditText.setText(qqStr);
         weChatEditText.setText(weChatStr);
         telEditText.setText(telStr);
         emailEditText.setText(emailStr);
 
 
-        UserAccount userAccount= FindLostThingsApplication.getUserService().getUserAccount();
+        UserAccount userAccount = FindLostThingsApplication.getUserService().getUserAccount();
         Glide.with(ShowOrChangeUserInfo.this)
                 .load(userAccount.getImageUrl())
                 .into(imageView);
-        AppUtils.ToolbarShowReturnButton(this,toolbar);
+        AppUtils.ToolbarShowReturnButton(this, toolbar);
 
-        realPersonValid=FindLostThingsApplication.getUserService().getMyProfile().getRealPersonValid();
-        switch (realPersonValid)
-        {
+        realPersonValid = FindLostThingsApplication.getUserService().getMyProfile().getRealPersonValid();
+        switch (realPersonValid) {
             case 0://未认证
                 realNameText.setText("未实名认证");
                 imageView1.setImageResource(R.drawable.ic_keyboard_arrow_right_black_24dp);
@@ -85,46 +85,62 @@ public class ShowOrChangeUserInfo extends AppCompatActivity
                 imageView1.setImageResource(R.drawable.ic_keyboard_arrow_right_black_24dp);
                 break;
         }
-
+        ClearRealPersonValidActivityState();
     }
 
+
+    private void ClearRealPersonValidActivityState() {
+        new Thread(() -> {
+            String cache = AppUtils.GetAppCachePath();
+            File file = new File(new File(cache), "RealPersonValidState.json");
+            if (file.exists()) {
+                file.delete();
+            }
+        }).start();
+    }
 
     @OnClick({R.id.RealNameAuthentication})
     public void EnterRealNameAuthentication(View v) {
         UserService.LoadUserProfile();
-        if(realPersonValid == 0 || realPersonValid ==2 ){
-            startActivity(new Intent(ShowOrChangeUserInfo.this,RealPersonValidActivity.class));
+        if (realPersonValid == 0 || realPersonValid == 2) {
+            startActivity(new Intent(ShowOrChangeUserInfo.this, RealPersonValidActivity.class));
         }
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        switch (item.getItemId()){
-            case android.R.id.home:{
-                UserInformation userInformation=FindLostThingsApplication.getUserService().getMyProfile();
-                userInformation.setEmail(emailEditText.getText().toString());
-                userInformation.setQQ(qqEditText.getText().toString());
-                userInformation.setWxID(weChatEditText.getText().toString());
-                userInformation.setPhoneNumber(telEditText.getText().toString());
-
-                new UpdateUserInformationAsyncTask((result) -> {
-                    int status=result.getStatusCode();
-                    if(status==0)
-                    {
-                        Toast.makeText(this,"更新信息成功", Toast.LENGTH_SHORT).show();
-                    }
-                    else
-                    {
-                        Toast.makeText(this,"更新信息失败", Toast.LENGTH_SHORT).show();
-                    }
-
-                }).execute(userInformation);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                UpdateUserProfile();
                 finish();
                 break;
             }
         }
-        return  true;
+        return true;
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        UpdateUserProfile();
+        finish();
+    }
+
+    private void UpdateUserProfile() {
+        UserInformation userInformation = FindLostThingsApplication.getUserService().getMyProfile();
+        userInformation.setEmail(emailEditText.getText().toString());
+        userInformation.setQQ(qqEditText.getText().toString());
+        userInformation.setWxID(weChatEditText.getText().toString());
+        userInformation.setPhoneNumber(telEditText.getText().toString());
+
+        new UpdateUserInformationAsyncTask((result) -> {
+            int status = result.getStatusCode();
+            if (status == 0) {
+                Toast.makeText(this, "更新信息成功", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "更新信息失败", Toast.LENGTH_SHORT).show();
+            }
+
+        }).execute(userInformation);
+    }
 }
