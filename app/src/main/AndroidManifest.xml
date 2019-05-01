@@ -52,9 +52,9 @@
                 android:theme="@style/SplashScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-
         </activity>
         <activity android:name=".Activity.QQAuthLoginActivity">
         </activity>
@@ -100,6 +100,9 @@
                 <category android:name="misaka.nemesiss.com.findlostthings"/>
             </intent-filter>
         </receiver>
+
+        <activity android:name=".Activity.Search">
+        </activity>
     </application>
 
 </manifest>
