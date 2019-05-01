@@ -45,6 +45,7 @@ import misaka.nemesiss.com.findlostthings.Adapter.LostThingCategoryAdapter;
 import misaka.nemesiss.com.findlostthings.Adapter.PublishLostThingPreviewImageAdapter;
 import misaka.nemesiss.com.findlostthings.Adapter.SchoolBuildingsCategoryAdapter;
 import misaka.nemesiss.com.findlostthings.Adapter.SchoolInfoCategoryAdapter;
+import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.Model.LostThingsCategory;
 import misaka.nemesiss.com.findlostthings.R;
 import misaka.nemesiss.com.findlostthings.Services.StorageBucket.BucketFileOperation;
@@ -624,7 +625,7 @@ public class PickupImageActivity extends FindLostThingsActivity
         info.setId(CurrentPublishUUID);
         info.setThingCatId(CategoryID);
         info.setThingDetailId(DetailedID);
-        info.setPublisher(36767411659079680L);
+        info.setPublisher(FindLostThingsApplication.getUserService().GetUserID());
         info.setThingPhotoUrls(UploadedImageUrl);
         info.setFoundAddrDescription(GetLostThingLocationAddiDesc);
         info.setThingAddiDescription(LostThingAddiDesc);

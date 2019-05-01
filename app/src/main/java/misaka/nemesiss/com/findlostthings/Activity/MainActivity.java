@@ -71,7 +71,7 @@ public class MainActivity extends FindLostThingsActivity {
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         WaterfallLayoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(WaterfallLayoutManager);
-        adapter = new LostThingsInfoAdapter(WaterfallInfoList);
+        adapter = new LostThingsInfoAdapter(WaterfallInfoList,MainActivity.this);
         recyclerView.setAdapter(adapter);
         swipeRefreshLayout = findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);

@@ -24,6 +24,10 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
+        <activity android:name=".Activity.ValidateGivenActivity">
+        </activity>
+        <activity android:name=".Activity.LostThingDetailActivity">
+        </activity>
         <activity android:name=".Activity.TryDoDownload">
         </activity>
         <activity android:name=".Activity.RealPersonValidActivity">

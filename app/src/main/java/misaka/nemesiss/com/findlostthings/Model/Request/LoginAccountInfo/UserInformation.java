@@ -1,5 +1,7 @@
 package misaka.nemesiss.com.findlostthings.Model.Request.LoginAccountInfo;
 
+import com.google.gson.Gson;
+
 import java.io.Serializable;
 
 public class UserInformation implements Serializable {
@@ -74,5 +76,9 @@ public class UserInformation implements Serializable {
 
     public void setRealPersonIdentity(String realPersonIdentity) {
         RealPersonIdentity = realPersonIdentity;
+    }
+
+    public String ToJson() {
+        return new Gson().toJson(this,UserInformation.class);
     }
 }
