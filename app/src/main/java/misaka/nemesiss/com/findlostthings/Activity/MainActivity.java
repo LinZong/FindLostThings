@@ -236,6 +236,7 @@ public class MainActivity extends FindLostThingsActivity {
                 startActivity(new Intent(MainActivity.this, PickupImageActivity.class));
                 break;
             case R.id.search:
+                startActivity(new Intent(MainActivity.this, Search.class));
                 break;
             default:
                 break;
