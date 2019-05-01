@@ -9,6 +9,7 @@ import android.widget.Button;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.yalantis.ucrop.UCrop;
 import misaka.nemesiss.com.findlostthings.R;
 import misaka.nemesiss.com.findlostthings.Utils.AppUtils;
@@ -70,6 +71,8 @@ public class PreviewSelectedImageActivity extends FindLostThingsActivity
     {
         Glide.with(PreviewSelectedImageActivity.this)
                 .load(ImageUri)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
                 .into(PreviewImageView);
     }
 
