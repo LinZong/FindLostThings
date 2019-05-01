@@ -1,6 +1,8 @@
 package misaka.nemesiss.com.findlostthings.Model;
 
-public class LostThingsInfo {
+import java.io.Serializable;
+
+public class LostThingsInfo implements Serializable {
     private String Id;
     private String Title;
     private int ThingCatId;

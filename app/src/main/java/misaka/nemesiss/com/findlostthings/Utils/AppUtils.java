@@ -328,7 +328,7 @@ public class AppUtils
         return Settings.System.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
-    public boolean IfNetworkConnected(Context context) {
+    public static boolean IfNetworkConnected(Context context) {
         if (context != null) {
             ConnectivityManager mConnectivityManager = (ConnectivityManager) context
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -340,5 +340,7 @@ public class AppUtils
         return false;
     }
 
-
+    public static String SplitFileName(String AbsolutePath) {
+        return new File(AbsolutePath).getName();
+    }
 }
