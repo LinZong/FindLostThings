@@ -27,7 +27,7 @@ public class MyPublishActivity extends FindLostThingsActivity
         setSupportActionBar(toolbar);
 
         initLostThingsInfo();
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
         GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(layoutManager);
         adapter = new LostThingsInfoAdapter(LostThingsInfoList);

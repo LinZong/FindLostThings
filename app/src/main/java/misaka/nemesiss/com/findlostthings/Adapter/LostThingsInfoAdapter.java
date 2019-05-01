@@ -3,12 +3,15 @@ package misaka.nemesiss.com.findlostthings.Adapter;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import misaka.nemesiss.com.findlostthings.R;
 import misaka.nemesiss.com.findlostthings.Model.LostThingsInfo;
 
@@ -54,7 +57,13 @@ public class LostThingsInfoAdapter extends RecyclerView.Adapter<LostThingsInfoAd
         // 再根据这些URL去下载图片资源。
         // holder.LostThingsInfoImage.setImageResource(Integer.parseInt(lostThingsInfo.getThingPhotoUrls()));
         holder.LostThingsInfoTextView.setText(lostThingsInfo.getTitle());
-        Glide.with(mContext).load(lostThingsInfo.getThingPhotoUrls()).into(holder.LostThingsInfoImage);
+
+        Gson gson = new Gson();
+        String[] images = gson.fromJson(lostThingsInfo.getThingPhotoUrls(),new TypeToken<String[]>(){}.getType());
+        if(images.length > 0 && !TextUtils.isEmpty(images[0]))
+        {
+            Glide.with(mContext).load(images[0]).into(holder.LostThingsInfoImage);
+        }
     }
     @Override
     public int getItemCount()
