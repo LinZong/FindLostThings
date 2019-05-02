@@ -1,12 +1,10 @@
 package misaka.nemesiss.com.findlostthings.Tasks;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+
 import com.google.gson.Gson;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.CustomPostExecuteAsyncTask;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.TaskPostExecuteWrapper;
-import misaka.nemesiss.com.findlostthings.Model.Response.MyPublishListResponse;
 import misaka.nemesiss.com.findlostthings.Services.APIDocs;
 import misaka.nemesiss.com.findlostthings.Model.LostThingsInfo;
 import misaka.nemesiss.com.findlostthings.Services.QQAuth.QQAuthCredentials;
@@ -14,12 +12,13 @@ import misaka.nemesiss.com.findlostthings.Services.User.UserService;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.modelmapper.TypeToken;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import static android.content.Context.MODE_PRIVATE;
+
 
 public class MyFindListTask extends CustomPostExecuteAsyncTask<Void,Void, List<LostThingsInfo>>
 {
@@ -54,8 +53,8 @@ public class MyFindListTask extends CustomPostExecuteAsyncTask<Void,Void, List<L
             if (response1.isSuccessful()){
                 String responseData1 = response1.body().string();
                 Gson gson = new Gson();
-                MyPublishListResponse resp = gson.fromJson(responseData1, MyPublishListResponse.class);
-                return resp.getLostThingsInfos();
+                List<LostThingsInfo> resp = gson.fromJson(responseData1, new TypeToken<List<LostThingsInfo>>(){}.getType());
+                return resp;
             }
 
         } catch (Exception e) {
