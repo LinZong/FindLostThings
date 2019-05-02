@@ -28,6 +28,7 @@ import com.google.gson.reflect.TypeToken;
 import com.yalantis.ucrop.UCrop;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.BuildConfig;
+import misaka.nemesiss.com.findlostthings.Model.Response.CommonResponse;
 import misaka.nemesiss.com.findlostthings.R;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
@@ -344,4 +345,7 @@ public class AppUtils
         return new File(AbsolutePath).getName();
     }
 
+    public static boolean CommonResponseOK(CommonResponse re){
+        return re!=null && re.getStatusCode() == 0;
+    }
 }

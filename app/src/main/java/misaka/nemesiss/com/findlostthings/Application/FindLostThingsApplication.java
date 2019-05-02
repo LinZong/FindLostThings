@@ -11,6 +11,7 @@ import misaka.nemesiss.com.findlostthings.Services.Common.AppService;
 import misaka.nemesiss.com.findlostthings.Services.QQAuth.QQAuthInfo;
 import misaka.nemesiss.com.findlostthings.Services.StorageBucket.BucketInfo;
 import misaka.nemesiss.com.findlostthings.Services.StorageBucket.CustomCredentialProvider;
+import misaka.nemesiss.com.findlostthings.Services.Thing.ThingServices;
 import misaka.nemesiss.com.findlostthings.Services.User.UserService;
 
 public class FindLostThingsApplication extends MultiDexApplication
@@ -28,6 +29,7 @@ public class FindLostThingsApplication extends MultiDexApplication
     //our app services.
     private static UserService userService;
     private static AppService appService;
+    private static ThingServices thingServices;
     //Define global variables
 
     //修改这个标志位可以跳过QQ登陆直接进入界面。但是相应功能会被屏蔽
@@ -53,6 +55,7 @@ public class FindLostThingsApplication extends MultiDexApplication
         //加载此App自己的服务.
         userService = new UserService();
         appService = new AppService();
+        thingServices = new ThingServices();
     }
     public static Context getContext()
     {
@@ -98,4 +101,8 @@ public class FindLostThingsApplication extends MultiDexApplication
         //这里放置一些检测到网络状态变化之后需要执行的语句。
     }
 
+    public static ThingServices getThingServices()
+    {
+        return thingServices;
+    }
 }

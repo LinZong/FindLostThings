@@ -26,10 +26,12 @@ import com.yzq.zxinglibrary.bean.ZxingConfig;
 import com.yzq.zxinglibrary.common.Constant;
 import com.yzq.zxinglibrary.encode.CodeCreator;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
-import misaka.nemesiss.com.findlostthings.Model.AccountContacts;
-import misaka.nemesiss.com.findlostthings.Model.LostThingsInfo;
+import misaka.nemesiss.com.findlostthings.Model.*;
 import misaka.nemesiss.com.findlostthings.Model.Request.LoginAccountInfo.UserInformation;
 import misaka.nemesiss.com.findlostthings.R;
+import misaka.nemesiss.com.findlostthings.Services.Thing.ThingServices;
+import misaka.nemesiss.com.findlostthings.Tasks.GetLostThingsCategoryPartitionTask;
+import misaka.nemesiss.com.findlostthings.Tasks.GetSchoolBuildingsTask;
 import misaka.nemesiss.com.findlostthings.Tasks.GetUserInformationTask;
 import misaka.nemesiss.com.findlostthings.Tasks.UpdateLostThingsInfoTask;
 import misaka.nemesiss.com.findlostthings.Utils.AppUtils;
@@ -44,6 +46,10 @@ public class LostThingDetailActivity extends FindLostThingsActivity {
 
     private static final int REQUEST_CODE_SCAN = 1001;
     private static final int REQUEST_GIVEN_CONFIRM = 999;
+
+    @BindView(R.id.LostThingTitle)
+    TextView LostThingTitle;
+
     @BindView(R.id.TakeOrGivenThing)
     FloatingActionButton TakeOrGivenThing;
     @BindView(R.id.UserQrCodeContainer)
@@ -86,7 +92,7 @@ public class LostThingDetailActivity extends FindLostThingsActivity {
     private LostThingsInfo CurrentLostThingInfo;
     private UserInformation CurrentLoginUser;
     private UserInformation CurrentTakingThingUser;
-    private AccountContacts PublisherContacts;
+    private UserInformation PublisherContacts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +107,9 @@ public class LostThingDetailActivity extends FindLostThingsActivity {
         } else {
             TakeOrGivenThing.setTitle("认领失物");
         }
+        LoadInformation();
     }
+
 
 
     private void LoadInformation() {
@@ -115,7 +123,7 @@ public class LostThingDetailActivity extends FindLostThingsActivity {
             }
             imageViewSwiper.SetImageList(uri, LostThingDetailActivity.this);
         }
-
+        LostThingTitle.setText(CurrentLostThingInfo.getTitle());
         PublishTime.setText(AppUtils.UnixStampToFmtString(CurrentLostThingInfo.getPublishTime()));
 
         String locDesc = CurrentLostThingInfo.getFoundAddrDescription();
@@ -137,25 +145,69 @@ public class LostThingDetailActivity extends FindLostThingsActivity {
             GivenDateField.setText(AppUtils.UnixStampToFmtString(CurrentLostThingInfo.getGivenTime()));
         }
 
-        // 解析发布者的联系方式。
 
-        String contactsStr = CurrentLostThingInfo.getPublisherContacts();
-        if(!TextUtils.isEmpty(contactsStr)) {
+        // 解析失物类别和地点
 
-            PublisherContacts = new Gson().fromJson(contactsStr,AccountContacts.class);
-            String qq = PublisherContacts.getQQ();
-            String wx = PublisherContacts.getWxID();
-            String email = PublisherContacts.getEmail();
-            String mobile = PublisherContacts.getPhoneNumber();
+        int catID = CurrentLostThingInfo.getThingCatId();
+        int detailID = CurrentLostThingInfo.getThingDetailId();
+        String[] foundAddress = CurrentLostThingInfo.getFoundAddress().split("-");
+        int schID = Integer.parseInt(foundAddress[0]);
+        int schBuildingID = Integer.parseInt(foundAddress[1]);
 
-            String[] value = {qq,wx,email,mobile};
-            TextView[] fields = {QQ,Wx,Email,Mobile};
-            for (int i = 0; i < value.length; i++) {
-                if(!TextUtils.isEmpty(value[i])) {
-                    fields[i].setText(value[i]);
+        ThingServices ts = FindLostThingsApplication.getThingServices();
+
+        SchoolInfo si = ts.getSchools().get(schID);
+        SchoolName.setText(si.getName());
+
+        LostThingsCategory tc = ts.getThingCategory().get(catID);
+        ThingCategory.setText(tc.getName());
+
+
+
+
+        new GetSchoolBuildingsTask(TaskRet -> {
+            if(AppUtils.CommonResponseOK(TaskRet))
+            {
+                for (MySchoolBuildings sb : TaskRet.getSchoolBuildings())
+                {
+                    if(sb.getId() == schBuildingID) {
+                        SchoolBuildingName.setText(sb.getBuildingName());
+                    }
                 }
             }
-        }
+        }).execute(schID);
+
+        new GetLostThingsCategoryPartitionTask(TaskRet -> {
+            if(AppUtils.CommonResponseOK(TaskRet))
+            {
+                for (LostThingsCategory cd : TaskRet.getCategoryDetails())
+                {
+                    if(cd.getId() == detailID) {
+                        ThingDetailCategory.setText(cd.getName());
+                    }
+                }
+            }
+        }).execute(catID);
+
+        // 解析发布者的联系方式。
+
+        new GetUserInformationTask(TaskRet -> {
+            if(TaskRet != null && TaskRet.getStatusCode() == 0) {
+                PublisherContacts = TaskRet.getUserInfo();
+                String qq = PublisherContacts.getQQ();
+                String wx = PublisherContacts.getWxID();
+                String email = PublisherContacts.getEmail();
+                String mobile = PublisherContacts.getPhoneNumber();
+                String[] value = {qq,wx,email,mobile};
+                TextView[] fields = {QQ,Wx,Email,Mobile};
+                for (int i = 0; i < value.length; i++) {
+                    if(!TextUtils.isEmpty(value[i])) {
+                        fields[i].setText(value[i]);
+                    }
+                }
+            }
+        }).execute(CurrentLostThingInfo.getPublisher());
+
     }
 
     @OnClick({R.id.TakeOrGivenThing})

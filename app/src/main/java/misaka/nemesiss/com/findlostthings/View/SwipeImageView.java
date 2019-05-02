@@ -56,11 +56,11 @@ public class SwipeImageView extends RelativeLayout implements ViewPager.OnPageCh
         imageUris.addAll(uris);
         CurrentActivity = activity;
         Adap = new SwipeLostThingImageAdapter(imageUris, activity);
-        if(viewPager == null ){
+        if(viewPager == null){
             viewPager = new ViewPager(mContext);
             viewPager.setAdapter(Adap);
             viewPager.setId(Integer.MAX_VALUE - 2000);
-            viewPager.setOnPageChangeListener(this);
+            viewPager.addOnPageChangeListener(this);
             RelativeLayout.LayoutParams viewPagerLp = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
             this.addView(viewPager, viewPagerLp);
         }

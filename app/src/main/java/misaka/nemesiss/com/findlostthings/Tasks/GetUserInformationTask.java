@@ -17,7 +17,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
 import static android.content.Context.MODE_PRIVATE;
 
-public class GetUserInformationTask extends CustomPostExecuteAsyncTask<Void,Void, UserInfoResponse> {
+public class GetUserInformationTask extends CustomPostExecuteAsyncTask<Long,Void, UserInfoResponse> {
     private OkHttpClient okHttpClient;
 
     private UserService userService = FindLostThingsApplication.getUserService();
@@ -42,10 +42,15 @@ public class GetUserInformationTask extends CustomPostExecuteAsyncTask<Void,Void
 
 
     @Override
-    protected UserInfoResponse doInBackground(Void... voids) {
+    protected UserInfoResponse doInBackground(Long... UserIDs) {
         try {
+            String url = APIDocs.FullUserInfo;
+            if(UserIDs.length > 0 && UserIDs[0] != null ){
+                url = url + "?query=" + UserIDs[0];
+            }
+
             Request request = new Request.Builder()
-                    .url(APIDocs.FullUserInfo)
+                    .url(url)
                     .addHeader("actk", EncryptedAccessToken)
                     .addHeader("userid",String.valueOf(SnowflakeID))
                     .build();
