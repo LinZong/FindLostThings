@@ -4,14 +4,16 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Base64;
-import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -24,7 +26,7 @@ import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.Model.LostThingsInfo;
 import misaka.nemesiss.com.findlostthings.Model.Request.LoginAccountInfo.UserInformation;
 import misaka.nemesiss.com.findlostthings.R;
-import misaka.nemesiss.com.findlostthings.Tasks.UpdateUserInformationAsyncTask;
+import misaka.nemesiss.com.findlostthings.Tasks.UpdateLostThingsInfoTask;
 import misaka.nemesiss.com.findlostthings.Utils.AppUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -40,6 +42,8 @@ public class LostThingDetailActivity extends FindLostThingsActivity {
     RelativeLayout UserQrCodeContainer;
     @BindView(R.id.UserQrCode)
     ImageView UserQrCode;
+    @BindView(R.id.LostThingDetailToolbar)
+    Toolbar toolbar;
 
     private LostThingsInfo CurrentLostThingInfo;
     private UserInformation CurrentLoginUser;
@@ -50,6 +54,8 @@ public class LostThingDetailActivity extends FindLostThingsActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lost_thing_detail);
         ButterKnife.bind(this);
+        AppUtils.ToolbarShowReturnButton(LostThingDetailActivity.this,toolbar);
+
         CurrentLostThingInfo = (LostThingsInfo) getIntent().getSerializableExtra("LostThingsInfo");
         CurrentLoginUser = FindLostThingsApplication.getUserService().getMyProfile();
         if (CurrentLoginUser.getId() == CurrentLostThingInfo.getPublisher()) {
@@ -61,7 +67,6 @@ public class LostThingDetailActivity extends FindLostThingsActivity {
 
     @OnClick({R.id.TakeOrGivenThing})
     public void HandleTakeOrGivenThing(View v) {
-
 
         if (CurrentLoginUser.getId() == CurrentLostThingInfo.getPublisher()) {
             // 当前登陆的账号是该失物的发布者，可以实行归还操作
@@ -85,19 +90,34 @@ public class LostThingDetailActivity extends FindLostThingsActivity {
 
         } else {
             // 当前登录的账号可以认领此失物。
-            String UserInfoJson = CurrentLoginUser.ToJson();
-            String Base64UserInfoJson = "";
+            QrCodeInfo qrCodeInfo = new QrCodeInfo();
+            qrCodeInfo.setThingID(CurrentLostThingInfo.getId());
+            qrCodeInfo.setUser(CurrentLoginUser);
+
+            String QrCodeJson = qrCodeInfo.ToJson();
+            String Base64UserInfoJson;
+
             try {
-                Base64UserInfoJson = Base64.encodeToString(UserInfoJson.getBytes("utf-8"), Base64.DEFAULT);
+                Base64UserInfoJson = Base64.encodeToString(QrCodeJson.getBytes("utf-8"), Base64.DEFAULT);
+                Bitmap QrCode = CodeCreator.createQRCode(Base64UserInfoJson, 260, 260, null);
+                UserQrCode.setImageBitmap(QrCode);
+                ToggleUserQrCodeContainer(true);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
-
             }
-            Bitmap QrCode = CodeCreator.createQRCode(Base64UserInfoJson, 280, 280, null);
-            UserQrCode.setImageBitmap(QrCode);
-            ToggleUserQrCodeContainer(true);
         }
+    }
 
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home : {
+                finish();
+                break;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -110,10 +130,22 @@ public class LostThingDetailActivity extends FindLostThingsActivity {
                         String content = data.getStringExtra(Constant.CODED_CONTENT);
                         try {
                             String decodeContent = new String(Base64.decode(content, Base64.DEFAULT), "utf-8");
-                            CurrentTakingThingUser = new Gson().fromJson(decodeContent,UserInformation.class);
+                            QrCodeInfo decodeInfo = new Gson().fromJson(decodeContent,QrCodeInfo.class);
+                            if(!decodeInfo.getThingID().equals(CurrentLostThingInfo.getId())){
+                                Toast.makeText(LostThingDetailActivity.this,"当前二维码对应的失物信息与待归还失物不一致。", Toast.LENGTH_SHORT).show();
+                            }
+                            else {
+                                // 跳转到信息确认界面。
+                                CurrentTakingThingUser = decodeInfo.getUser(); // 提取出失主信息。
+                                Intent intent = new Intent(LostThingDetailActivity.this,ValidateGivenActivity.class);
+                                intent.putExtra("UserInformation",CurrentTakingThingUser);
+                                startActivityForResult(intent,REQUEST_GIVEN_CONFIRM);
+                            }
+
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
                         }
+                        break;
                     }
                     case REQUEST_GIVEN_CONFIRM: {
                         int Action = data.getIntExtra("Action", -1);
@@ -124,21 +156,25 @@ public class LostThingDetailActivity extends FindLostThingsActivity {
                                 CurrentLostThingInfo.setGiven(CurrentTakingThingUser.getId());
                                 CurrentLostThingInfo.setIsgiven(1);
                                 CurrentLostThingInfo.setGivenTime(CurrentTime);
-//
-//                                new (TaskRet -> {
-//
-//                                }).execute(CurrentLostThingInfo)
-                                break;
-                            }
-                            case ValidateGivenActivity.REPORT_NOT_VALID: {
+                                new UpdateLostThingsInfoTask((result) -> {
+                                    if(result!=null) {
+                                        Toast.makeText(LostThingDetailActivity.this,"已归还失物!", Toast.LENGTH_SHORT).show();
+                                    }
+                                }).execute(CurrentLostThingInfo);
 
                                 break;
                             }
+                            case ValidateGivenActivity.REPORT_NOT_VALID: {
+                                Toast.makeText(LostThingDetailActivity.this,"报告了认领人非法", Toast.LENGTH_SHORT).show();
+                                break;
+                            }
                             default: {
+                                Toast.makeText(LostThingDetailActivity.this,"未知错误!", Toast.LENGTH_SHORT).show();
                                 break;
                             }
 
                         }
+                        break;
                     }
                 }
                 break;
@@ -179,4 +215,30 @@ public class LostThingDetailActivity extends FindLostThingsActivity {
         });
         UserQrCodeContainer.startAnimation(alphaAnimation);
     }
+
+
+    class QrCodeInfo {
+        private String ThingID;
+        private UserInformation User;
+
+        public String getThingID() {
+            return ThingID;
+        }
+
+        public UserInformation getUser() {
+            return User;
+        }
+
+        public void setThingID(String thingID) {
+            ThingID = thingID;
+        }
+
+        public void setUser(UserInformation user) {
+            User = user;
+        }
+        public String ToJson() {
+            return new Gson().toJson(this,QrCodeInfo.class);
+        }
+    }
+
 }

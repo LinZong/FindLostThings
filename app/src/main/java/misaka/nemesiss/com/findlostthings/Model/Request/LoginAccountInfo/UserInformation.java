@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 
 import java.io.Serializable;
 
-public class UserInformation implements Serializable {
+public class UserInformation implements Serializable,Cloneable {
     private long Id;
     private String Nickname;
     private int RealPersonValid;
@@ -80,5 +80,10 @@ public class UserInformation implements Serializable {
 
     public String ToJson() {
         return new Gson().toJson(this,UserInformation.class);
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }
