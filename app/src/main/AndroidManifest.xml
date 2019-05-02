@@ -105,7 +105,7 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".Activity.Search">
+        <activity android:name=".Activity.SearchActivity">
         </activity>
     </application>
 

@@ -1,7 +1,5 @@
 package misaka.nemesiss.com.findlostthings.Tasks;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import com.google.gson.Gson;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.CustomPostExecuteAsyncTask;
@@ -13,11 +11,9 @@ import misaka.nemesiss.com.findlostthings.Services.User.UserService;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
-import static android.content.Context.MODE_PRIVATE;
 
 public class GetUserInformationTask extends CustomPostExecuteAsyncTask<Void,Void, UserInfoResponse> {
     private OkHttpClient okHttpClient;

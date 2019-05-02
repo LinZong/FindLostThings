@@ -67,10 +67,6 @@ public class PickupImageActivity extends FindLostThingsActivity
     @BindView(R.id.previewImageRecyclerView)
     RecyclerView recyclerView;
 
-//    @BindView(R.id.ToggleFindLostThingLocationDesc)
-//    TextView ToggleFindLostThingLocationDesc;
-//    @BindView(R.id.ToggleLostThingAdditionalDesc)
-//    TextView ToggleLostThingAdditionalDesc;
 
     @BindView(R.id.AdditionalDescLayout)
     LinearLayout AdditionalDescLayout;

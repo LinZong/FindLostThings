@@ -4,26 +4,29 @@ import com.google.gson.Gson;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.CustomPostExecuteAsyncTask;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.TaskPostExecuteWrapper;
-import misaka.nemesiss.com.findlostthings.Services.APIDocs;
 import misaka.nemesiss.com.findlostthings.Model.LostThingsInfo;
+import misaka.nemesiss.com.findlostthings.Model.SearchLostThingsInfo;
+import misaka.nemesiss.com.findlostthings.Services.APIDocs;
 import misaka.nemesiss.com.findlostthings.Services.QQAuth.QQAuthCredentials;
 import misaka.nemesiss.com.findlostthings.Services.User.UserService;
-import okhttp3.*;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.modelmapper.TypeToken;
-
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class MyPublishListTask extends CustomPostExecuteAsyncTask<Void,Void, List<LostThingsInfo>>
+public class GetSearchLostThingsInfoTask extends CustomPostExecuteAsyncTask<SearchLostThingsInfo,Void, List<LostThingsInfo>>
 {
     private OkHttpClient okHttpClient;
-    String EncryptedAccessToken = null;
     private UserService userService = FindLostThingsApplication.getUserService();
     long SnowflakeID = userService.GetUserID();
 
-    public MyPublishListTask(TaskPostExecuteWrapper<List<LostThingsInfo>> DoInPostExecute) {
+    String EncryptedAccessToken = null;
+
+    public GetSearchLostThingsInfoTask(TaskPostExecuteWrapper<List<LostThingsInfo>> DoInPostExecute) {
         super(DoInPostExecute);
         try
         {
@@ -37,23 +40,22 @@ public class MyPublishListTask extends CustomPostExecuteAsyncTask<Void,Void, Lis
         }
     }
 
+
     @Override
-    protected List<LostThingsInfo> doInBackground(Void... voids) {
+    protected List<LostThingsInfo> doInBackground(SearchLostThingsInfo...searchLostThingsInfo) {
         try {
             Request request = new Request.Builder()
-                    .url(APIDocs.FullMyPublishList)
-                    .addHeader("actk",EncryptedAccessToken)
+                    .url(APIDocs.FullThingsSearch)
+                    .addHeader("actk", EncryptedAccessToken)
                     .addHeader("userid",String.valueOf(SnowflakeID))
                     .build();
-
-            Response response1 = okHttpClient.newCall(request).execute();
-            if (response1.isSuccessful()){
-                String responseData1 = response1.body().string();
+            Response response = okHttpClient.newCall(request).execute();
+            if(response.isSuccessful()){
+                String responseData = response.body().string();
                 Gson gson = new Gson();
-                List<LostThingsInfo> resp = gson.fromJson(responseData1, new TypeToken<List<LostThingsInfo>>(){}.getType());
+                List<LostThingsInfo> resp = gson.fromJson(responseData, new TypeToken<List<LostThingsInfo>>(){}.getType());
                 return resp;
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
