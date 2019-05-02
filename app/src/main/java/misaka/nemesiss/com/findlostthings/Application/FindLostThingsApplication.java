@@ -7,10 +7,7 @@ import com.tencent.cos.xml.CosXmlService;
 import com.tencent.cos.xml.CosXmlServiceConfig;
 import com.tencent.qcloud.core.auth.QCloudCredentialProvider;
 import com.tencent.tauth.Tencent;
-import misaka.nemesiss.com.findlostthings.Model.AppSettings;
-import misaka.nemesiss.com.findlostthings.Model.UserAccount;
 import misaka.nemesiss.com.findlostthings.Services.Common.AppService;
-import misaka.nemesiss.com.findlostthings.Services.QQAuth.QQAuthCredentials;
 import misaka.nemesiss.com.findlostthings.Services.QQAuth.QQAuthInfo;
 import misaka.nemesiss.com.findlostthings.Services.StorageBucket.BucketInfo;
 import misaka.nemesiss.com.findlostthings.Services.StorageBucket.CustomCredentialProvider;
@@ -100,4 +97,5 @@ public class FindLostThingsApplication extends MultiDexApplication
     {
         //这里放置一些检测到网络状态变化之后需要执行的语句。
     }
+
 }

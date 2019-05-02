@@ -28,8 +28,6 @@
         </activity>
         <activity android:name=".Activity.LostThingDetailActivity">
         </activity>
-        <activity android:name=".Activity.TryDoDownload">
-        </activity>
         <activity android:name=".Activity.RealPersonValidActivity">
         </activity>
         <activity android:name=".Activity.MainActivity">
@@ -54,11 +52,7 @@
         <activity
                 android:name=".Activity.SplashActivity"
                 android:theme="@style/SplashScreenTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
         <activity android:name=".Activity.QQAuthLoginActivity">
         </activity>

@@ -133,7 +133,6 @@ public class PreviewSelectedImageActivity extends FindLostThingsActivity
     @Override
     public void onBackPressed()
     {
-        super.onBackPressed();
         PassInfoToPublishPage(false);
         finish();
     }

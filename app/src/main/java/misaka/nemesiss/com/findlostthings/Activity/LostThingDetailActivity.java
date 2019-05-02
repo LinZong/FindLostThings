@@ -3,73 +3,163 @@ package misaka.nemesiss.com.findlostthings.Activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
 import com.yzq.zxinglibrary.common.Constant;
 import com.yzq.zxinglibrary.encode.CodeCreator;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
+import misaka.nemesiss.com.findlostthings.Model.AccountContacts;
 import misaka.nemesiss.com.findlostthings.Model.LostThingsInfo;
 import misaka.nemesiss.com.findlostthings.Model.Request.LoginAccountInfo.UserInformation;
 import misaka.nemesiss.com.findlostthings.R;
+import misaka.nemesiss.com.findlostthings.Tasks.GetUserInformationTask;
 import misaka.nemesiss.com.findlostthings.Tasks.UpdateLostThingsInfoTask;
 import misaka.nemesiss.com.findlostthings.Utils.AppUtils;
+import misaka.nemesiss.com.findlostthings.View.SwipeImageView;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class LostThingDetailActivity extends FindLostThingsActivity {
 
     private static final int REQUEST_CODE_SCAN = 1001;
     private static final int REQUEST_GIVEN_CONFIRM = 999;
     @BindView(R.id.TakeOrGivenThing)
-    Button TakeOrGivenThing;
+    FloatingActionButton TakeOrGivenThing;
     @BindView(R.id.UserQrCodeContainer)
     RelativeLayout UserQrCodeContainer;
     @BindView(R.id.UserQrCode)
     ImageView UserQrCode;
-    @BindView(R.id.LostThingDetailToolbar)
-    Toolbar toolbar;
+    @BindView(R.id.LostThingImagesSwiper)
+    SwipeImageView imageViewSwiper;
+
+    @BindView(R.id.ThingCategory)
+    TextView ThingCategory;
+    @BindView(R.id.ThingDetailCategory)
+    TextView ThingDetailCategory;
+    @BindView(R.id.SchoolName)
+    TextView SchoolName;
+    @BindView(R.id.SchollBuildingName)
+    TextView SchoolBuildingName;
+    @BindView(R.id.PublishTime)
+    TextView PublishTime;
+
+    @BindView(R.id.QQDetailField)
+    TextView QQ;
+    @BindView(R.id.WxDetailField)
+    TextView Wx;
+    @BindView(R.id.MobileDetailField)
+    TextView Mobile;
+    @BindView(R.id.EmailDetailField)
+    TextView Email;
+    @BindView(R.id.LocationDesc)
+    TextView LocationDesc;
+    @BindView(R.id.ThingDesc)
+    TextView ThingDesc;
+
+    @BindView(R.id.GivenDateHint)
+    TextView GivenDateHint;
+    @BindView(R.id.GivenDateField)
+    TextView GivenDateField;
+
 
     private LostThingsInfo CurrentLostThingInfo;
     private UserInformation CurrentLoginUser;
     private UserInformation CurrentTakingThingUser;
+    private AccountContacts PublisherContacts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lost_thing_detail);
         ButterKnife.bind(this);
-        AppUtils.ToolbarShowReturnButton(LostThingDetailActivity.this,toolbar);
 
         CurrentLostThingInfo = (LostThingsInfo) getIntent().getSerializableExtra("LostThingsInfo");
         CurrentLoginUser = FindLostThingsApplication.getUserService().getMyProfile();
         if (CurrentLoginUser.getId() == CurrentLostThingInfo.getPublisher()) {
-            TakeOrGivenThing.setText("归还失物");
+            TakeOrGivenThing.setTitle("归还失物");
         } else {
-            TakeOrGivenThing.setText("认领失物");
+            TakeOrGivenThing.setTitle("认领失物");
+        }
+    }
+
+
+    private void LoadInformation() {
+        String str = CurrentLostThingInfo.getThingPhotoUrls();
+        String[] urlArray = new Gson().fromJson(str,new TypeToken<String[]>(){}.getType());
+        if(urlArray.length > 0) {
+            // Convert To URI List
+            List<Uri> uri = new ArrayList<>();
+            for (String s : urlArray) {
+                uri.add(Uri.parse(s));
+            }
+            imageViewSwiper.SetImageList(uri, LostThingDetailActivity.this);
+        }
+
+        PublishTime.setText(AppUtils.UnixStampToFmtString(CurrentLostThingInfo.getPublishTime()));
+
+        String locDesc = CurrentLostThingInfo.getFoundAddrDescription();
+        String thingDesc = CurrentLostThingInfo.getThingAddiDescription();
+
+        if(!TextUtils.isEmpty(locDesc)) {
+            LocationDesc.setVisibility(View.VISIBLE);
+            LocationDesc.setText(locDesc);
+        }
+        if(!TextUtils.isEmpty(thingDesc)) {
+            ThingDesc.setVisibility(View.VISIBLE);
+            ThingDesc.setText(thingDesc);
+        }
+
+        if(CurrentLostThingInfo.getIsgiven() == 1) {
+            GivenDateField.setVisibility(View.VISIBLE);
+            GivenDateHint.setVisibility(View.VISIBLE);
+            // 把认领的时间SET上去。
+            GivenDateField.setText(AppUtils.UnixStampToFmtString(CurrentLostThingInfo.getGivenTime()));
+        }
+
+        // 解析发布者的联系方式。
+
+        String contactsStr = CurrentLostThingInfo.getPublisherContacts();
+        if(!TextUtils.isEmpty(contactsStr)) {
+
+            PublisherContacts = new Gson().fromJson(contactsStr,AccountContacts.class);
+            String qq = PublisherContacts.getQQ();
+            String wx = PublisherContacts.getWxID();
+            String email = PublisherContacts.getEmail();
+            String mobile = PublisherContacts.getPhoneNumber();
+
+            String[] value = {qq,wx,email,mobile};
+            TextView[] fields = {QQ,Wx,Email,Mobile};
+            for (int i = 0; i < value.length; i++) {
+                if(!TextUtils.isEmpty(value[i])) {
+                    fields[i].setText(value[i]);
+                }
+            }
         }
     }
 
     @OnClick({R.id.TakeOrGivenThing})
     public void HandleTakeOrGivenThing(View v) {
-
-
-
         if (CurrentLoginUser.getId() == CurrentLostThingInfo.getPublisher()) {
 
             if(CurrentLoginUser.getRealPersonValid() != 1) {
@@ -232,19 +322,15 @@ public class LostThingDetailActivity extends FindLostThingsActivity {
     class QrCodeInfo {
         private String ThingID;
         private UserInformation User;
-
         public String getThingID() {
             return ThingID;
         }
-
         public UserInformation getUser() {
             return User;
         }
-
         public void setThingID(String thingID) {
             ThingID = thingID;
         }
-
         public void setUser(UserInformation user) {
             User = user;
         }
