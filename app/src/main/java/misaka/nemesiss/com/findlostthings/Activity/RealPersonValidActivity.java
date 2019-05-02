@@ -1,12 +1,10 @@
 package misaka.nemesiss.com.findlostthings.Activity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -33,7 +31,6 @@ import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
 import com.tencent.cos.xml.transfer.COSXMLDownloadTask;
 import com.tencent.cos.xml.transfer.COSXMLUploadTask;
-import com.yalantis.ucrop.UCrop;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.Model.Request.LoginAccountInfo.UserInformation;
 import misaka.nemesiss.com.findlostthings.R;
@@ -81,7 +78,8 @@ public class RealPersonValidActivity extends AppCompatActivity {
         IdentifyImagePreview.setDrawingCacheEnabled(false);
         IdentifyImagePreview.setWillNotCacheDrawing(true);
         sp = FindLostThingsApplication.getContext().getSharedPreferences("PersistActivityState", MODE_PRIVATE);
-
+        TakeIdentifyPhotoButton.setOnClickListener(this::CallCameraToTakePhoto);
+        IdentifyImagePreview.setOnClickListener(this::EnterPreview);
         CosImagePath = new String[1];
         AppUtils.ToolbarShowReturnButton(RealPersonValidActivity.this, toolbar);
 
@@ -93,7 +91,7 @@ public class RealPersonValidActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
+        PersistActivityState();
     }
 
     @Override
@@ -104,19 +102,16 @@ public class RealPersonValidActivity extends AppCompatActivity {
 
 
     private void PersistActivityState() {
-        new Thread(() -> {
-            String str = new Gson().toJson(new ActivityState(LocalImagePath, IsReturnFromCamera), ActivityState.class);
-            String cache = AppUtils.GetAppCachePath();
-            File file = new File(new File(cache), "RealPersonValidState.json");
-            try {
-                FileWriter fw = new FileWriter(file);
-                fw.write(str);
-                fw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }).start();
+        String str = new Gson().toJson(new ActivityState(LocalImagePath, IsReturnFromCamera), ActivityState.class);
+        String cache = AppUtils.GetAppCachePath();
+        File file = new File(new File(cache), "RealPersonValidState.json");
+        try {
+            FileWriter fw = new FileWriter(file);
+            fw.write(str);
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void RestoreActivityState() {
@@ -135,7 +130,7 @@ public class RealPersonValidActivity extends AppCompatActivity {
                 fr.close();
                 String str = sb.toString();
                 ActivityState as = new Gson().fromJson(str, ActivityState.class);
-                LocalImagePath = as.SavedLocalImagePath;
+                this.LocalImagePath = as.SavedLocalImagePath;
                 IsReturnFromCamera = as.IsReturnFromCamera;
                 Log.d("RealPersonValidActivity", "恢复Activity状态成功!");
                 if (IsReturnFromCamera) {
@@ -201,6 +196,8 @@ public class RealPersonValidActivity extends AppCompatActivity {
                     String[] namez = CosObjectKey.split("/");
 
                     LocalImagePath = AppUtils.GetAppCachePath() + "/" + namez[namez.length - 1];
+                    PersistActivityState();
+                    Log.d("RealPersonValidActivity","即将Load - " + LocalImagePath);
                     File file = new File(LocalImagePath);
                     if (file.exists()) {
                         // 不需要启动下载，直接加载
@@ -259,7 +256,7 @@ public class RealPersonValidActivity extends AppCompatActivity {
             });
             // 把之前拍照拍出来的大文件删了。
             File file = new File(LocalImagePath);
-            if(file.exists()){
+            if (file.exists()) {
                 file.delete();
             }
             UpdateUserInfo();
@@ -318,6 +315,7 @@ public class RealPersonValidActivity extends AppCompatActivity {
             case Activity.RESULT_CANCELED: {
                 IsReturnFromCamera = false;
                 PersistActivityState();
+                InitComponents();
                 break;
             }
         }
@@ -339,7 +337,7 @@ public class RealPersonValidActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(File file) {
                         try {
-                            Log.d("RealPersonValidActivity","压缩完成，输出到"+file.getAbsolutePath());
+                            Log.d("RealPersonValidActivity", "压缩完成，输出到" + file.getAbsolutePath());
 
                             // 已经获得压缩完毕的图片，开始上传到腾讯云。
                             UploadIdentifyImage(file.getAbsolutePath());
@@ -372,22 +370,22 @@ public class RealPersonValidActivity extends AppCompatActivity {
         task.setCosXmlProgressListener(UploadTaskProgressListener);
     }
 
-    @OnClick({R.id.TakeIdentifyPhotoButton})
     public void CallCameraToTakePhoto(View v) {
 
         String cachePath = AppUtils.GetAppCachePath();
-        LocalImagePath = cachePath + "/" + AppUtils.GetTempImageName();
+        RealPersonValidActivity.this.LocalImagePath  = cachePath + "/" + AppUtils.GetTempImageName();
         IsReturnFromCamera = true;
         PersistActivityState();
         AppUtils.OpenCamera(Uri.fromFile(new File(LocalImagePath)), RealPersonValidActivity.this);
     }
 
 
-    @OnClick({R.id.IdentifyImagePreview})
     public void EnterPreview(View v) {
-        if (!TextUtils.isEmpty(LocalImagePath)) {
+        String path = RealPersonValidActivity.this.LocalImagePath;
+        if (!TextUtils.isEmpty(path)) {
             Intent it = new Intent(RealPersonValidActivity.this, PreviewSelectedImageActivity.class);
-            it.putExtra("PreviewImageUri", Uri.fromFile(new File(LocalImagePath)));
+            Log.d("RealPersonValidActivity","即将预览 - " + path);
+            it.putExtra("PreviewImageUri", Uri.fromFile(new File(path)));
             it.putExtra("IsNormalPreview", true);
             startActivityForResult(it, PickupImageActivity.PREVIEW_ACTIVITY);
         }

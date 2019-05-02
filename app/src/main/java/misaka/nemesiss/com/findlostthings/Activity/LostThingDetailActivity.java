@@ -68,8 +68,14 @@ public class LostThingDetailActivity extends FindLostThingsActivity {
     @OnClick({R.id.TakeOrGivenThing})
     public void HandleTakeOrGivenThing(View v) {
 
+
+
         if (CurrentLoginUser.getId() == CurrentLostThingInfo.getPublisher()) {
-            // 当前登陆的账号是该失物的发布者，可以实行归还操作
+
+            if(CurrentLoginUser.getRealPersonValid() != 1) {
+                Toast.makeText(LostThingDetailActivity.this,"当前登陆用户尚未完成实名认证，暂时无法归还失物。", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             // 跳转到扫描二维码界面
 
@@ -89,6 +95,12 @@ public class LostThingDetailActivity extends FindLostThingsActivity {
             startActivityForResult(intent, REQUEST_CODE_SCAN);
 
         } else {
+
+            if(CurrentLoginUser.getRealPersonValid() != 1) {
+                Toast.makeText(LostThingDetailActivity.this,"当前登陆用户尚未完成实名认证，暂时无法认领失物。", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             // 当前登录的账号可以认领此失物。
             QrCodeInfo qrCodeInfo = new QrCodeInfo();
             qrCodeInfo.setThingID(CurrentLostThingInfo.getId());
