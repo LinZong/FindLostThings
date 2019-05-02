@@ -82,7 +82,6 @@ public class RealPersonValidActivity extends AppCompatActivity {
         IdentifyImagePreview.setOnClickListener(this::EnterPreview);
         CosImagePath = new String[1];
         AppUtils.ToolbarShowReturnButton(RealPersonValidActivity.this, toolbar);
-
         RestoreActivityState();
         InitComponents();
     }
@@ -97,12 +96,11 @@ public class RealPersonValidActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        RestoreActivityState();
     }
 
 
     private void PersistActivityState() {
-        String str = new Gson().toJson(new ActivityState(LocalImagePath, IsReturnFromCamera), ActivityState.class);
+        String str = new Gson().toJson(new ActivityState(userInformation, RealPersonValidStatus, LocalImagePath, IsReturnFromCamera), ActivityState.class);
         String cache = AppUtils.GetAppCachePath();
         File file = new File(new File(cache), "RealPersonValidState.json");
         try {
@@ -130,10 +128,12 @@ public class RealPersonValidActivity extends AppCompatActivity {
                 fr.close();
                 String str = sb.toString();
                 ActivityState as = new Gson().fromJson(str, ActivityState.class);
-                this.LocalImagePath = as.SavedLocalImagePath;
-                IsReturnFromCamera = as.IsReturnFromCamera;
+                this.LocalImagePath = as.LocalImagePath;
+                this.IsReturnFromCamera = as.IsReturnFromCamera;
+                this.RealPersonValidStatus = as.RealPersonValidStatus;
+                this.userInformation = as.userInformation;
                 Log.d("RealPersonValidActivity", "恢复Activity状态成功!");
-                if (IsReturnFromCamera) {
+                if (IsReturnFromCamera && !TextUtils.isEmpty(this.LocalImagePath)) {
                     UploadImageButton.setVisibility(View.VISIBLE);
                     UploadImageButton.setText("上传照片");
                     UploadImageButton.setEnabled(true);
@@ -147,23 +147,8 @@ public class RealPersonValidActivity extends AppCompatActivity {
         } else Log.d("RealPersonValidActivity", "不存在Activity状态!!");
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d("RealPersonValidActivity", "活动被Destroy!");
-    }
-
     //针对个别低配置机型，切到照相机拍照后Activity被回收，且不调用onSaveInstanceState的情况，采用写配置文件的方式强行持久化Activity相关信息。
 
-    class ActivityState {
-        private String SavedLocalImagePath;
-        private boolean IsReturnFromCamera;
-
-        public ActivityState(String savedLocalImagePath, boolean isReturnFromCamera) {
-            SavedLocalImagePath = savedLocalImagePath;
-            IsReturnFromCamera = isReturnFromCamera;
-        }
-    }
 
     private void ClearRealPersonValidActivityState() {
         String cache = AppUtils.GetAppCachePath();
@@ -196,8 +181,7 @@ public class RealPersonValidActivity extends AppCompatActivity {
                     String[] namez = CosObjectKey.split("/");
 
                     LocalImagePath = AppUtils.GetAppCachePath() + "/" + namez[namez.length - 1];
-                    PersistActivityState();
-                    Log.d("RealPersonValidActivity","即将Load - " + LocalImagePath);
+                    Log.d("RealPersonValidActivity", "即将Load - " + LocalImagePath);
                     File file = new File(LocalImagePath);
                     if (file.exists()) {
                         // 不需要启动下载，直接加载
@@ -212,7 +196,6 @@ public class RealPersonValidActivity extends AppCompatActivity {
         } else {
             // 加载从照相机返回的图片。
             Glide.with(RealPersonValidActivity.this).load(LocalImagePath).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(IdentifyImagePreview);
-            IsReturnFromCamera = true;
         }
 
         switch (RealPersonValidStatus) {
@@ -291,7 +274,6 @@ public class RealPersonValidActivity extends AppCompatActivity {
                 switch (requestCode) {
                     case AppUtils.TYPE_CAMERA: {
                         RestoreActivityState();
-                        // TODO 处理相机返回的照片。
                         Log.d("RealPersonValidActivity", "即将加载图片 : " + LocalImagePath);
                         Glide.with(RealPersonValidActivity.this).load(Uri.fromFile(new File(LocalImagePath))).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(IdentifyImagePreview);
                         UploadImageButton.setVisibility(View.VISIBLE);
@@ -300,13 +282,15 @@ public class RealPersonValidActivity extends AppCompatActivity {
                         break;
                     }
                     case PickupImageActivity.PREVIEW_ACTIVITY: {
-                        ClearRealPersonValidActivityState();
                         boolean shouldDelete = data.getBooleanExtra("ShouldDeleteImage", false);
+                        IsReturnFromCamera = true;
                         if (shouldDelete) {
                             IdentifyImagePreview.setImageDrawable(null);
                             LocalImagePath = null;
                             UploadImageButton.setVisibility(View.GONE);
+                            IdentifyDescription.setText("请上传实名认证信息。");
                         }
+                        PersistActivityState();
                         break;
                     }
                 }
@@ -373,7 +357,7 @@ public class RealPersonValidActivity extends AppCompatActivity {
     public void CallCameraToTakePhoto(View v) {
 
         String cachePath = AppUtils.GetAppCachePath();
-        RealPersonValidActivity.this.LocalImagePath  = cachePath + "/" + AppUtils.GetTempImageName();
+        RealPersonValidActivity.this.LocalImagePath = cachePath + "/" + AppUtils.GetTempImageName();
         IsReturnFromCamera = true;
         PersistActivityState();
         AppUtils.OpenCamera(Uri.fromFile(new File(LocalImagePath)), RealPersonValidActivity.this);
@@ -381,10 +365,11 @@ public class RealPersonValidActivity extends AppCompatActivity {
 
 
     public void EnterPreview(View v) {
+        RestoreActivityState();
         String path = RealPersonValidActivity.this.LocalImagePath;
         if (!TextUtils.isEmpty(path)) {
             Intent it = new Intent(RealPersonValidActivity.this, PreviewSelectedImageActivity.class);
-            Log.d("RealPersonValidActivity","即将预览 - " + path);
+            Log.d("RealPersonValidActivity", "即将预览 - " + path);
             it.putExtra("PreviewImageUri", Uri.fromFile(new File(path)));
             it.putExtra("IsNormalPreview", true);
             startActivityForResult(it, PickupImageActivity.PREVIEW_ACTIVITY);
@@ -436,5 +421,20 @@ public class RealPersonValidActivity extends AppCompatActivity {
                 }
             } else Toast.makeText(RealPersonValidActivity.this, "更新用户实名认证状态失败, 无网络。", Toast.LENGTH_SHORT).show();
         }).execute(userInformation);
+    }
+
+
+    class ActivityState {
+        public UserInformation userInformation;
+        public int RealPersonValidStatus;
+        public String LocalImagePath;
+        private boolean IsReturnFromCamera;
+
+        public ActivityState(UserInformation userInformation, int realPersonValidStatus, String localImagePath, boolean isReturnFromCamera) {
+            this.userInformation = userInformation;
+            RealPersonValidStatus = realPersonValidStatus;
+            LocalImagePath = localImagePath;
+            IsReturnFromCamera = isReturnFromCamera;
+        }
     }
 }
