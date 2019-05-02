@@ -107,6 +107,8 @@
 
         <activity android:name=".Activity.SearchActivity">
         </activity>
+        <activity android:name=".Activity.SearchResultActivity">
+        </activity>
     </application>
 
 </manifest>

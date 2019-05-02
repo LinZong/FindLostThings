@@ -2,6 +2,7 @@ package misaka.nemesiss.com.findlostthings.Activity;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -240,7 +241,16 @@ public class SearchActivity extends FindLostThingsActivity
         {
             case R.id.PublishTickBtn:
             {
-                ValidateAllFields();
+                if (!ValidateAllFields())
+                {
+                    BuildupSearchThingRequest();
+                    Intent intent=new Intent(SearchActivity.this,SearchResultActivity.class);
+                    startActivity(intent);
+                }
+               else
+                {
+                    Toast.makeText(SearchActivity.this,"必须设置好所有查询条件", Toast.LENGTH_SHORT).show();
+                }
                 break;
             }
             case android.R.id.home:{
@@ -278,7 +288,7 @@ public class SearchActivity extends FindLostThingsActivity
         }).execute(searchLostThingsInfo);
     }
 
-    private void ValidateAllFields()
+    private boolean ValidateAllFields()
     {
         boolean refuse = false;
         ClearErrorFlags();
@@ -306,6 +316,7 @@ public class SearchActivity extends FindLostThingsActivity
             endDateTextView.setError("必须设置搜索的截止日期");
             refuse = true;
         }
+        return refuse;
 
     }
 
