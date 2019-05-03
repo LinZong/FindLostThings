@@ -6,34 +6,261 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".Activity.LostThingDetailActivity">
-    <android.support.design.widget.AppBarLayout android:layout_width="match_parent"
-                                                android:layout_height="wrap_content"
+
+    <android.support.v4.widget.NestedScrollView android:layout_width="match_parent"
+                                                android:layout_height="match_parent"
+                                                android:fillViewport="true"
     >
-        <android.support.v7.widget.Toolbar android:layout_width="match_parent"
-                                           android:layout_height="?attr/actionBarSize"
-                                           android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                                           app:popupTheme="@style/Theme.AppCompat.Light"
-                                           android:id="@+id/LostThingDetailToolbar"
-                                           app:title="失物详情">
-
-        </android.support.v7.widget.Toolbar>
-    </android.support.design.widget.AppBarLayout>
-
-    <android.support.constraint.ConstraintLayout android:layout_width="match_parent"
-                                                 android:layout_height="match_parent"
-                                                 app:layout_behavior="@string/appbar_scrolling_view_behavior">
-        <Button android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="认领失物"
-                android:layout_marginTop="8dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginStart="8dp"
-                android:id="@+id/TakeOrGivenThing"
+        <android.support.constraint.ConstraintLayout android:layout_width="match_parent"
+                                                     android:layout_height="match_parent"
         >
 
-        </Button>
-    </android.support.constraint.ConstraintLayout>
+
+            <misaka.nemesiss.com.findlostthings.View.SwipeImageView android:layout_width="0dp"
+                                                                    android:layout_height="280dp"
+                                                                    android:id="@+id/LostThingImagesSwiper"
+                                                                    app:layout_constraintTop_toTopOf="parent"
+                                                                    app:layout_constraintStart_toStartOf="parent"
+                                                                    app:layout_constraintEnd_toEndOf="parent"/>
+
+            <!--                    <Button android:layout_width="wrap_content"-->
+            <!--                            android:layout_height="wrap_content"-->
+            <!--                            android:text="认领失物"-->
+            <!--                            android:id="@+id/TakeOrGivenThing"-->
+            <!--                    >-->
+
+            <!--                    </Button>-->
+            <TextView android:layout_width="0dp"
+                      android:layout_height="wrap_content"
+                      android:textSize="24sp"
+                      android:textColor="#000"
+                      android:text="这是失物的标题"
+                      android:layout_marginStart="16dp"
+                      app:layout_constraintStart_toStartOf="parent" android:layout_marginEnd="24dp"
+                      app:layout_constraintEnd_toEndOf="parent" app:layout_constraintHorizontal_bias="0.0"
+                      android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/LostThingImagesSwiper"
+                      android:id="@+id/LostThingTitle"/>
+            <TextView
+                    android:text="分类"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/ThingCategory" android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@+id/LostThingTitle"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginStart="16dp"/>
+            <TextView
+                    android:text="细类"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/ThingDetailCategory" app:layout_constraintStart_toEndOf="@+id/ThingCategory"
+                    android:layout_marginStart="4dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/ThingCategory"/>
+            <TextView
+                    android:text="地点0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/SchoolName"
+                    app:layout_constraintTop_toBottomOf="@+id/ThingCategory"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginStart="16dp" android:layout_marginTop="4dp"/>
+            <TextView
+                    android:text="地点"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/SchollBuildingName" app:layout_constraintStart_toEndOf="@+id/SchoolName"
+                    android:layout_marginStart="4dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/SchoolName"/>
+            <TextView
+                    android:text="发布日期:"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView28"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginStart="16dp" android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@+id/ThingDesc"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/PublishTime" app:layout_constraintStart_toEndOf="@+id/textView28"
+                    android:layout_marginStart="4dp" app:layout_constraintBottom_toBottomOf="@+id/textView28"/>
+            <TextView
+                    android:text="发布者联系方式"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView30"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginStart="16dp" android:textSize="16sp" android:layout_marginTop="48dp"
+                    app:layout_constraintTop_toBottomOf="@+id/GivenDateHint"/>
+            <TextView
+                    android:text="QQ:"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView31" app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginStart="16dp" android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@+id/textView30" android:textSize="16sp"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/QQDetailField" app:layout_constraintStart_toEndOf="@+id/textView31"
+                    android:layout_marginStart="4dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView31" android:textSize="16sp"
+                    android:text="暂无信息"/>
+            <TextView
+                    android:text="微信:"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView33" android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@+id/textView31" app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginStart="16dp" android:textSize="16sp"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/WxDetailField" app:layout_constraintStart_toEndOf="@+id/textView33"
+                    android:layout_marginStart="4dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView33" android:textSize="16sp"
+                    android:text="暂无信息"/>
+            <TextView
+                    android:text="手机号码: "
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView35" app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginStart="16dp" android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@+id/textView33" android:textSize="16sp"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/MobileDetailField" app:layout_constraintStart_toEndOf="@+id/textView35"
+                    android:layout_marginStart="2dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView35" android:textSize="16sp"
+                    android:text="暂无信息"/>
+            <TextView
+                    android:text="邮箱: "
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView37" app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/textView35"
+                    android:textSize="16sp" app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginBottom="16dp" app:layout_constraintVertical_bias="0.0"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/EmailDetailField" app:layout_constraintStart_toEndOf="@+id/textView37"
+                    android:layout_marginStart="4dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView37" android:textSize="16sp"
+                    android:text="暂无信息"/>
+            <TextView
+                    android:visibility="gone"
+                    android:text="地点补充"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/LocationDesc" android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@+id/SchoolName" app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginStart="16dp" app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="16dp" app:layout_constraintHorizontal_bias="0.0"/>
+            <TextView
+                    android:visibility="gone"
+                    android:text="物品补充"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/ThingDesc" android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@+id/LocationDesc"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginStart="16dp" app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="16dp" app:layout_constraintHorizontal_bias="0.0"/>
+
+            <TextView
+                    android:visibility="gone"
+                    android:text="认领日期:"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/GivenDateHint" android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@+id/textView28" app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginStart="16dp"/>
+            <TextView
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/GivenDateField" app:layout_constraintStart_toEndOf="@+id/GivenDateHint"
+                    android:layout_marginStart="4dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/GivenDateHint"/>
+
+
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+    <RelativeLayout android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right|bottom"
+    >
+        <!--<com.getbase.floatingactionbutton.FloatingActionsMenu-->
+                <!--android:id="@+id/multiple_actions"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignParentBottom="true"-->
+                <!--android:layout_alignParentRight="true"-->
+                <!--android:layout_alignParentEnd="true"-->
+                <!--app:fab_addButtonColorNormal="@color/white"-->
+                <!--app:fab_addButtonColorPressed="@color/white_pressed"-->
+                <!--app:fab_addButtonPlusIconColor="@color/colorPrimaryDark"-->
+                <!--app:fab_labelStyle="@style/menu_labels_style"-->
+                <!--android:layout_marginBottom="16dp"-->
+                <!--android:layout_marginRight="16dp"-->
+                <!--android:layout_marginEnd="16dp">-->
+
+            <!--<com.getbase.floatingactionbutton.FloatingActionButton-->
+                    <!--android:id="@+id/action_a"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--app:fab_colorNormal="@color/white"-->
+                    <!--app:fab_title="Action A"-->
+                    <!--app:fab_colorPressed="@color/white_pressed"/>-->
+
+            <!--<com.getbase.floatingactionbutton.FloatingActionButton-->
+                    <!--android:id="@+id/TakeOrGivenThing"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--app:fab_colorNormal="@color/white"-->
+                    <!--app:fab_title="Action with a very long name that won\'t fit on the screen"-->
+                    <!--app:fab_colorPressed="@color/white_pressed"/>-->
+
+        <!--</com.getbase.floatingactionbutton.FloatingActionsMenu>-->
+
+        <com.getbase.floatingactionbutton.FloatingActionsMenu
+                android:id="@+id/multiple_actions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                app:fab_addButtonColorNormal="@color/colorAccent"
+                app:fab_addButtonColorPressed="@color/pink_pressed"
+                app:fab_addButtonPlusIconColor="@color/white"
+                app:fab_labelStyle="@style/menu_labels_style"
+                android:layout_marginBottom="16dp">
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/DeletePublish"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:fab_colorNormal="@color/colorPrimary"
+                    app:fab_icon="@drawable/ic_fab_star"
+                    app:fab_title="删除失物信息"
+                    app:fab_size="mini"
+                    app:fab_colorPressed="@color/colorPrimaryDark"/>
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/TakeOrGivenThing"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:fab_colorNormal="@color/colorPrimary"
+                    app:fab_icon="@drawable/ic_fab_star"
+                    app:fab_title="处理失物"
+                    app:fab_size="mini"
+                    app:fab_colorPressed="@color/colorPrimaryDark"/>
+
+        </com.getbase.floatingactionbutton.FloatingActionsMenu>
+    </RelativeLayout>
+
     <RelativeLayout android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="#7C000000"
@@ -53,6 +280,6 @@
                   android:layout_centerHorizontal="true"
                   android:layout_below="@id/UserQrCode"
                   android:textSize="16sp"
-                android:layout_marginTop="30dp"/>
+                  android:layout_marginTop="30dp"/>
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

@@ -26,6 +26,7 @@ public class APIDocs
     public static final String MyPublishList = "/thing/mylist?type=1";
     public static final String MyFindList = "/thing/mylist?type=0";
     public static final String ThingsUpdate = "/thing/update";
+    public static final String ThingsSearch = "/thing/search";
 
     public static final String FullAddress = DeploymentAddress + RequestAddress;
     public static final String FullUserInfo = DeploymentAddress + UserInfo;
@@ -39,7 +40,7 @@ public class APIDocs
     public static final String FullMyPublishList = DeploymentAddress + MyPublishList;
     public static final String FullMyFindList = DeploymentAddress + MyFindList;
     public static final String FullThingsUpdate = DeploymentAddress + ThingsUpdate;
-
+    public static final String FullThingsSearch = DeploymentAddress + ThingsSearch;
 
 
 }

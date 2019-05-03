@@ -12,15 +12,15 @@ import okhttp3.Response;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class GetLostThingsCategoryAsyncTask extends CustomPostExecuteAsyncTask<Void, Void, List<LostThingsCategory>> {
+public class GetLostThingsCategoryAsyncTask extends CustomPostExecuteAsyncTask<Void, Void, LostThingsCategoryResponse> {
 
     private OkHttpClient okHttpClient;
-    public GetLostThingsCategoryAsyncTask(TaskPostExecuteWrapper<List<LostThingsCategory>> DoInPostExecute) {
+    public GetLostThingsCategoryAsyncTask(TaskPostExecuteWrapper<LostThingsCategoryResponse> DoInPostExecute) {
         super(DoInPostExecute);
     }
 
     @Override
-    protected List<LostThingsCategory> doInBackground(Void... voids) {
+    protected LostThingsCategoryResponse doInBackground(Void... voids) {
         try {
             Request request = new Request.Builder()
                     .url(APIDocs.FullLostThingsCategory)
@@ -29,8 +29,7 @@ public class GetLostThingsCategoryAsyncTask extends CustomPostExecuteAsyncTask<V
             if (response1.isSuccessful()){
                 String responseData1 = response1.body().string();
                 Gson gson = new Gson();
-                LostThingsCategoryResponse resp = gson.fromJson(responseData1, LostThingsCategoryResponse.class);
-                return resp.getCategoryList();
+                return  gson.fromJson(responseData1, LostThingsCategoryResponse.class);
             }
 
         } catch (Exception e) {

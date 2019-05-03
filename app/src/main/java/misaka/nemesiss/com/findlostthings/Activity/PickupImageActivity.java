@@ -67,10 +67,6 @@ public class PickupImageActivity extends FindLostThingsActivity
     @BindView(R.id.previewImageRecyclerView)
     RecyclerView recyclerView;
 
-//    @BindView(R.id.ToggleFindLostThingLocationDesc)
-//    TextView ToggleFindLostThingLocationDesc;
-//    @BindView(R.id.ToggleLostThingAdditionalDesc)
-//    TextView ToggleLostThingAdditionalDesc;
 
     @BindView(R.id.AdditionalDescLayout)
     LinearLayout AdditionalDescLayout;
@@ -180,17 +176,23 @@ public class PickupImageActivity extends FindLostThingsActivity
     private void LoadSpinnerItems()
     {
         new GetLostThingsCategoryAsyncTask((result) -> {
-            Log.d("PickupImageActivity", "物品种类加载完成");
-            thingsCategories.clear();
-            thingsCategories.addAll(result);
-            thingsCategoryAdapter.notifyDataSetChanged();
-            Log.d("PickupImageActivity", String.valueOf(ThingCategorySpinner.getSelectedIndex()));
+            if(result!=null && result.getStatusCode() == 0)
+            {
+                Log.d("PickupImageActivity", "物品种类加载完成");
+                thingsCategories.clear();
+                thingsCategories.addAll(result.getCategoryList());
+                thingsCategoryAdapter.notifyDataSetChanged();
+                Log.d("PickupImageActivity", String.valueOf(ThingCategorySpinner.getSelectedIndex()));
+            }
         }).execute();
         new GetSupportSchoolsTask((result) -> {
-            Log.d("PickupImageActivity", "支持的学校加载完成");
-            allSupportedSchool.clear();
-            allSupportedSchool.addAll(result.getSupportSchools());
-            supportedSchoolListAdapter.notifyDataSetChanged();
+            if(result !=null && result.getStatusCode() == 0)
+            {
+                Log.d("PickupImageActivity", "支持的学校加载完成");
+                allSupportedSchool.clear();
+                allSupportedSchool.addAll(result.getSupportSchools());
+                supportedSchoolListAdapter.notifyDataSetChanged();
+            }
         }).execute();
     }
 
