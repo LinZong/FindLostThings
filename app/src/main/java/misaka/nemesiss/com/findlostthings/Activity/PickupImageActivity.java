@@ -9,6 +9,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -54,12 +55,15 @@ import misaka.nemesiss.com.findlostthings.Model.MySchoolBuildings;
 import misaka.nemesiss.com.findlostthings.Model.SchoolInfo;
 import misaka.nemesiss.com.findlostthings.Tasks.*;
 import misaka.nemesiss.com.findlostthings.Utils.AppUtils;
+import misaka.nemesiss.com.findlostthings.Utils.EventProxy;
+import misaka.nemesiss.com.findlostthings.Utils.ImageHelper;
 import misaka.nemesiss.com.findlostthings.Utils.UUIDGenerator;
 import misaka.nemesiss.com.findlostthings.View.PercentageProgressBar;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PickupImageActivity extends FindLostThingsActivity
 {
@@ -556,17 +560,38 @@ public class PickupImageActivity extends FindLostThingsActivity
         //重置放置存已经传好的图片的存储桶地址
         FinishUploadImageUrl.clear();
         //本次需要上传的所有图片的本地文件路径
-        List<String> AllImagePath = AppUtils.GetAllUploadObjectOriginalFilePath(PickupImagesList);
-        //对应完成后存储桶的地址
-        List<String> AllObjectKeys = AppUtils.GetAllUploadObjectKeys(PickupImagesList, 36767411659079680L, "C6E131A9-E8C9-4223-9D0B-E92AD01580D0");
-        int len = AllImagePath.size();
-        //把本地文件路径和存储桶路径匹配
-        for (int i = 0; i < len; i++)
-        {
-            CurrentUploadImageQueue.add(new Pair<>(AllImagePath.get(i), AllObjectKeys.get(i)));
-        }
-        //触发上传
-        UploadNextImage();
+
+        List<Uri> uploadList = new ArrayList<>(PickupImagesList);
+        uploadList.remove(uploadList.size()-1);
+
+        ImageHelper.CompressAllImage(uploadList, new EventProxy.EventResult<Uri>() {
+            @Override
+            public void handle(ConcurrentHashMap<Uri, Object> evs, ConcurrentHashMap<Uri, EventProxy.EventStatus> evStatus) {
+                Log.d("PickupImageActivity","图片压缩完成...");
+                List<Uri> compressed = new ArrayList<>();
+                for (Object val : evs.values()) {
+                    if(val != null) {
+                        compressed.add(Uri.fromFile((File) val));
+                    }
+                }
+                // 压缩完成后文件的路径
+                List<String> AllImagePath = AppUtils.GetAllUploadObjectOriginalFilePath(compressed);
+                // UserID
+                long userid = FindLostThingsApplication.getUserService().GetUserID();
+                // 应该存储在存储桶的object key
+                List<String> AllObjectKeys = AppUtils.GetAllUploadObjectKeys(compressed, userid, CurrentPublishUUID);
+                // 求大小
+                int len = AllImagePath.size();
+                //把本地文件路径和存储桶路径匹配
+                for (int i = 0; i < len; i++)
+                {
+                    CurrentUploadImageQueue.add(new Pair<>(AllImagePath.get(i), AllObjectKeys.get(i)));
+                }
+                //触发上传
+                UploadNextImage();
+            }
+        });
+
     }
 
     private void UploadNextImage()
@@ -633,8 +658,21 @@ public class PickupImageActivity extends FindLostThingsActivity
         info.setThingAddiDescription(LostThingAddiDesc);
 
         new PublishLostThingsInfoTask((result) -> {
-            Toast.makeText(PickupImageActivity.this, String.valueOf(result), Toast.LENGTH_SHORT).show();
-            Log.d("PickupImageActivity", String.valueOf(result));
+            if(AppUtils.CommonResponseOK(result))
+            {
+                if(result.getStatusCode() == 0) {
+                    Toast.makeText(PickupImageActivity.this, "发布成功!", Toast.LENGTH_SHORT).show();
+                    Log.d("PickupImageActivity", String.valueOf(result));
+                    finish();
+                }
+                else {
+                    Toast.makeText(PickupImageActivity.this, "发布失败!" + result, Toast.LENGTH_SHORT).show();
+                    Log.d("PickupImageActivity", String.valueOf(result));
+                }
+            }
+            else {
+                Toast.makeText(PickupImageActivity.this, "发布失败!请检查网络连接。", Toast.LENGTH_SHORT).show();
+            }
         }).execute(info);
     }
 

@@ -244,7 +244,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:fab_colorNormal="@color/colorPrimary"
-                    app:fab_icon="@drawable/ic_fab_star"
+                    app:fab_icon="@drawable/delete_lostthing_record"
                     app:fab_title="删除失物信息"
                     app:fab_size="mini"
                     app:fab_colorPressed="@color/colorPrimaryDark"/>
@@ -253,7 +253,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:fab_colorNormal="@color/colorPrimary"
-                    app:fab_icon="@drawable/ic_fab_star"
+                    app:fab_icon="@drawable/process_lostthing"
                     app:fab_title="处理失物"
                     app:fab_size="mini"
                     app:fab_colorPressed="@color/colorPrimaryDark"/>

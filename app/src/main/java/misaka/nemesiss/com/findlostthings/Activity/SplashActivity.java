@@ -98,7 +98,7 @@ public class SplashActivity extends FindLostThingsActivity
     {
         if(QQAuthCredentials.Validate())
         {
-            GoToMainActivityHandler.sendEmptyMessageDelayed(OVERTIME_GOTO_MAINACTIVITY,6000);
+            GoToMainActivityHandler.sendEmptyMessageDelayed(OVERTIME_GOTO_MAINACTIVITY,10000);
             QQAuthCredentials.LoadUserAccountInfo();
         }
         else

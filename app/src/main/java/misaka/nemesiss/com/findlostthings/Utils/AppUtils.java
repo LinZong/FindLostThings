@@ -308,7 +308,7 @@ public class AppUtils
     public static List<File> GetAllUploadObjectOriginalFilePtr(List<Uri> ImageUriList)
     {
         List<File> files = new ArrayList<>();
-        for (int i = 0; i < ImageUriList.size()-1; i++)
+        for (int i = 0; i < ImageUriList.size(); i++)
         {
             files.add(new File(ImageUriList.get(i).getPath()));
         }
@@ -318,7 +318,7 @@ public class AppUtils
     public static List<String> GetAllUploadObjectOriginalFilePath(List<Uri> ImageUriList)
     {
         List<String> result = new ArrayList<>();
-        for (int i = 0; i < ImageUriList.size()-1; i++)
+        for (int i = 0; i < ImageUriList.size(); i++)
         {
             result.add(ImageUriList.get(i).getPath());
         }

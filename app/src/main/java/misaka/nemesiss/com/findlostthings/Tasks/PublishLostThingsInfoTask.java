@@ -18,7 +18,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
 import static android.content.Context.MODE_PRIVATE;
 
-public class PublishLostThingsInfoTask extends CustomPostExecuteAsyncTask<LostThingsInfo, Void, Integer>
+public class PublishLostThingsInfoTask extends CustomPostExecuteAsyncTask<LostThingsInfo, Void, CommonResponse>
 {
     private OkHttpClient okHttpClient;
     String EncryptedAccessToken = null;
@@ -26,7 +26,7 @@ public class PublishLostThingsInfoTask extends CustomPostExecuteAsyncTask<LostTh
     long SnowflakeID = userService.GetUserID();
 
 
-    public PublishLostThingsInfoTask(TaskPostExecuteWrapper<Integer> DoInPostExecute)
+    public PublishLostThingsInfoTask(TaskPostExecuteWrapper<CommonResponse> DoInPostExecute)
     {
         super(DoInPostExecute);
         try
@@ -43,7 +43,7 @@ public class PublishLostThingsInfoTask extends CustomPostExecuteAsyncTask<LostTh
     }
 
     @Override
-    public Integer doInBackground(LostThingsInfo... lostThingsInfos)
+    public CommonResponse doInBackground(LostThingsInfo... lostThingsInfos)
     {
         try
         {
@@ -62,7 +62,7 @@ public class PublishLostThingsInfoTask extends CustomPostExecuteAsyncTask<LostTh
             {
                 String responseData = response.body().string();
                 CommonResponse resp = gson.fromJson(responseData, CommonResponse.class);
-                return resp.getStatusCode();
+                return resp;
             }
 
         }
