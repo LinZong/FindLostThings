@@ -160,7 +160,7 @@ public class MainActivity extends FindLostThingsActivity {
         int offset = recyclerView.computeVerticalScrollOffset();
         int range = recyclerView.computeVerticalScrollRange();
 
-        return (extent + offset) >= (range - (2 * extent));
+        return (offset > 20 && (extent + offset) >= (range - (2 * extent)));
     }
 
     private void loadMore() {
