@@ -21,10 +21,8 @@ public class SwipeImageView extends RelativeLayout implements ViewPager.OnPageCh
 
     private ViewPager viewPager;
     private LinearLayout dotsContainer;
-    private SwipeLostThingImageAdapter Adap;
-    private List<Uri> imageUris;
+    private SwipeLostThingImageAdapter Adapter;
     private List<ImageView> dotsList;
-    private Activity CurrentActivity;
     private ViewPager.OnPageChangeListener mListener;
     private Context mContext;
 
@@ -32,39 +30,60 @@ public class SwipeImageView extends RelativeLayout implements ViewPager.OnPageCh
         super(context);
         mContext = context;
         dotsList = new ArrayList<>();
-        imageUris = new ArrayList<>();
+        InitViewPager();
+        InitDotsContainer();
+
     }
 
     public SwipeImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
         dotsList = new ArrayList<>();
-        imageUris = new ArrayList<>();
+        InitViewPager();
+        InitDotsContainer();
     }
 
     public SwipeImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
         dotsList = new ArrayList<>();
-        imageUris = new ArrayList<>();
+        InitViewPager();
+        InitDotsContainer();
     }
 
 
+    private void InitViewPager()
+    {
+        viewPager = new ViewPager(mContext);
+        viewPager.setId(Integer.MAX_VALUE - 2000);
+        viewPager.addOnPageChangeListener(this);
+        RelativeLayout.LayoutParams viewPagerLp = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        this.addView(viewPager, viewPagerLp);
+    }
 
-    public SwipeImageView SetImageList(List<Uri> uris,Activity activity) {
-        imageUris.clear();
-        imageUris.addAll(uris);
-        CurrentActivity = activity;
-        Adap = new SwipeLostThingImageAdapter(imageUris, activity);
-        if(viewPager == null){
-            viewPager = new ViewPager(mContext);
-            viewPager.setAdapter(Adap);
-            viewPager.setId(Integer.MAX_VALUE - 2000);
-            viewPager.addOnPageChangeListener(this);
-            RelativeLayout.LayoutParams viewPagerLp = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-            this.addView(viewPager, viewPagerLp);
-        }
-        BuildImageDots();
+    private void InitDotsContainer()
+    {
+        dotsContainer = new LinearLayout(mContext);
+        dotsContainer.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
+        dotsContainer.setOrientation(LinearLayout.HORIZONTAL);
+        RelativeLayout.LayoutParams dotsLp = new RelativeLayout.LayoutParams(Dp2Px(200), Dp2Px(35));
+        dotsLp.addRule(RelativeLayout.ALIGN_BOTTOM,viewPager.getId());
+        dotsLp.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        dotsLp.bottomMargin = Dp2Px(10);
+        this.addView(dotsContainer, dotsLp);
+    }
+
+    public SwipeImageView SetImageListAdapter(SwipeLostThingImageAdapter adapter) {
+        Adapter = adapter;
+        viewPager.setAdapter(Adapter);
+        Adapter.SetOnImageChangedListener(new SwipeLostThingImageAdapter.OnImageListChanged()
+        {
+            @Override
+            public void handle(List<ImageView> ivs)
+            {
+                BuildImageDots();
+            }
+        });
         return this;
     }
 
@@ -73,21 +92,10 @@ public class SwipeImageView extends RelativeLayout implements ViewPager.OnPageCh
     }
 
     private SwipeImageView BuildImageDots() {
-        if(dotsContainer == null) {
-            dotsContainer = new LinearLayout(mContext);
-            dotsContainer.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
-            dotsContainer.setOrientation(LinearLayout.HORIZONTAL);
-
-            RelativeLayout.LayoutParams dotsLp = new RelativeLayout.LayoutParams(Dp2Px(200), Dp2Px(35));
-            dotsLp.addRule(RelativeLayout.ALIGN_BOTTOM,viewPager.getId());
-            dotsLp.addRule(RelativeLayout.CENTER_HORIZONTAL);
-            dotsLp.bottomMargin = Dp2Px(10);
-            this.addView(dotsContainer, dotsLp);
-        }
         dotsList.clear();
-        for (int i = 0; i < imageUris.size(); i++) {
+        for (int i = 0; i < Adapter.getImageUriList().size(); i++) {
 
-            ImageView iv = new ImageView(CurrentActivity);
+            ImageView iv = new ImageView(mContext);
             dotsList.add(iv);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             lp.width = 20;
@@ -112,7 +120,7 @@ public class SwipeImageView extends RelativeLayout implements ViewPager.OnPageCh
 
     public List<ImageView> GetInnerImageViews()
     {
-        return Adap.GetInnerImageViews();
+        return Adapter.GetInnerImageViews();
     }
 
     private int Dp2Px(int dp) {

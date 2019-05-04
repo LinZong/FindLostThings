@@ -24,6 +24,8 @@ public class SwipeLostThingImageAdapter extends PagerAdapter {
     private List<ImageView> imageViews;
     private Activity activity;
 
+    private OnImageListChanged mListener;
+
     public SwipeLostThingImageAdapter(List<Uri> imageUriList, Activity activity) {
         this.activity = activity;
         imageViews = new ArrayList<>();
@@ -46,6 +48,10 @@ public class SwipeLostThingImageAdapter extends PagerAdapter {
             iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
             Glide.with(activity).load(uri).into(iv);
             imageViews.add(iv);
+        }
+        if(mListener != null)
+        {
+            mListener.handle(imageViews);
         }
     }
 
@@ -90,5 +96,21 @@ public class SwipeLostThingImageAdapter extends PagerAdapter {
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         container.addView(imageViews.get(position));
         return imageViews.get(position);
+    }
+
+
+    public void SetOnImageChangedListener(OnImageListChanged listener)
+    {
+        mListener = listener;
+    }
+
+    public void RemoveOnImageChangedListener()
+    {
+        mListener = null;
+    }
+
+    public interface OnImageListChanged
+    {
+        void handle(List<ImageView> ivs);
     }
 }

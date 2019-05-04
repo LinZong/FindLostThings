@@ -26,6 +26,7 @@ import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
 import com.yzq.zxinglibrary.common.Constant;
 import com.yzq.zxinglibrary.encode.CodeCreator;
+import misaka.nemesiss.com.findlostthings.Adapter.SwipeLostThingImageAdapter;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.Model.LostThingsCategory;
 import misaka.nemesiss.com.findlostthings.Model.LostThingsInfo;
@@ -99,7 +100,9 @@ public class LostThingDetailActivity extends FindLostThingsActivity {
     private LostThingsInfo CurrentLostThingInfo;
     private UserInformation CurrentLoginUser;
     private UserInformation CurrentTakingThingUser;
+
     private UserInformation PublisherContacts;
+    private SwipeLostThingImageAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,7 +170,8 @@ public class LostThingDetailActivity extends FindLostThingsActivity {
             for (String s : urlArray) {
                 uri.add(Uri.parse(s));
             }
-            imageViewSwiper.SetImageList(uri, LostThingDetailActivity.this);
+            adapter = new SwipeLostThingImageAdapter(uri,LostThingDetailActivity.this);
+            imageViewSwiper.SetImageListAdapter(adapter);
         }
 
         // 实现返回按钮自动变色。
