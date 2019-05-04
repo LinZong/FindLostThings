@@ -245,8 +245,8 @@ public class MainActivity extends FindLostThingsActivity {
         return true;
     }
 
-<<<<<<< HEAD
-=======
+
+
 
     @OnClick({R.id.BackToTop})
     public void GoBackToTop(View v)
@@ -256,7 +256,7 @@ public class MainActivity extends FindLostThingsActivity {
         WaterfallLayoutManager.startSmoothScroll(mScroller);
     }
 
->>>>>>> 49203c7b959eab48269ba0f8509261eb2a540cd7
+
     private void LoadNickNameAndAvatar() {
         UserAccount ua = FindLostThingsApplication.getUserService().getUserAccount();
         if (ua != null) {

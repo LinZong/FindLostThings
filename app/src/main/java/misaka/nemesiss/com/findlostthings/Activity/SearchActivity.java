@@ -21,7 +21,6 @@ import com.jaredrummler.materialspinner.MaterialSpinner;
 import misaka.nemesiss.com.findlostthings.Adapter.LostThingCategoryAdapter;
 import misaka.nemesiss.com.findlostthings.Adapter.SchoolBuildingsCategoryAdapter;
 import misaka.nemesiss.com.findlostthings.Adapter.SchoolInfoCategoryAdapter;
-import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.Model.*;
 import misaka.nemesiss.com.findlostthings.R;
 import misaka.nemesiss.com.findlostthings.Tasks.*;
@@ -164,20 +163,33 @@ public class SearchActivity extends FindLostThingsActivity
         if (cached == null)
         {
             new GetSchoolBuildingsTask((result) -> {
+
                 CacheSchoolBuildingsList.append(SelectedSchoolID, result.getSchoolBuildings());
                 currentSchoolBuildings.clear();
+
+                MySchoolBuildings NotSelected = new MySchoolBuildings();
+                NotSelected.setId(-1);
+                NotSelected.setBuildingName("不选");
+                currentSchoolBuildings.add(0,NotSelected);
+
                 currentSchoolBuildings.addAll(result.getSchoolBuildings());
                 SchoolBuildingSpinner.setSelectedIndex(0);
-                SchoolBuildingSpinner.setText(result.getSchoolBuildings().get(0).getBuildingName());
+                SchoolBuildingSpinner.setText(currentSchoolBuildings.get(0).getBuildingName());
             }).execute(SelectedSchoolID);
         }
         else
         {
             currentSchoolBuildings.clear();
+
+            MySchoolBuildings NotSelected = new MySchoolBuildings();
+            NotSelected.setId(-1);
+            NotSelected.setBuildingName("不选");
+            currentSchoolBuildings.add(0,NotSelected);
+
             currentSchoolBuildings.addAll(cached);
             currentSchoolBuildingsAdapter.notifyDataSetChanged();
             SchoolBuildingSpinner.setSelectedIndex(0);
-            SchoolBuildingSpinner.setText(cached.get(0).getBuildingName());
+            SchoolBuildingSpinner.setText(currentSchoolBuildings.get(0).getBuildingName());
         }
     }
 
@@ -255,7 +267,7 @@ public class SearchActivity extends FindLostThingsActivity
                 }
                else
                 {
-                    Toast.makeText(SearchActivity.this,"必须设置好所有查询条件", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SearchActivity.this,"必须设置好查询条件", Toast.LENGTH_SHORT).show();
                 }
                 break;
             }
@@ -276,17 +288,24 @@ public class SearchActivity extends FindLostThingsActivity
         int CategoryID = thingsCategories.get(CategorySelectedIndex).getId();
         int DetailedID = thingsDetails.get(DetailedSelectedIndex).getId();
         int SchoolID = allSupportedSchool.get(SchoolInfoSelectedIndex).getId();
+        // 判一下有没有选
         int SchoolBuildingID = currentSchoolBuildings.get(SchoolBuildingSelectedIndex).getId();
         long FoundDateBeginUnix = AppUtils.Date2UnixStamp(CurrentPickDateAndTime1.getTime());
         long FoundDateEndUnix = AppUtils.Date2UnixStamp(CurrentPickDateAndTime2.getTime());
+
 
         SearchLostThingsInfo searchLostThingsInfo = new SearchLostThingsInfo();
         searchLostThingsInfo.setFoundDateBeginUnix(FoundDateBeginUnix);
         searchLostThingsInfo.setFoundDateEndUnix(FoundDateEndUnix);
         searchLostThingsInfo.setSchoolId(SchoolID);
-        searchLostThingsInfo.setSchoolBuildingId(SchoolBuildingID);
         searchLostThingsInfo.setThingCatId(CategoryID);
         searchLostThingsInfo.setThingDetailId(DetailedID);
+
+        if(SchoolBuildingID != -1)
+        {
+            // 提取信息
+            searchLostThingsInfo.setSchoolBuildingId(SchoolBuildingID);
+        }
 
         new GetSearchLostThingsInfoTask((result) -> {
             Toast.makeText(SearchActivity.this, String.valueOf(result), Toast.LENGTH_SHORT).show();
@@ -298,7 +317,7 @@ public class SearchActivity extends FindLostThingsActivity
     {
         boolean refuse = false;
         ClearErrorFlags();
-        if (!ConfirmSpinnerAllSelected(ThingCategorySpinner, ThingDetailedSpinner, SchoolAreaSpinner, SchoolBuildingSpinner))
+        if (!ConfirmSpinnerAllSelected(ThingCategorySpinner, ThingDetailedSpinner, SchoolAreaSpinner))
         {
             refuse = true;
         }
@@ -330,8 +349,8 @@ public class SearchActivity extends FindLostThingsActivity
     {
         ThingCategorySpinner.setError(null);
         ThingDetailedSpinner.setError(null);
-        SchoolAreaSpinner.setError(null);
-        SchoolBuildingSpinner.setError(null);
+        //SchoolAreaSpinner.setError(null);
+       // SchoolBuildingSpinner.setError(null);
         startTimeTextView.setError(null);
         endTimeTextView.setError(null);
         startDateTextView.setError(null);

@@ -13,8 +13,8 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class APIDocs
 {
-    public static final String DeploymentAddress = "http://192.168.88.126:8970";
-    //public static final String DeploymentAddress = "http://111.230.238.192/learn/lost";
+    //public static final String DeploymentAddress = "http://192.168.88.126:8970";
+    public static final String DeploymentAddress = "http://111.230.238.192/learn/lost";
     public static final String RequestAddress = "/user/login";
     public static final String UserInfo = "/user/info";
     public static final String LostThingsCategory = "/category";
