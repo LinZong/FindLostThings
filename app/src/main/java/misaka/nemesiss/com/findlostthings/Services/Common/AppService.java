@@ -3,7 +3,9 @@ package misaka.nemesiss.com.findlostthings.Services.Common;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
@@ -19,6 +21,7 @@ import com.tencent.cos.xml.listener.CosXmlResultListener;
 import com.tencent.cos.xml.model.CosXmlRequest;
 import com.tencent.cos.xml.model.CosXmlResult;
 import com.tencent.cos.xml.transfer.COSXMLDownloadTask;
+import misaka.nemesiss.com.findlostthings.Activity.ExecuteApkInstallActivity;
 import misaka.nemesiss.com.findlostthings.Activity.SplashActivity;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.BuildConfig;
@@ -167,8 +170,12 @@ public class AppService {
         }
         else if(progress == -1)
         {
-            // 下载完成，点击安装
             AppUtils.InstallApk(NewVersionApkPath);
+            Intent intent = new Intent(context, ExecuteApkInstallActivity.class);
+            intent.putExtra("ApkPath",NewVersionApkPath);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            PendingIntent pdit = PendingIntent.getActivity(context,1,intent,0);
+            builder.setContentIntent(pdit);
         }
         else {
             // 下载失败。
