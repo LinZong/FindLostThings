@@ -11,6 +11,11 @@
     <style name="SplashScreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_bg_drawable</item>
     </style>
+
+    <style name="InstallApkTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/install_apk_bg</item>
+    </style>
+
     <style name="WhiteConstrain" parent="Theme.AppCompat.Light" >
         <item name="colorPrimary">#ffffff</item>
         <item name="colorPrimaryDark">#ffffff</item>

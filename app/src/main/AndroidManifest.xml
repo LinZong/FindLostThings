@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT"/>
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
 
     <permission
             android:name="misaka.nemesiss.com.findlostthings.permission.JPUSH_MESSAGE"
@@ -105,6 +106,20 @@
         <activity android:name=".Activity.SearchActivity">
         </activity>
         <activity android:name=".Activity.SearchResultActivity">
+        </activity>
+
+        <provider
+                android:name="android.support.v4.content.FileProvider"
+                android:authorities="${applicationId}.provider"
+                android:exported="false"
+                android:grantUriPermissions="true">
+            <meta-data
+                    android:name="android.support.FILE_PROVIDER_PATHS"
+                    android:resource="@xml/file_paths"/>
+        </provider>
+
+        <activity android:name=".Activity.ExecuteApkInstallActivity"
+                    android:theme="@style/InstallApkTheme">
         </activity>
     </application>
 

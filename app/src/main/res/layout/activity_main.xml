@@ -53,8 +53,18 @@
      </android.support.v4.widget.SwipeRefreshLayout>
 
 
-    </android.support.design.widget.CoordinatorLayout>
+      <com.getbase.floatingactionbutton.FloatingActionButton android:layout_width="wrap_content"
+                                                             android:layout_height="wrap_content"
+                                                             android:id="@+id/BackToTop"
+                                                             app:fab_colorNormal="@color/white"
+                                                             android:layout_gravity="end|bottom"
+                                                             app:fab_size="mini"
+                                                             app:fab_colorPressed="@color/white_pressed"
+                                                             app:fab_icon="@drawable/ic_keyboard_arrow_up_black_24dp"
 
+      />
+
+    </android.support.design.widget.CoordinatorLayout>
    <android.support.design.widget.NavigationView
        android:id="@+id/nav_view"
        android:layout_height="match_parent"
@@ -62,8 +72,6 @@
        android:layout_gravity="start"
        app:menu="@menu/navigation_menu"
        app:headerLayout="@layout/navigation_header"/>
-
-
 </android.support.v4.widget.DrawerLayout>
 
 

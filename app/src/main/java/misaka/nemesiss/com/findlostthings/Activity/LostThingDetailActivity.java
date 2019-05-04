@@ -12,6 +12,7 @@ import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.*;
@@ -107,9 +108,13 @@ public class LostThingDetailActivity extends FindLostThingsActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
+                WindowManager.LayoutParams.FLAG_SECURE);
+
+
         setContentView(R.layout.activity_lost_thing_detail);
         ButterKnife.bind(this);
-
         CurrentLostThingInfo = (LostThingsInfo) getIntent().getSerializableExtra("LostThingsInfo");
         int arrowDrawRes = getIntent().getIntExtra("ArrowDrawableRes",-1);
         if(arrowDrawRes!=-1){

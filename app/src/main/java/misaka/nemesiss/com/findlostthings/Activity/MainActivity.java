@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.bumptech.glide.Glide;
 import de.hdodenhof.circleimageview.CircleImageView;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
@@ -27,6 +28,7 @@ import misaka.nemesiss.com.findlostthings.R;
 import misaka.nemesiss.com.findlostthings.Model.LostThingsInfo;
 import misaka.nemesiss.com.findlostthings.Adapter.LostThingsInfoAdapter;
 import misaka.nemesiss.com.findlostthings.Tasks.WaterfallThingsInfoTask;
+import misaka.nemesiss.com.findlostthings.Utils.TopSmoothScroller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -243,6 +245,18 @@ public class MainActivity extends FindLostThingsActivity {
         return true;
     }
 
+<<<<<<< HEAD
+=======
+
+    @OnClick({R.id.BackToTop})
+    public void GoBackToTop(View v)
+    {
+        final TopSmoothScroller mScroller = new TopSmoothScroller(MainActivity.this);
+        mScroller.setTargetPosition(0);
+        WaterfallLayoutManager.startSmoothScroll(mScroller);
+    }
+
+>>>>>>> 49203c7b959eab48269ba0f8509261eb2a540cd7
     private void LoadNickNameAndAvatar() {
         UserAccount ua = FindLostThingsApplication.getUserService().getUserAccount();
         if (ua != null) {
