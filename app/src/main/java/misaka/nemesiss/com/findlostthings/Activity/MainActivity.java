@@ -144,7 +144,6 @@ public class MainActivity extends FindLostThingsActivity {
         RefreshLostThingsInfo(InitWaterfall,true);
     }
 
-
     private boolean isSlideToBottom(RecyclerView recyclerView) {
         if (recyclerView == null)
             return false;
@@ -199,7 +198,6 @@ public class MainActivity extends FindLostThingsActivity {
         return true;
     }
 
-
     private void ClickAvatarToOpenDrawers(View view) {
         mDrawerLayout.openDrawer(Gravity.START);
     }
@@ -248,6 +246,8 @@ public class MainActivity extends FindLostThingsActivity {
     }
 
 
+
+
     @OnClick({R.id.BackToTop})
     public void GoBackToTop(View v)
     {
@@ -255,6 +255,7 @@ public class MainActivity extends FindLostThingsActivity {
         mScroller.setTargetPosition(0);
         WaterfallLayoutManager.startSmoothScroll(mScroller);
     }
+
 
     private void LoadNickNameAndAvatar() {
         UserAccount ua = FindLostThingsApplication.getUserService().getUserAccount();

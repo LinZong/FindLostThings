@@ -17,10 +17,9 @@ import com.google.gson.reflect.TypeToken;
 import misaka.nemesiss.com.findlostthings.Activity.LostThingDetailActivity;
 import misaka.nemesiss.com.findlostthings.R;
 import misaka.nemesiss.com.findlostthings.Model.LostThingsInfo;
-
 import java.util.List;
 
-public class LostThingsInfoAdapter extends RecyclerView.Adapter<LostThingsInfoAdapter.ViewHolder> {
+public class MyPublishLostThingsInfoAdapter extends RecyclerView.Adapter<MyPublishLostThingsInfoAdapter.ViewHolder> {
     private Context mContext;
     private Activity mActivity;
     private List<LostThingsInfo> mLostThingsInfoList;
@@ -28,18 +27,21 @@ public class LostThingsInfoAdapter extends RecyclerView.Adapter<LostThingsInfoAd
     static class ViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
         ImageView LostThingsInfoImage;
-        TextView LostThingsInfoTextView;
+        TextView LostThingsInfoTextView1;
+        TextView LostThingsInfoTextView2;
+
         public int CurrentPosition;
 
         public ViewHolder(View view) {
             super(view);
             cardView = (CardView) view;
-            LostThingsInfoImage = (ImageView) view.findViewById(R.id.lost_things_info_image);
-            LostThingsInfoTextView = (TextView) view.findViewById(R.id.lost_things_info_textview);
+            LostThingsInfoImage = (ImageView) view.findViewById(R.id.myPublish_lost_things_info_image);
+            LostThingsInfoTextView1 = (TextView) view.findViewById(R.id.myPublish_lost_things_info_text1);
+            LostThingsInfoTextView2 = (TextView) view.findViewById(R.id.myPublish_lost_things_info_text2);
         }
     }
 
-    public LostThingsInfoAdapter(List<LostThingsInfo> lostThingsInfoList, Activity activity) {
+    public MyPublishLostThingsInfoAdapter(List<LostThingsInfo> lostThingsInfoList, Activity activity) {
         mLostThingsInfoList = lostThingsInfoList;
         mActivity = activity;
     }
@@ -49,7 +51,7 @@ public class LostThingsInfoAdapter extends RecyclerView.Adapter<LostThingsInfoAd
         if (mContext == null) {
             mContext = parent.getContext();
         }
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.lost_things_info, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_publish_lostthings, parent, false);
         return new ViewHolder(view);
     }
 
@@ -71,11 +73,15 @@ public class LostThingsInfoAdapter extends RecyclerView.Adapter<LostThingsInfoAd
         });
 
         LostThingsInfo lostThingsInfo = mLostThingsInfoList.get(pos);
-        //整个发布步骤大致为 填写失物信息 --> 拍照 --> 照片传到存储桶 --> 上传完成后，得到照片位于存储桶的URL地址 --> 将照片URL放入数组，
-        // 转成JSON数组之后连同失物信息一起上传给服务器 这样一来，服务器上就只存储照片的URL，获取失物信息的时候客户端应该解析这些照片的URL，
-        // 再根据这些URL去下载图片资源。
-        // holder.LostThingsInfoImage.setImageResource(Integer.parseInt(lostThingsInfo.getThingPhotoUrls()));
-        holder.LostThingsInfoTextView.setText(lostThingsInfo.getTitle());
+        holder.LostThingsInfoTextView1.setText(lostThingsInfo.getTitle());
+        if(lostThingsInfo.getIsgiven()==1)
+        {
+            holder.LostThingsInfoTextView2.setText("已归还");
+        }
+       else
+        {
+            holder.LostThingsInfoTextView2.setText("未归还");
+        }
         holder.CurrentPosition = pos;
         Gson gson = new Gson();
         String[] images = gson.fromJson(lostThingsInfo.getThingPhotoUrls(), new TypeToken<String[]>() {
@@ -91,3 +97,4 @@ public class LostThingsInfoAdapter extends RecyclerView.Adapter<LostThingsInfoAd
         return mLostThingsInfoList.size();
     }
 }
+
