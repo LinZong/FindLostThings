@@ -54,10 +54,11 @@ public class LostThingsInfoAdapter extends RecyclerView.Adapter<LostThingsInfoAd
         return new ViewHolder(view);
     }
 
-    private void EnterThingDetail(int position) {
+    private void EnterThingDetail(int position,int arrowDrawable) {
         LostThingsInfo lti = mLostThingsInfoList.get(position);
         Intent intent = new Intent(mActivity, LostThingDetailActivity.class);
         intent.putExtra("LostThingsInfo", lti);
+        intent.putExtra("ArrowDrawableRes",arrowDrawable);
         mActivity.startActivity(intent);
     }
 
@@ -65,7 +66,10 @@ public class LostThingsInfoAdapter extends RecyclerView.Adapter<LostThingsInfoAd
     public void onBindViewHolder(ViewHolder holder, int position) {
         // Bind onClick handler.
         int pos = holder.getAdapterPosition();
-        holder.itemView.setOnClickListener(v -> EnterThingDetail(pos));
+        holder.itemView.setOnClickListener(v -> {
+            int arrowDrawable = LostThingDetailActivity.ComputeHomeArrowColor(holder.LostThingsInfoImage);
+            EnterThingDetail(pos,arrowDrawable);
+        });
 
         LostThingsInfo lostThingsInfo = mLostThingsInfoList.get(pos);
         //整个发布步骤大致为 填写失物信息 --> 拍照 --> 照片传到存储桶 --> 上传完成后，得到照片位于存储桶的URL地址 --> 将照片URL放入数组，

@@ -37,7 +37,7 @@ public class ImageHelper {
                         @Override
                         public void onError(Throwable e) {
                             Log.d("ImageHelper","Compress failed! : " + e.getMessage() + "  " + ur.getPath());
-                            eventList.emit(ur, EventProxy.EventStatus.Fail,null);
+                            eventList.emit(ur, EventProxy.EventStatus.Fail,"null");
                         }
                     }).launch();
         }

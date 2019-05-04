@@ -9,6 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
+import misaka.nemesiss.com.findlostthings.Activity.LostThingDetailActivity;
 import misaka.nemesiss.com.findlostthings.Activity.PreviewSelectedImageActivity;
 
 import java.util.ArrayList;
@@ -34,6 +38,7 @@ public class SwipeLostThingImageAdapter extends PagerAdapter {
         ImageUriList = imageUriList;
         imageViews.clear();
         int size = ImageUriList.size();
+
         for (int i = 0; i < size; i++) {
             ImageView iv = new ImageView(activity);
             Uri uri  = ImageUriList.get(i);
@@ -43,6 +48,12 @@ public class SwipeLostThingImageAdapter extends PagerAdapter {
             imageViews.add(iv);
         }
     }
+
+    public List<ImageView> GetInnerImageViews()
+    {
+        return imageViews;
+    }
+
     private void EnterImagePreview(Uri uri)
     {
         Intent intent = new Intent(activity, PreviewSelectedImageActivity.class);

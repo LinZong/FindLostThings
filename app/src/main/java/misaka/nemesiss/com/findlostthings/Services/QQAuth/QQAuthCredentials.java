@@ -16,6 +16,7 @@ import misaka.nemesiss.com.findlostthings.Model.UserAccount;
 import misaka.nemesiss.com.findlostthings.Services.User.UserService;
 import misaka.nemesiss.com.findlostthings.Tasks.PostUserInformationAsyncTask;
 import misaka.nemesiss.com.findlostthings.Utils.AppUtils;
+import misaka.nemesiss.com.findlostthings.Utils.EventProxy;
 import misaka.nemesiss.com.findlostthings.Utils.HMacSha256;
 import org.json.JSONObject;
 
@@ -79,7 +80,7 @@ public class QQAuthCredentials
             FindLostThingsApplication.getUserService().SetUserID(res.getUserID());
             Log.d("QQAuthCredentials", "成功上报数据给服务器.");
 
-            SplashActivity.GoToMainActivityHandler.sendEmptyMessage(SplashActivity.CAN_GOTO_MAINACTIVITY);
+            SplashActivity.GotoMainActivityEvent.emit("qq_login", EventProxy.EventStatus.Finish,"QQLoginFinish");
 
             FindLostThingsApplication.ReloadAfterLogin();
 

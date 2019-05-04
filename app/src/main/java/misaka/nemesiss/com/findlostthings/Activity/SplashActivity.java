@@ -20,9 +20,11 @@ import butterknife.ButterKnife;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.R;
 import misaka.nemesiss.com.findlostthings.Services.QQAuth.QQAuthCredentials;
+import misaka.nemesiss.com.findlostthings.Utils.EventProxy;
 import misaka.nemesiss.com.findlostthings.Utils.PermissionsHelper;
 
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SplashActivity extends FindLostThingsActivity
 {
@@ -32,7 +34,7 @@ public class SplashActivity extends FindLostThingsActivity
     // 注意，这个Handler只能在App运行的时候使用。从Service启动Activity需要拿context去起，不能用这个Handler。
 
     public static Handler GoToMainActivityHandler;
-
+    public static EventProxy<String> GotoMainActivityEvent;
     public static final int CAN_GOTO_MAINACTIVITY = 1;
     public static final int OVERTIME_GOTO_MAINACTIVITY = 2;
 
@@ -41,6 +43,17 @@ public class SplashActivity extends FindLostThingsActivity
     {
         super.onCreate(savedInstanceState);
         GoToMainActivityHandler = new Handler(this::SplashMessageHandler);
+
+        GotoMainActivityEvent = new EventProxy<>();
+        // 设置进入MainActivity的条件
+
+        GotoMainActivityEvent.all(new EventProxy.EventResult<String>() {
+            @Override
+            public void handle(ConcurrentHashMap<String, Object> evs, ConcurrentHashMap<String, EventProxy.EventStatus> evStatus) {
+                SplashActivity.GoToMainActivityHandler.sendEmptyMessage(SplashActivity.CAN_GOTO_MAINACTIVITY);
+            }
+        }, "qq_login", "get_school_name", "get_thing_category");
+
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_splash);

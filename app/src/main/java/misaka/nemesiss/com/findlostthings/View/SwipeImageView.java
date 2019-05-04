@@ -110,6 +110,11 @@ public class SwipeImageView extends RelativeLayout implements ViewPager.OnPageCh
         return viewPager;
     }
 
+    public List<ImageView> GetInnerImageViews()
+    {
+        return Adap.GetInnerImageViews();
+    }
+
     private int Dp2Px(int dp) {
         final float scale = getResources().getDisplayMetrics().density;
         return (int) (dp * scale + 0.5f);

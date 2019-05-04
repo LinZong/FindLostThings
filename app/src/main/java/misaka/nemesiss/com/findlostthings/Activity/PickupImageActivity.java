@@ -569,11 +569,21 @@ public class PickupImageActivity extends FindLostThingsActivity
             public void handle(ConcurrentHashMap<Uri, Object> evs, ConcurrentHashMap<Uri, EventProxy.EventStatus> evStatus) {
                 Log.d("PickupImageActivity","图片压缩完成...");
                 List<Uri> compressed = new ArrayList<>();
-                for (Object val : evs.values()) {
-                    if(val != null) {
-                        compressed.add(Uri.fromFile((File) val));
+//                for (Object val : evs.values()) {
+//                    if(val != null) {
+//                        compressed.add(Uri.fromFile((File) val));
+//                    }
+//                }
+                for (Map.Entry<Uri, EventProxy.EventStatus> statEntry : evStatus.entrySet()) {
+                    Uri key = statEntry.getKey();
+                    EventProxy.EventStatus status = statEntry.getValue();
+                    if(status == EventProxy.EventStatus.Finish) {
+                        File f = (File) evs.get(key);
+                        compressed.add(Uri.fromFile(f));
                     }
                 }
+
+
                 // 压缩完成后文件的路径
                 List<String> AllImagePath = AppUtils.GetAllUploadObjectOriginalFilePath(compressed);
                 // UserID

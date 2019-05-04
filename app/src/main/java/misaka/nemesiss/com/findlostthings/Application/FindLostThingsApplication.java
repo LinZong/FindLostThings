@@ -7,12 +7,14 @@ import com.tencent.cos.xml.CosXmlService;
 import com.tencent.cos.xml.CosXmlServiceConfig;
 import com.tencent.qcloud.core.auth.QCloudCredentialProvider;
 import com.tencent.tauth.Tencent;
+import misaka.nemesiss.com.findlostthings.Activity.SplashActivity;
 import misaka.nemesiss.com.findlostthings.Services.Common.AppService;
 import misaka.nemesiss.com.findlostthings.Services.QQAuth.QQAuthInfo;
 import misaka.nemesiss.com.findlostthings.Services.StorageBucket.BucketInfo;
 import misaka.nemesiss.com.findlostthings.Services.StorageBucket.CustomCredentialProvider;
 import misaka.nemesiss.com.findlostthings.Services.Thing.ThingServices;
 import misaka.nemesiss.com.findlostthings.Services.User.UserService;
+import misaka.nemesiss.com.findlostthings.Utils.EventProxy;
 
 public class FindLostThingsApplication extends MultiDexApplication
 {
@@ -94,6 +96,12 @@ public class FindLostThingsApplication extends MultiDexApplication
         //这里放置一些在完成全部Login操作之后需要执行的语句.
         ((CustomCredentialProvider)credentialProvider).LoadAccessTokenAndUserID();
         UserService.LoadUserProfile();
+        thingServices.ReloadSchoolList(() -> {
+            SplashActivity.GotoMainActivityEvent.emit("get_school_name", EventProxy.EventStatus.Finish,"GetSchoolNameFinish");
+        });
+        thingServices.ReloadThingCategory(() -> {
+            SplashActivity.GotoMainActivityEvent.emit("get_thing_category", EventProxy.EventStatus.Finish,"GetThingCategoryFinish");
+        });
     }
 
     public static void ReloadAfterNetworkChanged()

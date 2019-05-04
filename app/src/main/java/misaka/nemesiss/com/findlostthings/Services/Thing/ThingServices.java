@@ -18,8 +18,7 @@ public class ThingServices
         Schools = new SparseArray<>();
         ThingCategory = new SparseArray<>();
 
-        ReloadSchoolList(null);
-        ReloadThingCategory(null);
+        
     }
 
     public void ReloadSchoolList(@Nullable Runnable callback)
