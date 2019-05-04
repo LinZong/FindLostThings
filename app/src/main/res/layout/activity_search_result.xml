@@ -16,4 +16,32 @@
                                            app:title="搜索结果">
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <android.support.v7.widget.RecyclerView
+                android:id="@+id/SearchResultView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+        />
+    </LinearLayout>
+    <RelativeLayout android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                    android:background="#3B000000"
+                    android:visibility="visible"
+                    android:id="@+id/SearchProgressContainer"
+    >
+        <ProgressBar android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:layout_centerInParent="true"
+                     android:id="@+id/SearchProgress"
+        />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                  android:textColor="#fff"
+                  android:text="正在搜索..."
+                  android:layout_below="@id/SearchProgress"
+                  android:layout_centerHorizontal="true"
+        />
+    </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

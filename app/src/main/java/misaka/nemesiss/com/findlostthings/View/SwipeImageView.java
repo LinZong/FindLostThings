@@ -84,6 +84,7 @@ public class SwipeImageView extends RelativeLayout implements ViewPager.OnPageCh
                 BuildImageDots();
             }
         });
+        BuildImageDots();
         return this;
     }
 

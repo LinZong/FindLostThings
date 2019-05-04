@@ -52,7 +52,7 @@ public class SplashActivity extends FindLostThingsActivity
             public void handle(ConcurrentHashMap<String, Object> evs, ConcurrentHashMap<String, EventProxy.EventStatus> evStatus) {
                 SplashActivity.GoToMainActivityHandler.sendEmptyMessage(SplashActivity.CAN_GOTO_MAINACTIVITY);
             }
-        }, "qq_login", "get_school_name", "get_thing_category","finish_check_update");
+        }, "qq_login", "get_school_name", "get_thing_category","get_thing_detail","finish_check_update");
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_splash);
@@ -62,7 +62,10 @@ public class SplashActivity extends FindLostThingsActivity
 
         HideNavigationBar();
         LoadSchoolNameAnimation();
-        FindLostThingsApplication.getAppService().CheckAppUpdate(SplashActivity.this);
+
+        FindLostThingsApplication.ReloadBeforeLogin();
+
+        FindLostThingsApplication.getAppService().CheckAppUpdate(SplashActivity.this,true);
         if(PermissionsHelper.RequestAllPermissions(SplashActivity.this, SplashActivity.this))
         {
             InitApplication();

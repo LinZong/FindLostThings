@@ -92,17 +92,23 @@ public class FindLostThingsApplication extends MultiDexApplication
         return appService;
     }
 
-    public static void ReloadAfterLogin()
-    {
-        //这里放置一些在完成全部Login操作之后需要执行的语句.
-        ((CustomCredentialProvider)credentialProvider).LoadAccessTokenAndUserID();
-        UserService.LoadUserProfile();
+    public static void ReloadBeforeLogin() {
         thingServices.ReloadSchoolList(() -> {
             SplashActivity.GotoMainActivityEvent.emit("get_school_name", EventProxy.EventStatus.Finish,"GetSchoolNameFinish");
         });
         thingServices.ReloadThingCategory(() -> {
             SplashActivity.GotoMainActivityEvent.emit("get_thing_category", EventProxy.EventStatus.Finish,"GetThingCategoryFinish");
         });
+        thingServices.ReloadAllThingDetail(() -> {
+            SplashActivity.GotoMainActivityEvent.emit("get_thing_detail", EventProxy.EventStatus.Finish,"GetThingDetailFinish");
+        });
+    }
+
+    public static void ReloadAfterLogin()
+    {
+        //这里放置一些在完成全部Login操作之后需要执行的语句.
+        ((CustomCredentialProvider)credentialProvider).LoadAccessTokenAndUserID();
+        UserService.LoadUserProfile();
     }
 
     public static void ReloadAfterNetworkChanged()

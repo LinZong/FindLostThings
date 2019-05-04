@@ -1,11 +1,15 @@
 package misaka.nemesiss.com.findlostthings.Model;
 
-public class SearchLostThingsInfo
+import android.content.Intent;
+
+import java.io.Serializable;
+
+public class SearchLostThingsInfo implements Serializable
 {
     private int ThingCatId;
-    private int ThingDetailId;
+    private Integer ThingDetailId;
     private int SchoolId;
-    private int SchoolBuildingId;
+    private Integer SchoolBuildingId;
     private int ItemStatus;
     private int SortType;
     private int IsAdvancedSort=0;
@@ -13,7 +17,7 @@ public class SearchLostThingsInfo
     private long FoundDateBeginUnix;
     private long FoundDateEndUnix;
 
-    public int getThingDetailId()
+    public Integer getThingDetailId()
     {
         return ThingDetailId;
     }
@@ -33,7 +37,7 @@ public class SearchLostThingsInfo
         return ItemStatus;
     }
 
-    public int getSchoolBuildingId()
+    public Integer getSchoolBuildingId()
     {
         return SchoolBuildingId;
     }

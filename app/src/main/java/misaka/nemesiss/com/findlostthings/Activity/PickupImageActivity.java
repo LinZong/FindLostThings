@@ -42,17 +42,12 @@ import com.tencent.cos.xml.model.CosXmlResult;
 import com.tencent.cos.xml.transfer.COSXMLUploadTask;
 import com.tencent.cos.xml.transfer.TransferState;
 import com.yalantis.ucrop.UCrop;
-import misaka.nemesiss.com.findlostthings.Adapter.LostThingCategoryAdapter;
-import misaka.nemesiss.com.findlostthings.Adapter.PublishLostThingPreviewImageAdapter;
-import misaka.nemesiss.com.findlostthings.Adapter.SchoolBuildingsCategoryAdapter;
-import misaka.nemesiss.com.findlostthings.Adapter.SchoolInfoCategoryAdapter;
+import misaka.nemesiss.com.findlostthings.Adapter.*;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
-import misaka.nemesiss.com.findlostthings.Model.LostThingsCategory;
+import misaka.nemesiss.com.findlostthings.Model.*;
 import misaka.nemesiss.com.findlostthings.R;
 import misaka.nemesiss.com.findlostthings.Services.StorageBucket.BucketFileOperation;
-import misaka.nemesiss.com.findlostthings.Model.LostThingsInfo;
-import misaka.nemesiss.com.findlostthings.Model.MySchoolBuildings;
-import misaka.nemesiss.com.findlostthings.Model.SchoolInfo;
+import misaka.nemesiss.com.findlostthings.Services.Thing.ThingServices;
 import misaka.nemesiss.com.findlostthings.Tasks.*;
 import misaka.nemesiss.com.findlostthings.Utils.AppUtils;
 import misaka.nemesiss.com.findlostthings.Utils.EventProxy;
@@ -109,17 +104,17 @@ public class PickupImageActivity extends FindLostThingsActivity
     DatePickerDialog datePickerDialog;
     TimePickerDialog timePickerDialog;
 
-    private SparseArray<List<LostThingsCategory>> CacheThingsDetail = new SparseArray<>();
+    private SparseArray<List<LostThingDetail>> CacheThingsDetail = new SparseArray<>();
     private SparseArray<List<MySchoolBuildings>> CacheSchoolBuildingsList = new SparseArray<>();
 
     private List<LostThingsCategory> thingsCategories = new ArrayList<>();
-    private List<LostThingsCategory> thingsDetails = new ArrayList<>();
+    private List<LostThingDetail> thingsDetails = new ArrayList<>();
     private List<SchoolInfo> allSupportedSchool = new ArrayList<>();
     private List<MySchoolBuildings> currentSchoolBuildings = new ArrayList<>();
 
     //配套上面这些List的Adapter
     private LostThingCategoryAdapter thingsCategoryAdapter = new LostThingCategoryAdapter(PickupImageActivity.this, thingsCategories);
-    private LostThingCategoryAdapter thingsDetailedAdapter = new LostThingCategoryAdapter(PickupImageActivity.this, thingsDetails);
+    private LostThingDetailAdapter thingsDetailedAdapter = new LostThingDetailAdapter(PickupImageActivity.this, thingsDetails);
     private SchoolInfoCategoryAdapter supportedSchoolListAdapter = new SchoolInfoCategoryAdapter(PickupImageActivity.this, allSupportedSchool);
     private SchoolBuildingsCategoryAdapter currentSchoolBuildingsAdapter = new SchoolBuildingsCategoryAdapter(PickupImageActivity.this, currentSchoolBuildings);
 
@@ -179,25 +174,34 @@ public class PickupImageActivity extends FindLostThingsActivity
 
     private void LoadSpinnerItems()
     {
-        new GetLostThingsCategoryAsyncTask((result) -> {
-            if(result!=null && result.getStatusCode() == 0)
-            {
-                Log.d("PickupImageActivity", "物品种类加载完成");
-                thingsCategories.clear();
-                thingsCategories.addAll(result.getCategoryList());
-                thingsCategoryAdapter.notifyDataSetChanged();
-                Log.d("PickupImageActivity", String.valueOf(ThingCategorySpinner.getSelectedIndex()));
-            }
-        }).execute();
-        new GetSupportSchoolsTask((result) -> {
-            if(result !=null && result.getStatusCode() == 0)
-            {
-                Log.d("PickupImageActivity", "支持的学校加载完成");
-                allSupportedSchool.clear();
-                allSupportedSchool.addAll(result.getSupportSchools());
-                supportedSchoolListAdapter.notifyDataSetChanged();
-            }
-        }).execute();
+//        new GetLostThingsCategoryAsyncTask((result) -> {
+//            if(result!=null && result.getStatusCode() == 0)
+//            {
+//                Log.d("PickupImageActivity", "物品种类加载完成");
+//                thingsCategories.clear();
+//                thingsCategories.addAll(result.getCategoryList());
+//                thingsCategoryAdapter.notifyDataSetChanged();
+//                Log.d("PickupImageActivity", String.valueOf(ThingCategorySpinner.getSelectedIndex()));
+//            }
+//        }).execute();
+//        new GetSupportSchoolsTask((result) -> {
+//            if(result !=null && result.getStatusCode() == 0)
+//            {
+//                Log.d("PickupImageActivity", "支持的学校加载完成");
+//                allSupportedSchool.clear();
+//                allSupportedSchool.addAll(result.getSupportSchools());
+//                supportedSchoolListAdapter.notifyDataSetChanged();
+//            }
+//        }).execute();
+
+        ThingServices ts = FindLostThingsApplication.getThingServices();
+
+        thingsCategories.addAll(ts.getOriginalThingCategory());
+        thingsCategoryAdapter.notifyDataSetChanged();
+
+        allSupportedSchool.addAll(ts.getOriginalSchools());
+        supportedSchoolListAdapter.notifyDataSetChanged();
+
     }
 
     private void InitComponents()
@@ -275,27 +279,40 @@ public class PickupImageActivity extends FindLostThingsActivity
     private void HandleUpdateThingsDetailed(MaterialSpinner materialSpinner, int position, long id, Object item)
     {
         int SelectedThingCategoryID = thingsCategories.get(position).getId();
-        List<LostThingsCategory> cached = CacheThingsDetail.get(SelectedThingCategoryID, null);
+        ThingServices ts = FindLostThingsApplication.getThingServices();
+        SparseArray<LostThingDetail> dt = ts.getThingDetails().get(SelectedThingCategoryID);
 
-        if (cached == null)
-        {
-            new GetLostThingsCategoryPartitionTask((result) -> {
-                CacheThingsDetail.append(SelectedThingCategoryID, result.getCategoryDetails());
-                thingsDetails.clear();
-                thingsDetails.addAll(result.getCategoryDetails());
-                thingsDetailedAdapter.notifyDataSetChanged();
-                ThingDetailedSpinner.setSelectedIndex(0);
-                ThingDetailedSpinner.setText(result.getCategoryDetails().get(0).getName());
-            }).execute(SelectedThingCategoryID);
-        } else
-        {
+        int len = dt.size();
 
-            thingsDetails.clear();
-            thingsDetails.addAll(cached);
-            thingsDetailedAdapter.notifyDataSetChanged();
-            ThingDetailedSpinner.setSelectedIndex(0);
-            ThingDetailedSpinner.setText(cached.get(0).getName());
+        thingsDetails.clear();
+        for (int i = 0; i < len; i++) {
+            thingsDetails.add(dt.valueAt(i));
         }
+        thingsDetailedAdapter.notifyDataSetChanged();
+        ThingDetailedSpinner.setSelectedIndex(0);
+        ThingDetailedSpinner.setText(thingsDetails.get(0).getName());
+
+//        List<LostThingDetail> cached = CacheThingsDetail.get(SelectedThingCategoryID, null);
+//
+//        if (cached == null)
+//        {
+//            new GetLostThingsCategoryPartitionTask((result) -> {
+//                CacheThingsDetail.append(SelectedThingCategoryID, result.getCategoryDetails());
+//                thingsDetails.clear();
+//                thingsDetails.addAll(result.getCategoryDetails());
+//                thingsDetailedAdapter.notifyDataSetChanged();
+//                ThingDetailedSpinner.setSelectedIndex(0);
+//                ThingDetailedSpinner.setText(result.getCategoryDetails().get(0).getName());
+//            }).execute(SelectedThingCategoryID);
+//        } else
+//        {
+//
+//            thingsDetails.clear();
+//            thingsDetails.addAll(cached);
+//            thingsDetailedAdapter.notifyDataSetChanged();
+//            ThingDetailedSpinner.setSelectedIndex(0);
+//            ThingDetailedSpinner.setText(cached.get(0).getName());
+//        }
     }
 
     private void HandleTimePick(TimePicker timePicker, int HourOfDay, int Minus)

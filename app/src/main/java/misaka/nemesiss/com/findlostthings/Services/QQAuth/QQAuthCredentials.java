@@ -73,17 +73,18 @@ public class QQAuthCredentials
 
         new PostUserInformationAsyncTask((res) ->
         {
-            if (res.getStatusCode() != 0) {
-                Log.d("QQAuthCredentials", "上报数据给服务器出现异常!");
+            if(AppUtils.CommonResponseOK(res)) {
+                if (res.getStatusCode() != 0) {
+                    Log.d("QQAuthCredentials", "上报数据给服务器出现异常!");
+                }
+                //将服务器返回的UserID存入UserService对象。
+                FindLostThingsApplication.getUserService().SetUserID(res.getUserID());
+                Log.d("QQAuthCredentials", "成功上报数据给服务器.");
+
+                SplashActivity.GotoMainActivityEvent.emit("qq_login", EventProxy.EventStatus.Finish,"QQLoginFinish");
+
+                FindLostThingsApplication.ReloadAfterLogin();
             }
-            //将服务器返回的UserID存入UserService对象。
-            FindLostThingsApplication.getUserService().SetUserID(res.getUserID());
-            Log.d("QQAuthCredentials", "成功上报数据给服务器.");
-
-            SplashActivity.GotoMainActivityEvent.emit("qq_login", EventProxy.EventStatus.Finish,"QQLoginFinish");
-
-            FindLostThingsApplication.ReloadAfterLogin();
-
         }).execute(OpenID, NickName, AppUtils.getAndroidId(ctx));
     }
 

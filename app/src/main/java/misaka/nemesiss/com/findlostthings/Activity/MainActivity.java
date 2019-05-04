@@ -213,8 +213,9 @@ public class MainActivity extends FindLostThingsActivity {
                         WaterfallInfoList.clear();
                     }
                     WaterfallInfoList.addAll(TaskRet);
-                }else
-                    Toast.makeText(MainActivity.this,"已经是最新啦",Toast.LENGTH_SHORT).show();
+                }
+//                else
+//                    Toast.makeText(MainActivity.this,"已经是最新啦",Toast.LENGTH_SHORT).show();
                 adapter.notifyDataSetChanged();
                 swipeRefreshLayout.setRefreshing(false);
                 IsLoadingMore = false;

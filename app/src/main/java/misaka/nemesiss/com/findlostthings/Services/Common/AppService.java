@@ -77,7 +77,7 @@ public class AppService {
 
 
 
-    public void CheckAppUpdate(Activity activity)
+    public void CheckAppUpdate(Activity activity,boolean IsFromAppStart)
     {
         new CheckNewVersionTask((result) -> {
             if(result != null)
@@ -87,12 +87,18 @@ public class AppService {
                     BuildNewVersionTips(result.getDescription(),result.getDownload(),activity);
                 }
                 else {
-                    SplashActivity.GotoMainActivityEvent.emit("finish_check_update", EventProxy.EventStatus.Finish,"finish");
+                    if(IsFromAppStart) {
+                        SplashActivity.GotoMainActivityEvent.emit("finish_check_update", EventProxy.EventStatus.Finish,"finish");
+                    }
+                    else Toast.makeText(FindLostThingsApplication.getContext(),"当前已是最新版本 (0)", Toast.LENGTH_SHORT).show();
                 }
             }
             else
             {
-                SplashActivity.GotoMainActivityEvent.emit("finish_check_update", EventProxy.EventStatus.Finish,"finish");
+                if(IsFromAppStart) {
+                    SplashActivity.GotoMainActivityEvent.emit("finish_check_update", EventProxy.EventStatus.Finish,"finish");
+                }
+                else Toast.makeText(FindLostThingsApplication.getContext(),"当前已是最新版本 (-1)", Toast.LENGTH_SHORT).show();
             }
         }).execute();
     }
