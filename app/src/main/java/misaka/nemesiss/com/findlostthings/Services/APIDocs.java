@@ -1,20 +1,9 @@
 package misaka.nemesiss.com.findlostthings.Services;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.text.TextUtils;
-import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
-import misaka.nemesiss.com.findlostthings.Utils.HMacSha256;
-
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
-import static android.content.Context.MODE_PRIVATE;
-
 public class APIDocs
 {
-    public static final String DeploymentAddress = "http://192.168.88.126:8970";
-    //public static final String DeploymentAddress = "http://111.230.238.192/learn/lost";
+    //public static final String DeploymentAddress = "http://192.168.88.126:8970";
+    public static final String DeploymentAddress = "http://111.230.238.192/learn/lost";
     public static final String RequestAddress = "/user/login";
     public static final String UserInfo = "/user/info";
     public static final String LostThingsCategory = "/category";
