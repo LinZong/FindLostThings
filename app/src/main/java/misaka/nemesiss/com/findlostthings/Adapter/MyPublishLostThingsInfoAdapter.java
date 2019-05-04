@@ -17,10 +17,9 @@ import com.google.gson.reflect.TypeToken;
 import misaka.nemesiss.com.findlostthings.Activity.LostThingDetailActivity;
 import misaka.nemesiss.com.findlostthings.R;
 import misaka.nemesiss.com.findlostthings.Model.LostThingsInfo;
-
 import java.util.List;
 
-public class LostThingsInfoAdapter extends RecyclerView.Adapter<LostThingsInfoAdapter.ViewHolder> {
+public class MyPublishLostThingsInfoAdapter extends RecyclerView.Adapter<MyPublishLostThingsInfoAdapter.ViewHolder> {
     private Context mContext;
     private Activity mActivity;
     private List<LostThingsInfo> mLostThingsInfoList;
@@ -34,12 +33,12 @@ public class LostThingsInfoAdapter extends RecyclerView.Adapter<LostThingsInfoAd
         public ViewHolder(View view) {
             super(view);
             cardView = (CardView) view;
-            LostThingsInfoImage = (ImageView) view.findViewById(R.id.lost_things_info_image);
-            LostThingsInfoTextView = (TextView) view.findViewById(R.id.lost_things_info_textview);
+            LostThingsInfoImage = (ImageView) view.findViewById(R.id.myPublish_lost_things_info_image);
+            LostThingsInfoTextView = (TextView) view.findViewById(R.id.myPublish_lost_things_info_text);
         }
     }
 
-    public LostThingsInfoAdapter(List<LostThingsInfo> lostThingsInfoList, Activity activity) {
+    public MyPublishLostThingsInfoAdapter(List<LostThingsInfo> lostThingsInfoList, Activity activity) {
         mLostThingsInfoList = lostThingsInfoList;
         mActivity = activity;
     }
@@ -49,7 +48,7 @@ public class LostThingsInfoAdapter extends RecyclerView.Adapter<LostThingsInfoAd
         if (mContext == null) {
             mContext = parent.getContext();
         }
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.lost_things_info, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_publish_lostthings, parent, false);
         return new ViewHolder(view);
     }
 
@@ -76,6 +75,7 @@ public class LostThingsInfoAdapter extends RecyclerView.Adapter<LostThingsInfoAd
         // 再根据这些URL去下载图片资源。
         // holder.LostThingsInfoImage.setImageResource(Integer.parseInt(lostThingsInfo.getThingPhotoUrls()));
         holder.LostThingsInfoTextView.setText(lostThingsInfo.getTitle());
+        holder.LostThingsInfoTextView.setText(lostThingsInfo.getIsgiven());
         holder.CurrentPosition = pos;
         Gson gson = new Gson();
         String[] images = gson.fromJson(lostThingsInfo.getThingPhotoUrls(), new TypeToken<String[]>() {
@@ -91,3 +91,4 @@ public class LostThingsInfoAdapter extends RecyclerView.Adapter<LostThingsInfoAd
         return mLostThingsInfoList.size();
     }
 }
+

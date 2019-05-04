@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import static android.content.Context.MODE_PRIVATE;
 
-public class WaterfallThingsInfoTask extends CustomPostExecuteAsyncTask<WaterfallThingsInfo,Void, List<LostThingsInfo>>
+public class WaterfallThingsInfoTask extends CustomPostExecuteAsyncTask<WaterfallThingsInfo,Void,List<LostThingsInfo>>
 {
     private OkHttpClient okHttpClient;
     String EncryptedAccessToken = null;

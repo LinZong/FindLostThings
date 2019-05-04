@@ -142,7 +142,6 @@ public class MainActivity extends FindLostThingsActivity {
         RefreshLostThingsInfo(InitWaterfall,true);
     }
 
-
     private boolean isSlideToBottom(RecyclerView recyclerView) {
         if (recyclerView == null)
             return false;
@@ -197,7 +196,6 @@ public class MainActivity extends FindLostThingsActivity {
         return true;
     }
 
-
     private void ClickAvatarToOpenDrawers(View view) {
         mDrawerLayout.openDrawer(Gravity.START);
     }
@@ -244,7 +242,6 @@ public class MainActivity extends FindLostThingsActivity {
         }
         return true;
     }
-
 
     private void LoadNickNameAndAvatar() {
         UserAccount ua = FindLostThingsApplication.getUserService().getUserAccount();
