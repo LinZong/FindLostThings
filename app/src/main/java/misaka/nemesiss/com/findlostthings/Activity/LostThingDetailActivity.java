@@ -121,16 +121,18 @@ public class LostThingDetailActivity extends FindLostThingsActivity {
             homeArrow.setCompoundDrawablesWithIntrinsicBounds(arrowDrawRes,0,0,0);
         }
         CurrentLoginUser = FindLostThingsApplication.getUserService().getMyProfile();
-        if(CurrentLostThingInfo.getIsgiven() == 1) {
-            TakeOrGivenThing.setVisibility(View.GONE);
-            // 节省资源，如果已经归还掉的失物就不要再显示处理失物的按钮了
-        }
-        else {
-            if (CurrentLoginUser.getId() == CurrentLostThingInfo.getPublisher()) {
-                TakeOrGivenThing.setTitle("归还失物");
-            } else {
-                TakeOrGivenThing.setTitle("认领失物");
+        if (CurrentLoginUser.getId() == CurrentLostThingInfo.getPublisher()) {
+            if(CurrentLostThingInfo.getIsgiven() == 1) {
+                TakeOrGivenThing.setTitle("您已归还失物");
+                TakeOrGivenThing.setEnabled(false);
             }
+            else TakeOrGivenThing.setTitle("归还失物");
+        } else {
+            if(CurrentLostThingInfo.getIsgiven() == 1) {
+                TakeOrGivenThing.setTitle("您已认领失物");
+                TakeOrGivenThing.setEnabled(false);
+            }
+            TakeOrGivenThing.setTitle("认领失物");
         }
         LoadInformation();
     }
