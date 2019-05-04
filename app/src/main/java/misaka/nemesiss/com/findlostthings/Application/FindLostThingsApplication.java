@@ -58,6 +58,7 @@ public class FindLostThingsApplication extends MultiDexApplication
         userService = new UserService();
         appService = new AppService();
         thingServices = new ThingServices();
+        
     }
     public static Context getContext()
     {

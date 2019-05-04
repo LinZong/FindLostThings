@@ -13,7 +13,8 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class APIDocs
 {
-    public static final String DeploymentAddress = "http://111.230.238.192/learn/lost";
+    public static final String DeploymentAddress = "http://192.168.88.126:8970";
+    //public static final String DeploymentAddress = "http://111.230.238.192/learn/lost";
     public static final String RequestAddress = "/user/login";
     public static final String UserInfo = "/user/info";
     public static final String LostThingsCategory = "/category";
@@ -27,6 +28,7 @@ public class APIDocs
     public static final String MyFindList = "/thing/mylist?type=0";
     public static final String ThingsUpdate = "/thing/update";
     public static final String ThingsSearch = "/thing/search";
+    public static final String CheckUpdate = "/common/update";
 
     public static final String FullAddress = DeploymentAddress + RequestAddress;
     public static final String FullUserInfo = DeploymentAddress + UserInfo;
@@ -41,6 +43,6 @@ public class APIDocs
     public static final String FullMyFindList = DeploymentAddress + MyFindList;
     public static final String FullThingsUpdate = DeploymentAddress + ThingsUpdate;
     public static final String FullThingsSearch = DeploymentAddress + ThingsSearch;
-
+    public static final String FullCheckUpdate = DeploymentAddress + CheckUpdate;
 
 }

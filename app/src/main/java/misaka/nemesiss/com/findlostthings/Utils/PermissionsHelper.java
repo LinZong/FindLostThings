@@ -46,6 +46,7 @@ public class PermissionsHelper
             NeedAllPermissions.remove("android.permission.WRITE_SETTINGS");
             NeedAllPermissions.remove("android.permission.SYSTEM_ALERT_WINDOW");
             NeedAllPermissions.remove("android.permission.CHANGE_NETWORK_STATE");
+            NeedAllPermissions.remove("android.permission.REQUEST_INSTALL_PACKAGES");
         } catch (Exception e) {
             e.printStackTrace();
         }

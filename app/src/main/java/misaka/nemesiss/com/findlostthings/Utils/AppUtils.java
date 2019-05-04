@@ -15,6 +15,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -161,6 +162,10 @@ public class AppUtils
         //  /storage/emulated/0/DCIM/Camera
         return Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DCIM).getAbsolutePath();
+    }
+
+    public static String GetSystemDownloadPath(){
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
     }
 
     public static String GetAppDataDCIMPath()
@@ -347,5 +352,22 @@ public class AppUtils
 
     public static boolean CommonResponseOK(CommonResponse re){
         return re!=null && re.getStatusCode() == 0;
+    }
+
+
+    public static void InstallApk(String apkPath)
+    {
+        Context context = FindLostThingsApplication.getContext();
+        File apkFile = new File(apkPath);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            Uri contentUri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider",apkFile);
+            intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
+        } else {
+            intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
+        }
+        context.startActivity(intent);
     }
 }
