@@ -1,6 +1,5 @@
 package misaka.nemesiss.com.findlostthings.Tasks;
 
-
 import com.google.gson.Gson;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.InfrastructureExtension.TasksExtensions.CustomPostExecuteAsyncTask;
@@ -13,12 +12,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.modelmapper.TypeToken;
-
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 
 public class MyFindListTask extends CustomPostExecuteAsyncTask<Void,Void, List<LostThingsInfo>>
 {

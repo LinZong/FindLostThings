@@ -191,6 +191,12 @@ public class MainActivity extends FindLostThingsActivity {
                     startActivity(intent1);
                 };
                 break;
+            case R.id.my_findBack:
+                ShouldHandleMenuClicked = () -> {
+                    Intent intent2 = new Intent(MainActivity.this, MyFindBackActivity.class);
+                    startActivity(intent2);
+                };
+                break;
             default:
                 break;
         }
@@ -238,6 +244,7 @@ public class MainActivity extends FindLostThingsActivity {
             case R.id.search:
                 startActivity(new Intent(MainActivity.this, SearchActivity.class));
                 break;
+
             default:
                 break;
 

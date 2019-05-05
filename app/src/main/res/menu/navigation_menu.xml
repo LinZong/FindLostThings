@@ -9,6 +9,10 @@
             android:id="@+id/my_find"
             android:title="我发布的"/>
         <item
+            android:icon="@drawable/ic_add_shopping_cart_white_24dp"
+            android:id="@+id/my_findBack"
+            android:title="我找回的"/>
+        <item
             android:icon="@drawable/settings_icon_24dp"
             android:id="@+id/set_up"
             android:title="设置"/>
