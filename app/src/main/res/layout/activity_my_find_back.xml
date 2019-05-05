@@ -24,24 +24,30 @@
                 <TextView android:layout_width="wrap_content"
                           android:layout_height="wrap_content"
                           android:layout_gravity="center"
-                          android:text="我发布的"
+                          android:text="我找回的"
                           android:textColor="#fff"
                           android:textSize="20sp"
                 />
             </android.support.v7.widget.Toolbar>
         </android.support.design.widget.AppBarLayout>
 
-        <android.support.v4.widget.SwipeRefreshLayout
-                android:id="@+id/swipe_refresh"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent"
+                     app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
             <android.support.v7.widget.RecyclerView
                     android:id="@+id/recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
             />
-        </android.support.v4.widget.SwipeRefreshLayout>
+            <TextView android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:text="你还没有找回过失物信息哦"
+                      android:visibility="gone"
+                      android:layout_gravity="center"
+                      android:textSize="16sp"
+                      android:id="@+id/noFindRecordHint"
+            />
+        </FrameLayout>
     </android.support.design.widget.CoordinatorLayout>
 </android.support.v4.widget.DrawerLayout>
 
