@@ -7,6 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 import misaka.nemesiss.com.findlostthings.Adapter.MyPublishLostThingsInfoAdapter;
 import misaka.nemesiss.com.findlostthings.R;
@@ -18,8 +20,9 @@ import java.util.List;
 public class MyPublishActivity extends FindLostThingsActivity {
     private List<LostThingsInfo> LostThingsInfoList = new ArrayList<>();
     private MyPublishLostThingsInfoAdapter adapter;
-    private SwipeRefreshLayout swipeRefreshLayout;
     private boolean IsLoadingMore = false;
+    private RecyclerView recyclerView;
+    private TextView NoPublishRecordHint;
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,20 +31,16 @@ public class MyPublishActivity extends FindLostThingsActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        recyclerView = findViewById(R.id.recycler_view);
+        NoPublishRecordHint = findViewById(R.id.NoPublishRecordHint);
+
         LinearLayoutManager layoutManager=new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         adapter = new MyPublishLostThingsInfoAdapter(LostThingsInfoList,MyPublishActivity.this);
         recyclerView.setAdapter(adapter);
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
-        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                HandleSwipeRefresh();
-            }
-        });
+
         RefreshLostThingsInfo(true);
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);//左侧添加一个默认的返回图标
         getSupportActionBar().setHomeButtonEnabled(true); //设置返回键可用
     }
@@ -56,14 +55,9 @@ public class MyPublishActivity extends FindLostThingsActivity {
         return true;
     }
 
-    private void HandleSwipeRefresh() {
-
-        RefreshLostThingsInfo(true);
-    }
 
     public void RefreshLostThingsInfo( boolean ClearBefore) {
         if(!IsLoadingMore) {
-            swipeRefreshLayout.setRefreshing(true);
             IsLoadingMore = true;
             new MyPublishListTask(TaskRet -> {
                 if(TaskRet!=null&&TaskRet.size()!=0) {
@@ -72,9 +66,11 @@ public class MyPublishActivity extends FindLostThingsActivity {
                     }
                     LostThingsInfoList.addAll(TaskRet);
                 }else
-                    Toast.makeText(MyPublishActivity.this,"已经是最新啦",Toast.LENGTH_SHORT).show();
+                {
+                    recyclerView.setVisibility(View.GONE);
+                    NoPublishRecordHint.setVisibility(View.VISIBLE);
+                }
                 adapter.notifyDataSetChanged();
-                swipeRefreshLayout.setRefreshing(false);
                 IsLoadingMore = false;
             }).execute();
         }
