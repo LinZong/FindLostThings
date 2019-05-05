@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import misaka.nemesiss.com.findlostthings.Adapter.MyFindBackAdapter;
 import misaka.nemesiss.com.findlostthings.Adapter.MyPublishLostThingsInfoAdapter;
 import misaka.nemesiss.com.findlostthings.Model.LostThingsInfo;
 import misaka.nemesiss.com.findlostthings.R;
@@ -19,7 +20,7 @@ public class MyFindBackActivity extends FindLostThingsActivity
 {
 
     private List<LostThingsInfo> LostThingsInfoList = new ArrayList<>();
-    private MyPublishLostThingsInfoAdapter adapter;
+    private MyFindBackAdapter adapter;
     private boolean IsLoadingMore = false;
     private RecyclerView recyclerView;
     private TextView NoFindRecordHint;
@@ -36,7 +37,7 @@ public class MyFindBackActivity extends FindLostThingsActivity
 
         LinearLayoutManager layoutManager=new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new MyPublishLostThingsInfoAdapter(LostThingsInfoList,MyFindBackActivity.this);
+        adapter = new  MyFindBackAdapter(LostThingsInfoList,MyFindBackActivity.this);
         recyclerView.setAdapter(adapter);
 
         RefreshLostThingsInfo(true);
