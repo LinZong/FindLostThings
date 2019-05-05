@@ -160,7 +160,7 @@ public class MainActivity extends FindLostThingsActivity {
         int offset = recyclerView.computeVerticalScrollOffset();
         int range = recyclerView.computeVerticalScrollRange();
 
-        return (extent + offset) >= (range - (2 * extent));
+        return (offset > 20 && (extent + offset) >= (range - (2 * extent)));
     }
 
     private void loadMore() {
@@ -219,8 +219,9 @@ public class MainActivity extends FindLostThingsActivity {
                         WaterfallInfoList.clear();
                     }
                     WaterfallInfoList.addAll(TaskRet);
-                }else
-                    Toast.makeText(MainActivity.this,"已经是最新啦",Toast.LENGTH_SHORT).show();
+                }
+//                else
+//                    Toast.makeText(MainActivity.this,"已经是最新啦",Toast.LENGTH_SHORT).show();
                 adapter.notifyDataSetChanged();
                 swipeRefreshLayout.setRefreshing(false);
                 IsLoadingMore = false;

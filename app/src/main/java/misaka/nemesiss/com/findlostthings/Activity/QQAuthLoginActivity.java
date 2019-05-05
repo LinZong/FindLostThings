@@ -51,6 +51,7 @@ public class QQAuthLoginActivity extends FindLostThingsActivity {
     private void ClearInValidateUserAccountInfo() {
         //既然跳到了这个页面，说明之前的登陆信息是无效的，需要清除。
         QQAuthCredentials.ClearStoredIdentity();
+
     }
 
     private void init() {
@@ -114,7 +115,7 @@ public class QQAuthLoginActivity extends FindLostThingsActivity {
     }
 
     private void PrepareToMainActivity() {
-        SplashActivity.GoToMainActivityHandler.sendEmptyMessageDelayed(SplashActivity.OVERTIME_GOTO_MAINACTIVITY,6000);
+        SplashActivity.GoToMainActivityHandler.sendEmptyMessageDelayed(SplashActivity.OVERTIME_GOTO_MAINACTIVITY,10000);
         QQAuthCredentials.LoadUserAccountInfo();
     }
 

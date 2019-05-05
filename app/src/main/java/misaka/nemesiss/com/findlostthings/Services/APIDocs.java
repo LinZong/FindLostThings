@@ -2,12 +2,12 @@ package misaka.nemesiss.com.findlostthings.Services;
 
 public class APIDocs
 {
-    //public static final String DeploymentAddress = "http://192.168.88.126:8970";
+    //public static final String DeploymentAddress = "http://192.168.43.223:8080/dotnet";
     public static final String DeploymentAddress = "http://111.230.238.192/learn/lost";
     public static final String RequestAddress = "/user/login";
     public static final String UserInfo = "/user/info";
     public static final String LostThingsCategory = "/category";
-    public static final String LostThingsCategoryPartition = "/category/detail?id=";
+    public static final String LostThingsCategoryPartition = "/category/detail";
     public static final String GetStoreBucketKey = "/tencent/coskey";
     public static final String SchoolInfo = "/school/list/";
     public static final String SchoolBuildings = "/school/building?id=";

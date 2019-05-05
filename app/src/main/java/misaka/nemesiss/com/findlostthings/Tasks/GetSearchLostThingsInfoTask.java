@@ -9,9 +9,7 @@ import misaka.nemesiss.com.findlostthings.Model.SearchLostThingsInfo;
 import misaka.nemesiss.com.findlostthings.Services.APIDocs;
 import misaka.nemesiss.com.findlostthings.Services.QQAuth.QQAuthCredentials;
 import misaka.nemesiss.com.findlostthings.Services.User.UserService;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 import org.modelmapper.TypeToken;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -44,11 +42,18 @@ public class GetSearchLostThingsInfoTask extends CustomPostExecuteAsyncTask<Sear
     @Override
     protected List<LostThingsInfo> doInBackground(SearchLostThingsInfo...searchLostThingsInfo) {
         try {
+
+
+            String json = new Gson().toJson(searchLostThingsInfo[0],SearchLostThingsInfo.class);
+            RequestBody requestBody = FormBody.create(MediaType.parse("application/json"),json);
+
             Request request = new Request.Builder()
                     .url(APIDocs.FullThingsSearch)
                     .addHeader("actk", EncryptedAccessToken)
                     .addHeader("userid",String.valueOf(SnowflakeID))
+                    .post(requestBody)
                     .build();
+
             Response response = okHttpClient.newCall(request).execute();
             if(response.isSuccessful()){
                 String responseData = response.body().string();

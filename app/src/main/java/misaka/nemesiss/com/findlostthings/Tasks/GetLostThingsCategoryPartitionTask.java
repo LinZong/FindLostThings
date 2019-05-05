@@ -19,7 +19,10 @@ public class GetLostThingsCategoryPartitionTask extends CustomPostExecuteAsyncTa
     @Override
     protected LostThingsCategoryPartition doInBackground(Integer... IDs) {
         try {
-            String VariedUrl =(APIDocs.FullLostThingsCategoryPartition + IDs[0]);
+            String VariedUrl = APIDocs.FullLostThingsCategoryPartition;
+            if(IDs.length > 0) {
+                VariedUrl = VariedUrl + "?id=" + IDs[0];
+            }
             Request request = new Request.Builder()
                     .url(VariedUrl)
                     .build();
@@ -28,9 +31,8 @@ public class GetLostThingsCategoryPartitionTask extends CustomPostExecuteAsyncTa
                 String responseData2 = response2.body().string();
                 Gson gson = new Gson();
                 LostThingsCategoryPartition lostThingsCategoryPartition = gson.fromJson(responseData2, misaka.nemesiss.com.findlostthings.Model.Response.LostThingsCategoryPartition.class);
-                return  lostThingsCategoryPartition;
+                return lostThingsCategoryPartition;
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -100,6 +100,12 @@ public class SettingFragment extends SettingBaseFragment {
         else  NotificationSwitch.setChecked(false);
     }
 
+
+    @OnClick({R.id.EnterCheckUpdate})
+    public void CheckUpdate(View v) {
+        FindLostThingsApplication.getAppService().CheckAppUpdate(getActivity(),false);
+    }
+
     @OnClick({R.id.EnterSetPhotoStoreLocation})
     public void EnterSetPhotoStoreLocation(View v) {
         SettingActivity.ToNextFragment(new PhotoSaveLocationFragment(),"照片存储位置",null);
