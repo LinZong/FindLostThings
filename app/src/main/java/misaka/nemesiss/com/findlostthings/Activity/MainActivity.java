@@ -6,9 +6,11 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -21,13 +23,15 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bumptech.glide.Glide;
 import de.hdodenhof.circleimageview.CircleImageView;
+import misaka.nemesiss.com.findlostthings.Adapter.LostThingsInfoAdapter;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
+import misaka.nemesiss.com.findlostthings.Model.LostThingsInfo;
+import misaka.nemesiss.com.findlostthings.Model.Request.LoginAccountInfo.UserInformation;
 import misaka.nemesiss.com.findlostthings.Model.UserAccount;
 import misaka.nemesiss.com.findlostthings.Model.WaterfallThingsInfo;
 import misaka.nemesiss.com.findlostthings.R;
-import misaka.nemesiss.com.findlostthings.Model.LostThingsInfo;
-import misaka.nemesiss.com.findlostthings.Adapter.LostThingsInfoAdapter;
 import misaka.nemesiss.com.findlostthings.Tasks.WaterfallThingsInfoTask;
+import misaka.nemesiss.com.findlostthings.Utils.AppUtils;
 import misaka.nemesiss.com.findlostthings.Utils.TopSmoothScroller;
 
 import java.util.ArrayList;
@@ -240,8 +244,39 @@ public class MainActivity extends FindLostThingsActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.publish:
-                startActivity(new Intent(MainActivity.this, PickupImageActivity.class));
+            {
+                UserInformation usi = FindLostThingsApplication.getUserService().getMyProfile();
+                String qq = usi.getQQ();
+                String wx = usi.getWxID();
+                String mobile = usi.getPhoneNumber();
+                String email = usi.getEmail();
+                String[] test = {qq,wx,mobile,email};
+                boolean AllEmpty = true;
+                for (int i = 0; i < test.length; i++)
+                {
+                    if(!TextUtils.isEmpty(test[i]))
+                    {
+                        AllEmpty = false;
+                        break;
+                    }
+                }
+
+                if(AllEmpty)
+                {
+                    AlertDialog.Builder builder = AppUtils.ShowAlertDialog(MainActivity.this,false,"请完善个人信息", "检测到您并没有在系统中留下任何联系方式。为了让失主在看到您发布的失物信息后能与您取得联系，您必须在系统中留存至少一项的联系方式。");
+                    builder.setPositiveButton("前往设置",(d,i) -> {
+                        Intent intent1 = new Intent(MainActivity.this, ShowOrChangeUserInfo.class);
+                        startActivity(intent1);
+                    });
+                    builder.setNegativeButton("取消",(d,i)->{});
+                    builder.show();
+                }
+                else
+                {
+                    startActivity(new Intent(MainActivity.this, PickupImageActivity.class));
+                }
                 break;
+            }
             case R.id.search:
                 startActivity(new Intent(MainActivity.this, SearchActivity.class));
                 break;
