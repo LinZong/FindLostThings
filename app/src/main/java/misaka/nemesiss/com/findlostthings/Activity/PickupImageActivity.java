@@ -291,28 +291,6 @@ public class PickupImageActivity extends FindLostThingsActivity
         thingsDetailedAdapter.notifyDataSetChanged();
         ThingDetailedSpinner.setSelectedIndex(0);
         ThingDetailedSpinner.setText(thingsDetails.get(0).getName());
-
-//        List<LostThingDetail> cached = CacheThingsDetail.get(SelectedThingCategoryID, null);
-//
-//        if (cached == null)
-//        {
-//            new GetLostThingsCategoryPartitionTask((result) -> {
-//                CacheThingsDetail.append(SelectedThingCategoryID, result.getCategoryDetails());
-//                thingsDetails.clear();
-//                thingsDetails.addAll(result.getCategoryDetails());
-//                thingsDetailedAdapter.notifyDataSetChanged();
-//                ThingDetailedSpinner.setSelectedIndex(0);
-//                ThingDetailedSpinner.setText(result.getCategoryDetails().get(0).getName());
-//            }).execute(SelectedThingCategoryID);
-//        } else
-//        {
-//
-//            thingsDetails.clear();
-//            thingsDetails.addAll(cached);
-//            thingsDetailedAdapter.notifyDataSetChanged();
-//            ThingDetailedSpinner.setSelectedIndex(0);
-//            ThingDetailedSpinner.setText(cached.get(0).getName());
-//        }
     }
 
     private void HandleTimePick(TimePicker timePicker, int HourOfDay, int Minus)
@@ -330,23 +308,6 @@ public class PickupImageActivity extends FindLostThingsActivity
 
         DateTextView.setText(year + "-" + (month + 1) + "-" + dayOfMonth);
     }
-
-//    private View.OnClickListener HandleAdditionalDescCollapsing(TextView toggle, EditText editor)
-//    {
-//        AtomicBoolean initStatus = new AtomicBoolean(false);
-//        return view -> {
-//            if (!initStatus.get())
-//            {
-//                toggle.setTextColor(getResources().getColor(R.color.OpenAdditionalInfoColor));
-//                editor.setVisibility(View.VISIBLE);
-//            } else
-//            {
-//                toggle.setTextColor(getResources().getColor(R.color.DefaultTextViewColor));
-//                editor.setVisibility(View.GONE);
-//            }
-//            initStatus.set(!initStatus.get());
-//        };
-//    }
 
     public void SetTempImageSavedUri(Uri uri)
     {
@@ -577,6 +538,13 @@ public class PickupImageActivity extends FindLostThingsActivity
         //重置放置存已经传好的图片的存储桶地址
         FinishUploadImageUrl.clear();
         //本次需要上传的所有图片的本地文件路径
+
+
+        if(PickupImagesList.size() == 1)
+        {
+            AllImageUploadFinished();
+            return;
+        }
 
         List<Uri> uploadList = new ArrayList<>(PickupImagesList);
         uploadList.remove(uploadList.size()-1);
