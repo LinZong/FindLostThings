@@ -42,6 +42,9 @@ import com.tencent.cos.xml.model.CosXmlResult;
 import com.tencent.cos.xml.transfer.COSXMLUploadTask;
 import com.tencent.cos.xml.transfer.TransferState;
 import com.yalantis.ucrop.UCrop;
+import io.reactivex.Observer;
+import io.reactivex.Scheduler;
+import io.reactivex.disposables.Disposable;
 import misaka.nemesiss.com.findlostthings.Adapter.*;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.Model.*;
@@ -54,11 +57,15 @@ import misaka.nemesiss.com.findlostthings.Utils.EventProxy;
 import misaka.nemesiss.com.findlostthings.Utils.ImageHelper;
 import misaka.nemesiss.com.findlostthings.Utils.UUIDGenerator;
 import misaka.nemesiss.com.findlostthings.View.PercentageProgressBar;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 public class PickupImageActivity extends FindLostThingsActivity
 {
@@ -140,6 +147,22 @@ public class PickupImageActivity extends FindLostThingsActivity
     public static final int PREVIEW_ACTIVITY = 1998;
 
 
+    private void ListenNetworkChange()
+    {
+        ThingServices ts = FindLostThingsApplication.getThingServices();
+        ts.getOriginalSchoolsObservable().subscribe(
+                NewSchools -> {
+                    allSupportedSchool.clear();
+                    allSupportedSchool.addAll(NewSchools);
+                    supportedSchoolListAdapter.notifyDataSetChanged();
+                });
+        ts.getThingCategoryObservable().subscribe(
+                NewLTC -> {
+                    thingsCategories.clear();
+                    thingsCategories.addAll(NewLTC);
+                    thingsCategoryAdapter.notifyDataSetChanged();
+                });
+    }
 
 
     public RxBusResultDisposable<ImageMultipleResultEvent> getMultiImageSelectHandler()
@@ -170,30 +193,11 @@ public class PickupImageActivity extends FindLostThingsActivity
         AppUtils.ToolbarShowReturnButton(PickupImageActivity.this, PublishLostThingToolbar);
         InitComponents();
         LoadSpinnerItems();
+        ListenNetworkChange();
     }
 
     private void LoadSpinnerItems()
     {
-//        new GetLostThingsCategoryAsyncTask((result) -> {
-//            if(result!=null && result.getStatusCode() == 0)
-//            {
-//                Log.d("PickupImageActivity", "物品种类加载完成");
-//                thingsCategories.clear();
-//                thingsCategories.addAll(result.getCategoryList());
-//                thingsCategoryAdapter.notifyDataSetChanged();
-//                Log.d("PickupImageActivity", String.valueOf(ThingCategorySpinner.getSelectedIndex()));
-//            }
-//        }).execute();
-//        new GetSupportSchoolsTask((result) -> {
-//            if(result !=null && result.getStatusCode() == 0)
-//            {
-//                Log.d("PickupImageActivity", "支持的学校加载完成");
-//                allSupportedSchool.clear();
-//                allSupportedSchool.addAll(result.getSupportSchools());
-//                supportedSchoolListAdapter.notifyDataSetChanged();
-//            }
-//        }).execute();
-
         ThingServices ts = FindLostThingsApplication.getThingServices();
 
         thingsCategories.addAll(ts.getOriginalThingCategory());
@@ -285,7 +289,8 @@ public class PickupImageActivity extends FindLostThingsActivity
         int len = dt.size();
 
         thingsDetails.clear();
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < len; i++)
+        {
             thingsDetails.add(dt.valueAt(i));
         }
         thingsDetailedAdapter.notifyDataSetChanged();
@@ -381,7 +386,8 @@ public class PickupImageActivity extends FindLostThingsActivity
                 }
                 break;
             }
-            case android.R.id.home:{
+            case android.R.id.home:
+            {
                 finish();
                 break;
             }
@@ -403,7 +409,8 @@ public class PickupImageActivity extends FindLostThingsActivity
                 {
                     case AppUtils.TYPE_CAMERA:
                     {
-                        if(resultCode!=Activity.RESULT_CANCELED){
+                        if (resultCode != Activity.RESULT_CANCELED)
+                        {
                             NotifyImageToCamera(PickupImageActivity.this, TempImageSavedUri);
                             UCrop of = AppUtils.OpenUCrop(TempImageSavedUri);
                             of.start(PickupImageActivity.this);
@@ -522,7 +529,7 @@ public class PickupImageActivity extends FindLostThingsActivity
     private void UploadProgressHandler(long complete, long target)
     {
         runOnUiThread(() -> {
-            int progress = (int)(complete / target * 100);
+            int progress = (int) (complete / target * 100);
             CurrentUploadImageProgress.setPercentage(progress);
         });
     }
@@ -540,29 +547,33 @@ public class PickupImageActivity extends FindLostThingsActivity
         //本次需要上传的所有图片的本地文件路径
 
 
-        if(PickupImagesList.size() == 1)
+        if (PickupImagesList.size() == 1)
         {
             AllImageUploadFinished();
             return;
         }
 
         List<Uri> uploadList = new ArrayList<>(PickupImagesList);
-        uploadList.remove(uploadList.size()-1);
+        uploadList.remove(uploadList.size() - 1);
 
-        ImageHelper.CompressAllImage(uploadList, new EventProxy.EventResult<Uri>() {
+        ImageHelper.CompressAllImage(uploadList, new EventProxy.EventResult<Uri>()
+        {
             @Override
-            public void handle(ConcurrentHashMap<Uri, Object> evs, ConcurrentHashMap<Uri, EventProxy.EventStatus> evStatus) {
-                Log.d("PickupImageActivity","图片压缩完成...");
+            public void handle(ConcurrentHashMap<Uri, Object> evs, ConcurrentHashMap<Uri, EventProxy.EventStatus> evStatus)
+            {
+                Log.d("PickupImageActivity", "图片压缩完成...");
                 List<Uri> compressed = new ArrayList<>();
 //                for (Object val : evs.values()) {
 //                    if(val != null) {
 //                        compressed.add(Uri.fromFile((File) val));
 //                    }
 //                }
-                for (Map.Entry<Uri, EventProxy.EventStatus> statEntry : evStatus.entrySet()) {
+                for (Map.Entry<Uri, EventProxy.EventStatus> statEntry : evStatus.entrySet())
+                {
                     Uri key = statEntry.getKey();
                     EventProxy.EventStatus status = statEntry.getValue();
-                    if(status == EventProxy.EventStatus.Finish) {
+                    if (status == EventProxy.EventStatus.Finish)
+                    {
                         File f = (File) evs.get(key);
                         compressed.add(Uri.fromFile(f));
                     }
@@ -653,19 +664,20 @@ public class PickupImageActivity extends FindLostThingsActivity
         info.setThingAddiDescription(LostThingAddiDesc);
 
         new PublishLostThingsInfoTask((result) -> {
-            if(AppUtils.CommonResponseOK(result))
+            if (AppUtils.CommonResponseOK(result))
             {
-                if(result.getStatusCode() == 0) {
+                if (result.getStatusCode() == 0)
+                {
                     Toast.makeText(PickupImageActivity.this, "发布成功!", Toast.LENGTH_SHORT).show();
                     Log.d("PickupImageActivity", String.valueOf(result));
                     finish();
-                }
-                else {
+                } else
+                {
                     Toast.makeText(PickupImageActivity.this, "发布失败!" + result, Toast.LENGTH_SHORT).show();
                     Log.d("PickupImageActivity", String.valueOf(result));
                 }
-            }
-            else {
+            } else
+            {
                 Toast.makeText(PickupImageActivity.this, "发布失败!请检查网络连接。", Toast.LENGTH_SHORT).show();
             }
         }).execute(info);
@@ -730,10 +742,9 @@ public class PickupImageActivity extends FindLostThingsActivity
     }
 
 
-
     /*
-    * 展开/关闭补充说明框动画控制相关
-    * */
+     * 展开/关闭补充说明框动画控制相关
+     * */
 
     private boolean IsAdditionalDescCollapsed = true;
     private Drawable AdditionalDescArrow;
@@ -742,19 +753,21 @@ public class PickupImageActivity extends FindLostThingsActivity
     private int AdditionalDescLayoutExpandedDp = 163;
 
     @OnClick({R.id.AdditionalDescCollapsing})
-    public void SwitchAdditionalDescCollapsing(View v) {
+    public void SwitchAdditionalDescCollapsing(View v)
+    {
         int ArrowBegin = IsAdditionalDescCollapsed ? 0 : 10000;
         int ArrowEnd = IsAdditionalDescCollapsed ? 10000 : 0;
         int LayoutBegin = IsAdditionalDescCollapsed ? 1 : AdditionalDescLayoutHeight;
         int LayoutEnd = IsAdditionalDescCollapsed ? AdditionalDescLayoutHeight : 1;
 
 
-        if(IsAdditionalDescCollapsed) {
+        if (IsAdditionalDescCollapsed)
+        {
             AdditionalDescLayout.setVisibility(View.VISIBLE);
         }
 
-        ObjectAnimator arrowAnimator = ObjectAnimator.ofInt(AdditionalDescArrow,"level",ArrowBegin,ArrowEnd);
-        ValueAnimator layoutAnimator = ValueAnimator.ofInt(LayoutBegin,LayoutEnd);
+        ObjectAnimator arrowAnimator = ObjectAnimator.ofInt(AdditionalDescArrow, "level", ArrowBegin, ArrowEnd);
+        ValueAnimator layoutAnimator = ValueAnimator.ofInt(LayoutBegin, LayoutEnd);
 
         arrowAnimator.addListener(ArrowAnimatorListener);
         layoutAnimator.addUpdateListener(AdditionalDescLayoutAnimatorListener);
@@ -767,11 +780,13 @@ public class PickupImageActivity extends FindLostThingsActivity
         IsAdditionalDescCollapsed = !IsAdditionalDescCollapsed;
     }
 
-    private ValueAnimator.AnimatorUpdateListener AdditionalDescLayoutAnimatorListener = new ValueAnimator.AnimatorUpdateListener() {
+    private ValueAnimator.AnimatorUpdateListener AdditionalDescLayoutAnimatorListener = new ValueAnimator.AnimatorUpdateListener()
+    {
         @Override
-        public void onAnimationUpdate(ValueAnimator valueAnimator) {
+        public void onAnimationUpdate(ValueAnimator valueAnimator)
+        {
 
-            Log.d("PickupImageActivity",String.valueOf(AdditionalDescLayout.getHeight()));
+            Log.d("PickupImageActivity", String.valueOf(AdditionalDescLayout.getHeight()));
             ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) AdditionalDescLayout.getLayoutParams();
             lp.height = (Integer) valueAnimator.getAnimatedValue();
             AdditionalDescLayout.setLayoutParams(lp);
@@ -779,27 +794,33 @@ public class PickupImageActivity extends FindLostThingsActivity
     };
 
 
-    private ObjectAnimator.AnimatorListener ArrowAnimatorListener = new ObjectAnimator.AnimatorListener(){
+    private ObjectAnimator.AnimatorListener ArrowAnimatorListener = new ObjectAnimator.AnimatorListener()
+    {
 
         @Override
-        public void onAnimationStart(Animator animator) {
+        public void onAnimationStart(Animator animator)
+        {
 
         }
 
         @Override
-        public void onAnimationEnd(Animator animator) {
-            if(IsAdditionalDescCollapsed) {
+        public void onAnimationEnd(Animator animator)
+        {
+            if (IsAdditionalDescCollapsed)
+            {
                 AdditionalDescLayout.setVisibility(View.GONE);
             }
         }
 
         @Override
-        public void onAnimationCancel(Animator animator) {
+        public void onAnimationCancel(Animator animator)
+        {
 
         }
 
         @Override
-        public void onAnimationRepeat(Animator animator) {
+        public void onAnimationRepeat(Animator animator)
+        {
 
         }
     };
@@ -808,6 +829,6 @@ public class PickupImageActivity extends FindLostThingsActivity
     private int Dp2Px(int dp)
     {
         final float scale = getResources().getDisplayMetrics().density;
-        return (int)(dp*scale+0.5f);
+        return (int) (dp * scale + 0.5f);
     }
 }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -23,13 +24,15 @@ public class SwipeLostThingImageAdapter extends PagerAdapter {
     private List<Uri> ImageUriList;
     private List<ImageView> imageViews;
     private Activity activity;
-
     private OnImageListChanged mListener;
+    private boolean enablePinchView;
 
-    public SwipeLostThingImageAdapter(List<Uri> imageUriList, Activity activity) {
+    public SwipeLostThingImageAdapter(List<Uri> imageUriList, Activity activity,boolean EnablePinchImageView) {
         this.activity = activity;
         imageViews = new ArrayList<>();
+        enablePinchView = EnablePinchImageView;
         setImageUriList(imageUriList);
+
     }
 
     public void setActivity(Activity activity) {
@@ -44,7 +47,8 @@ public class SwipeLostThingImageAdapter extends PagerAdapter {
         for (int i = 0; i < size; i++) {
             ImageView iv = new ImageView(activity);
             Uri uri  = ImageUriList.get(i);
-            iv.setOnClickListener((v) -> EnterImagePreview(uri));
+            if (enablePinchView)
+                iv.setOnClickListener((v) -> EnterImagePreview(uri));
             iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
             Glide.with(activity).load(uri).into(iv);
             imageViews.add(iv);
@@ -62,6 +66,7 @@ public class SwipeLostThingImageAdapter extends PagerAdapter {
 
     private void EnterImagePreview(Uri uri)
     {
+        Log.d("xxx","准备进入图片预览吧");
         Intent intent = new Intent(activity, PreviewSelectedImageActivity.class);
         intent.putExtra("PreviewImageUri",uri);
         intent.putExtra("IsNormalPreview",true);

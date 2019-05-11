@@ -102,7 +102,27 @@ public class SearchActivity extends FindLostThingsActivity {
         AppUtils.ToolbarShowReturnButton(SearchActivity.this, toolbar);
         InitComponents();
         LoadSpinnerItems();
+        ListenNetworkChange();
     }
+
+
+    private void ListenNetworkChange()
+    {
+        ThingServices ts = FindLostThingsApplication.getThingServices();
+        ts.getOriginalSchoolsObservable().subscribe(
+                NewSchools -> {
+                    allSupportedSchool.clear();
+                    allSupportedSchool.addAll(NewSchools);
+                    supportedSchoolListAdapter.notifyDataSetChanged();
+                });
+        ts.getThingCategoryObservable().subscribe(
+                NewLTC -> {
+                    thingsCategories.clear();
+                    thingsCategories.addAll(NewLTC);
+                    thingsCategoryAdapter.notifyDataSetChanged();
+                });
+    }
+
 
     private void LoadSpinnerItems() {
         ThingServices ts = FindLostThingsApplication.getThingServices();
@@ -112,12 +132,6 @@ public class SearchActivity extends FindLostThingsActivity {
 
         allSupportedSchool.addAll(ts.getOriginalSchools());
         supportedSchoolListAdapter.notifyDataSetChanged();
-//
-//       LostThingsCategory cat = ts.getThingCategory().get(4);
-//        cat.getName();
-//
-//       LostThingDetail dt = ts.getThingDetails().get(4).get(33);
-//        dt.getName();
     }
 
     private void InitComponents() {

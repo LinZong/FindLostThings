@@ -13,6 +13,7 @@ package misaka.nemesiss.com.findlostthings.Model;
 public class AppSettings {
     private int EnableNotification = 0;
     private int TakePhotoStoreLocation = 0;
+    private boolean HaveSeenUserGuide = false;
 
     public int getEnableNotification() {
         return EnableNotification;
@@ -28,6 +29,12 @@ public class AppSettings {
 
     public void setTakePhotoStoreLocation(int takePhotoStoreLocation) {
         TakePhotoStoreLocation = takePhotoStoreLocation;
+    }
+    public boolean getHaveSeenUserGuide() {
+        return HaveSeenUserGuide;
+    }
+    public void setHaveSeenUserGuide(boolean val) {
+        HaveSeenUserGuide = val;
     }
 }
 

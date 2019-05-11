@@ -3,14 +3,15 @@ package misaka.nemesiss.com.findlostthings.Services.Thing;
 import android.util.Log;
 import android.util.SparseArray;
 import androidx.annotation.Nullable;
+import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.Model.LostThingDetail;
 import misaka.nemesiss.com.findlostthings.Model.LostThingsCategory;
-import misaka.nemesiss.com.findlostthings.Model.Response.LostThingsCategoryPartition;
 import misaka.nemesiss.com.findlostthings.Model.SchoolInfo;
 import misaka.nemesiss.com.findlostthings.Tasks.GetLostThingsCategoryAsyncTask;
 import misaka.nemesiss.com.findlostthings.Tasks.GetLostThingsCategoryPartitionTask;
 import misaka.nemesiss.com.findlostthings.Tasks.GetSupportSchoolsTask;
 import misaka.nemesiss.com.findlostthings.Utils.AppUtils;
+import rx.subjects.BehaviorSubject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,14 +21,25 @@ public class ThingServices
     private SparseArray<SchoolInfo> Schools;
     private SparseArray<LostThingsCategory> ThingCategory;
     private SparseArray<SparseArray<LostThingDetail>> ThingDetails;
-    private List<SchoolInfo> OriginalSchools;
-    private List<LostThingsCategory> OriginalThingCategory;
+    private BehaviorSubject<List<SchoolInfo>> OriginalSchools;
+    private BehaviorSubject<List<LostThingsCategory>> OriginalThingCategory;
 
     public ThingServices()
     {
         Schools = new SparseArray<>();
         ThingCategory = new SparseArray<>();
         ThingDetails = new SparseArray<>();
+
+        OriginalSchools = BehaviorSubject.create(new ArrayList<>());
+        OriginalThingCategory = BehaviorSubject.create(new ArrayList<>());
+
+        FindLostThingsApplication.GetCurrentNetworkStatusObservable()
+                .subscribe(result -> {
+                    if(result) {
+                        ReloadSchoolList(null);
+                        ReloadThingCategory(null);
+                    }
+                });
     }
 
     public void ReloadSchoolList(@Nullable Runnable callback)
@@ -35,8 +47,8 @@ public class ThingServices
         new GetSupportSchoolsTask(TaskRet -> {
             if(TaskRet!=null && TaskRet.getStatusCode() == 0)
             {
-                OriginalSchools = TaskRet.getSupportSchools();
-
+                OriginalSchools.onNext(TaskRet.getSupportSchools());
+                Schools.clear();
                 for (SchoolInfo sc : TaskRet.getSupportSchools())
                 {
                     Schools.append(sc.getId(),sc);
@@ -55,8 +67,7 @@ public class ThingServices
         new GetLostThingsCategoryAsyncTask(TaskRet -> {
             if(TaskRet!=null && TaskRet.getStatusCode() == 0)
             {
-                OriginalThingCategory = TaskRet.getCategoryList();
-
+                OriginalThingCategory.onNext(TaskRet.getCategoryList());
                 for (LostThingsCategory c : TaskRet.getCategoryList())
                 {
                     ThingCategory.append(c.getId(),c);
@@ -108,10 +119,18 @@ public class ThingServices
     }
 
     public List<LostThingsCategory> getOriginalThingCategory() {
-        return OriginalThingCategory;
+        return OriginalThingCategory.getValue();
     }
 
     public List<SchoolInfo> getOriginalSchools() {
+        return OriginalSchools.getValue();
+    }
+
+    public BehaviorSubject<List<SchoolInfo>> getOriginalSchoolsObservable() {
         return OriginalSchools;
+    }
+
+    public BehaviorSubject<List<LostThingsCategory>> getThingCategoryObservable() {
+        return OriginalThingCategory;
     }
 }

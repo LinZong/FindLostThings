@@ -25,13 +25,21 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name=".Activity.ValidateGivenActivity">
+        <activity android:name=".Activity.ValidateGivenActivity"
+                  android:screenOrientation="portrait"
+        >
         </activity>
-        <activity android:name=".Activity.LostThingDetailActivity">
+        <activity android:name=".Activity.LostThingDetailActivity"
+                  android:screenOrientation="portrait"
+        >
         </activity>
-        <activity android:name=".Activity.RealPersonValidActivity">
+        <activity android:name=".Activity.RealPersonValidActivity"
+                  android:screenOrientation="portrait"
+        >
         </activity>
-        <activity android:name=".Activity.MainActivity">
+        <activity android:name=".Activity.MainActivity"
+                  android:screenOrientation="portrait"
+        >
         </activity>
         <activity
                 android:name="com.tencent.tauth.AuthActivity"
@@ -59,9 +67,13 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.QQAuthLoginActivity">
+        <activity android:name=".Activity.QQAuthLoginActivity"
+                  android:screenOrientation="portrait"
+        >
         </activity>
-        <activity android:name=".Activity.PickupImageActivity">
+        <activity android:name=".Activity.PickupImageActivity"
+                  android:screenOrientation="portrait"
+        >
         </activity>
         <activity
                 android:name="cn.finalteam.rxgalleryfinal.ui.activity.MediaActivity"
@@ -70,23 +82,31 @@
                 android:name="com.yalantis.ucrop.UCropActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/AppTheme"/>
-        <activity android:name=".Activity.MyPublishActivity">
+        <activity android:name=".Activity.MyPublishActivity"
+                  android:screenOrientation="portrait"
+        >
         </activity>
-        <activity android:name=".Activity.SettingActivity">
+        <activity android:name=".Activity.SettingActivity"
+                  android:screenOrientation="portrait"
+        >
         </activity>
-        <activity android:name=".Activity.ShowOrChangeUserInfo">
+        <activity android:name=".Activity.ShowOrChangeUserInfo"
+                  android:screenOrientation="portrait"
+        >
         </activity>
         <activity
                 android:name=".Activity.PreviewSelectedImageActivity"
+                android:screenOrientation="portrait"
                 android:launchMode="standard">
         </activity>
-        <activity android:name=".Activity.AboutMe">
+        <activity android:name=".Activity.AboutMe"
+                  android:screenOrientation="portrait"
+        >
         </activity>
 
         <receiver android:name=".Services.Notifications.JPushActionResultReceiver">
             <intent-filter>
                 <action android:name="cn.jpush.android.intent.RECEIVE_MESSAGE"/>
-
                 <category android:name="misaka.nemesiss.com.findlostthings"/>
             </intent-filter>
         </receiver>
@@ -104,9 +124,13 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".Activity.SearchActivity">
+        <activity android:name=".Activity.SearchActivity"
+                  android:screenOrientation="portrait"
+        >
         </activity>
-        <activity android:name=".Activity.SearchResultActivity">
+        <activity android:name=".Activity.SearchResultActivity"
+                  android:screenOrientation="portrait"
+        >
         </activity>
 
         <provider
@@ -123,7 +147,14 @@
                 android:name=".Activity.ExecuteApkInstallActivity"
                 android:theme="@style/InstallApkTheme">
         </activity>
-        <activity android:name=".Activity.MyFindBackActivity">
+        <activity android:name=".Activity.MyFindBackActivity"
+                  android:screenOrientation="portrait"
+        >
+        </activity>
+        <activity android:name=".Activity.UserGuidanceActivity"
+                  android:screenOrientation="portrait"
+        >
+
         </activity>
     </application>
 

@@ -1,6 +1,7 @@
 package misaka.nemesiss.com.findlostthings.Application;
 
 import android.content.Context;
+import android.content.IntentFilter;
 import android.support.multidex.MultiDexApplication;
 import cn.jpush.android.api.JPushInterface;
 import com.tencent.cos.xml.CosXmlService;
@@ -9,12 +10,17 @@ import com.tencent.qcloud.core.auth.QCloudCredentialProvider;
 import com.tencent.tauth.Tencent;
 import misaka.nemesiss.com.findlostthings.Activity.SplashActivity;
 import misaka.nemesiss.com.findlostthings.Services.Common.AppService;
+import misaka.nemesiss.com.findlostthings.Services.Common.NetworkStateReceiver;
 import misaka.nemesiss.com.findlostthings.Services.QQAuth.QQAuthInfo;
 import misaka.nemesiss.com.findlostthings.Services.StorageBucket.BucketInfo;
 import misaka.nemesiss.com.findlostthings.Services.StorageBucket.CustomCredentialProvider;
 import misaka.nemesiss.com.findlostthings.Services.Thing.ThingServices;
 import misaka.nemesiss.com.findlostthings.Services.User.UserService;
+import misaka.nemesiss.com.findlostthings.Utils.AppUtils;
 import misaka.nemesiss.com.findlostthings.Utils.EventProxy;
+import rx.subjects.BehaviorSubject;
+
+import java.util.Queue;
 
 public class FindLostThingsApplication extends MultiDexApplication
 {
@@ -37,12 +43,24 @@ public class FindLostThingsApplication extends MultiDexApplication
     //修改这个标志位可以跳过QQ登陆直接进入界面。但是相应功能会被屏蔽
     public static boolean JumpOutQQLogin = false;
 
+    private static Queue<Runnable> PendingNetworkTasks;
 
+    private static BehaviorSubject<Boolean> CurrentNetworkStatus;
+
+    private NetworkStateReceiver networkStateReceiver;
     @Override
     public void onCreate()
     {
         super.onCreate();
         context = getApplicationContext();
+        CurrentNetworkStatus = BehaviorSubject.create(AppUtils.IfAppIsRunning(context));
+
+        IntentFilter intentFilter = new IntentFilter();
+
+        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        networkStateReceiver = new NetworkStateReceiver();
+        registerReceiver(networkStateReceiver,intentFilter);
+
         QQAuthService = Tencent.createInstance(QQAuthInfo.APPID,context);
         cosXmlServiceConfig = new CosXmlServiceConfig.Builder()
                 .setAppidAndRegion(BucketInfo.AppID,BucketInfo.Region)
@@ -58,8 +76,17 @@ public class FindLostThingsApplication extends MultiDexApplication
         userService = new UserService();
         appService = new AppService();
         thingServices = new ThingServices();
+
         
     }
+
+    @Override
+    public void onTerminate()
+    {
+        super.onTerminate();
+        unregisterReceiver(networkStateReceiver);
+    }
+
     public static Context getContext()
     {
         return context;
@@ -111,13 +138,13 @@ public class FindLostThingsApplication extends MultiDexApplication
         UserService.LoadUserProfile();
     }
 
-    public static void ReloadAfterNetworkChanged()
-    {
-        //这里放置一些检测到网络状态变化之后需要执行的语句。
-    }
-
     public static ThingServices getThingServices()
     {
         return thingServices;
+    }
+
+    public static BehaviorSubject<Boolean> GetCurrentNetworkStatusObservable()
+    {
+        return CurrentNetworkStatus;
     }
 }

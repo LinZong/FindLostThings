@@ -3,6 +3,7 @@ package misaka.nemesiss.com.findlostthings.Activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,7 +19,9 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
+import misaka.nemesiss.com.findlostthings.Model.AppSettings;
 import misaka.nemesiss.com.findlostthings.R;
+import misaka.nemesiss.com.findlostthings.Services.Common.NetworkStateReceiver;
 import misaka.nemesiss.com.findlostthings.Services.QQAuth.QQAuthCredentials;
 import misaka.nemesiss.com.findlostthings.Utils.EventProxy;
 import misaka.nemesiss.com.findlostthings.Utils.PermissionsHelper;
@@ -42,11 +45,9 @@ public class SplashActivity extends FindLostThingsActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
         GoToMainActivityHandler = new Handler(this::SplashMessageHandler);
-
         GotoMainActivityEvent = new EventProxy<>();
-        // 设置进入MainActivity的条件
-
         GotoMainActivityEvent.all(new EventProxy.EventResult<String>() {
             @Override
             public void handle(ConcurrentHashMap<String, Object> evs, ConcurrentHashMap<String, EventProxy.EventStatus> evStatus) {
@@ -113,7 +114,12 @@ public class SplashActivity extends FindLostThingsActivity
 
     private void InitApplication()
     {
-        if(QQAuthCredentials.Validate())
+        AppSettings as = FindLostThingsApplication.getAppService().GetAppSettings();
+        if(!as.getHaveSeenUserGuide()) {
+            startActivity(new Intent(SplashActivity.this,UserGuidanceActivity.class));
+            finish();
+        }
+        else if(QQAuthCredentials.Validate())
         {
             GoToMainActivityHandler.sendEmptyMessageDelayed(OVERTIME_GOTO_MAINACTIVITY,10000);
             QQAuthCredentials.LoadUserAccountInfo();
@@ -122,7 +128,7 @@ public class SplashActivity extends FindLostThingsActivity
         {
             startActivity(new Intent(SplashActivity.this, QQAuthLoginActivity.class));
             finish();
-       }
+        }
     }
 
     @Override

@@ -109,8 +109,8 @@ public class LostThingDetailActivity extends FindLostThingsActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
-                WindowManager.LayoutParams.FLAG_SECURE);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
+//                WindowManager.LayoutParams.FLAG_SECURE);
 
 
         setContentView(R.layout.activity_lost_thing_detail);
@@ -183,7 +183,7 @@ public class LostThingDetailActivity extends FindLostThingsActivity {
             for (String s : urlArray) {
                 uri.add(Uri.parse(s));
             }
-            adapter = new SwipeLostThingImageAdapter(uri,LostThingDetailActivity.this);
+            adapter = new SwipeLostThingImageAdapter(uri,LostThingDetailActivity.this,true);
             imageViewSwiper.SetImageListAdapter(adapter);
         }
 

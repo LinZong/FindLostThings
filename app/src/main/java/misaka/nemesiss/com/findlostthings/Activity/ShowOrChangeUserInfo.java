@@ -35,30 +35,49 @@ public class ShowOrChangeUserInfo extends AppCompatActivity
     private EditText telEditText;
     private EditText emailEditText;
     private int realPersonValid;
+    private ImageView imageView;
+    private ConstraintLayout qq;
+    private ConstraintLayout weChat;
+    private ConstraintLayout tel;
+    private ConstraintLayout email;
+    private ConstraintLayout realNameAuthentication;
+    private TextView realNameText;
+    private ImageView imageView1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_or_change_user_info);
-        UserService.LoadUserProfile();
+
         ButterKnife.bind(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        ImageView imageView = (ImageView) findViewById(R.id.QQImage);
-        ConstraintLayout qq = (ConstraintLayout) findViewById(R.id.qq);
-        ConstraintLayout weChat = (ConstraintLayout) findViewById(R.id.weChat);
-        ConstraintLayout tel = (ConstraintLayout) findViewById(R.id.tel);
-        ConstraintLayout email = (ConstraintLayout) findViewById(R.id.email);
-        ConstraintLayout realNameAuthentication = (ConstraintLayout) findViewById(R.id.RealNameAuthentication);
-        TextView realNameText = (TextView) findViewById(R.id.realNameText);
-        ImageView imageView1 = (ImageView) findViewById(R.id.imageView);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        imageView = findViewById(R.id.QQImage);
+        qq = findViewById(R.id.qq);
+        weChat = findViewById(R.id.weChat);
+        tel = findViewById(R.id.tel);
+        email = findViewById(R.id.email);
+        realNameAuthentication = findViewById(R.id.RealNameAuthentication);
+        realNameText = findViewById(R.id.realNameText);
+        imageView1 = findViewById(R.id.imageView);
 
-        qqEditText = (EditText) findViewById(R.id.qq_number);
-        weChatEditText = (EditText) findViewById(R.id.weChat_number);
-        telEditText = (EditText) findViewById(R.id.phone_number);
-        emailEditText = (EditText) findViewById(R.id.emailEditText);
+        qqEditText = findViewById(R.id.qq_number);
+        weChatEditText = findViewById(R.id.weChat_number);
+        telEditText = findViewById(R.id.phone_number);
+        emailEditText = findViewById(R.id.emailEditText);
 
+        AppUtils.ToolbarShowReturnButton(this, toolbar);
 
+        if(FindLostThingsApplication.GetCurrentNetworkStatusObservable().getValue())
+        {
+            LoadUserInformation();
+        }
+
+        ClearRealPersonValidActivityState();
+    }
+
+    private void LoadUserInformation()
+    {
         String qqStr = FindLostThingsApplication.getUserService().getMyProfile().getQQ();
         String weChatStr = FindLostThingsApplication.getUserService().getMyProfile().getWxID();
         String telStr = FindLostThingsApplication.getUserService().getMyProfile().getPhoneNumber();
@@ -73,7 +92,7 @@ public class ShowOrChangeUserInfo extends AppCompatActivity
         Glide.with(ShowOrChangeUserInfo.this)
                 .load(userAccount.getImageUrl())
                 .into(imageView);
-        AppUtils.ToolbarShowReturnButton(this, toolbar);
+
 
         realPersonValid = FindLostThingsApplication.getUserService().getMyProfile().getRealPersonValid();
         switch (realPersonValid)
@@ -90,9 +109,7 @@ public class ShowOrChangeUserInfo extends AppCompatActivity
                 imageView1.setImageResource(R.drawable.ic_keyboard_arrow_right_black_24dp);
                 break;
         }
-        ClearRealPersonValidActivityState();
     }
-
 
     private void ClearRealPersonValidActivityState()
     {
@@ -123,11 +140,11 @@ public class ShowOrChangeUserInfo extends AppCompatActivity
         {
             case android.R.id.home:
             {
-                if (ValidateEnteredInformation())
+                if (FindLostThingsApplication.GetCurrentNetworkStatusObservable().getValue() && ValidateEnteredInformation())
                 {
                     UpdateUserProfile();
-                    finish();
-                }
+
+                } finish();
                 break;
             }
         }
@@ -137,11 +154,11 @@ public class ShowOrChangeUserInfo extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
-        if (ValidateEnteredInformation())
+        if (FindLostThingsApplication.GetCurrentNetworkStatusObservable().getValue() && ValidateEnteredInformation())
         {
             UpdateUserProfile();
-            finish();
-        }
+
+        } finish();
     }
 
     private void UpdateUserProfile()
