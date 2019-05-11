@@ -87,7 +87,7 @@ public class ValidateGivenActivity extends FindLostThingsActivity {
         String str = CurrentValidateUserInfo.getRealPersonIdentity();
         String[] identityImgList = new Gson().fromJson(str, new TypeToken<String[]>() {
         }.getType());
-        if (identityImgList.length > 0) {
+        if (identityImgList!=null && identityImgList.length > 0) {
             LoadIdentityImage(identityImgList[0]);
         }
 
