@@ -177,7 +177,6 @@ public class ShowOrChangeUserInfo extends AppCompatActivity
             {
                 Toast.makeText(this, "更新信息失败", Toast.LENGTH_SHORT).show();
             }
-
         }).execute(userInformation);
     }
 

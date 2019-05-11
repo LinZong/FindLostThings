@@ -406,6 +406,7 @@ public class RealPersonValidActivity extends AppCompatActivity {
         String IdentityUrl = gson.toJson(CosImagePath, new TypeToken<String[]>() {
         }.getType());
         userInformation.setRealPersonIdentity(IdentityUrl);
+        FindLostThingsApplication.getUserService().setMyProfile(userInformation);
 
         new UpdateUserInformationAsyncTask((result) -> {
             IsUploadingInfo = false;
