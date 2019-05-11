@@ -143,8 +143,8 @@ public class ShowOrChangeUserInfo extends AppCompatActivity
                 if (FindLostThingsApplication.GetCurrentNetworkStatusObservable().getValue() && ValidateEnteredInformation())
                 {
                     UpdateUserProfile();
-
-                } finish();
+                    finish();
+                }
                 break;
             }
         }
@@ -157,8 +157,8 @@ public class ShowOrChangeUserInfo extends AppCompatActivity
         if (FindLostThingsApplication.GetCurrentNetworkStatusObservable().getValue() && ValidateEnteredInformation())
         {
             UpdateUserProfile();
-
-        } finish();
+            finish();
+        }
     }
 
     private void UpdateUserProfile()
@@ -187,7 +187,7 @@ public class ShowOrChangeUserInfo extends AppCompatActivity
         String MatchQQ = "[1-9][0-9]{4,9}";
         String MatchEmail = "[\\w!#$%&'*+/=?^_`{|}~-]+(?:\\.[\\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\\w](?:[\\w-]*[\\w])?\\.)+[\\w](?:[\\w-]*[\\w])?";
         String MatchPhone = "^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199|(147))\\d{8}$";
-        String MatchWx = "^[a-zA-Z]{1}[-_a-zA-Z0-9]{5,19}$";
+        String MatchWx = "^([a-zA-Z]{1}[-_a-zA-Z0-9]{5,19}|((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199|(147))\\d{8})$";
 
 
         String email = emailEditText.getText().toString().trim();
@@ -219,7 +219,7 @@ public class ShowOrChangeUserInfo extends AppCompatActivity
         }
         if (AllEmpty)
         {
-            Toast.makeText(ShowOrChangeUserInfo.this, "必须至少填写一项联系方式!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ShowOrChangeUserInfo.this, "至少填写一项联系方式!", Toast.LENGTH_SHORT).show();
             return false;
         } else
         {
@@ -227,7 +227,7 @@ public class ShowOrChangeUserInfo extends AppCompatActivity
             boolean AllOK = true;
             for (int i = 0; i < NotEmptyString.size(); i++)
             {
-                if (!IsMatch(NotEmptyMatcher.get(i), NotEmptyString.get(i)))
+                if (!IsMatch(NotEmptyMatcher.get(i),NotEmptyString.get(i)))
                 {
                     NotEmptyContainer.get(i).setError("联系方式格式错误!");
                     AllOK = false;

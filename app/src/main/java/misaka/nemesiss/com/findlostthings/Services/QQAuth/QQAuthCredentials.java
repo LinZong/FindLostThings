@@ -80,8 +80,8 @@ public class QQAuthCredentials
                 //将服务器返回的UserID存入UserService对象。
                 FindLostThingsApplication.getUserService().SetUserID(res.getUserID());
                 Log.d("QQAuthCredentials", "成功上报数据给服务器.");
-                SplashActivity.GotoMainActivityEvent.emit("qq_login", EventProxy.EventStatus.Finish,"QQLoginFinish");
 
+                SplashActivity.GotoMainActivityEvent.emit("qq_login", EventProxy.EventStatus.Finish,"QQLoginFinish");
 
                 FindLostThingsApplication.ReloadAfterLogin();
             }

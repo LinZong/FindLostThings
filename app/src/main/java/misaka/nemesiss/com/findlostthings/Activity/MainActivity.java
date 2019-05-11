@@ -318,7 +318,7 @@ public class MainActivity extends FindLostThingsActivity {
             mDrawerLayout.closeDrawers();
         } else {
             long curr = System.currentTimeMillis();
-            if (curr - LastPressedMillSeconds <= 1000) {
+            if (curr - LastPressedMillSeconds <= 1500) {
                 finish();
             } else {
                 LastPressedMillSeconds = curr;

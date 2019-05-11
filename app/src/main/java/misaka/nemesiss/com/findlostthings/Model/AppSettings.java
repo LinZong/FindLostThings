@@ -11,7 +11,7 @@ package misaka.nemesiss.com.findlostthings.Model;
  * */
 
 public class AppSettings {
-    private int EnableNotification = 0;
+    private int EnableNotification = 1;
     private int TakePhotoStoreLocation = 0;
     private boolean HaveSeenUserGuide = false;
 

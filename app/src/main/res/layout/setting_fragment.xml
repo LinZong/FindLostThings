@@ -21,7 +21,7 @@
                   app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="8dp"
                   app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="8dp"
                   android:layout_marginStart="16dp" app:layout_constraintStart_toStartOf="parent"/>
-        <android.support.v7.widget.SwitchCompat android:layout_width="42dp"
+        <android.support.v7.widget.SwitchCompat android:layout_width="65dp"
                                                 android:layout_height="match_parent"
                                                 android:id="@+id/Setting_NotificationSwitch"
                                                 app:layout_constraintRight_toRightOf="@id/push_notice"

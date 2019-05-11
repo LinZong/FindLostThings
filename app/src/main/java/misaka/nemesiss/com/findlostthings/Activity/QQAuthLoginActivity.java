@@ -5,10 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.*;
 import com.tencent.connect.UserInfo;
 import com.tencent.connect.auth.QQToken;
 import com.tencent.tauth.IUiListener;
@@ -39,6 +37,7 @@ public class QQAuthLoginActivity extends FindLostThingsActivity {
     public String access_token;
     private String expires;
 
+    private RelativeLayout IsLogining;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +54,7 @@ public class QQAuthLoginActivity extends FindLostThingsActivity {
     }
 
     private void init() {
+        IsLogining = findViewById(R.id.IsLogining);
         mTencent = FindLostThingsApplication.getQQAuthService();
         img = findViewById(R.id.iv_img);
         login = findViewById(R.id.btn_login);
@@ -67,6 +67,7 @@ public class QQAuthLoginActivity extends FindLostThingsActivity {
 
     private void QQLogin() {
         if (!mTencent.isSessionValid()) {
+            IsLogining.setVisibility(View.VISIBLE);
             mTencent.login(this, "all", mListener);
         }
     }
@@ -78,11 +79,13 @@ public class QQAuthLoginActivity extends FindLostThingsActivity {
             parseResult(o);
             PersistUserInfo();
             PrepareToMainActivity();
+            IsLogining.setVisibility(View.GONE);
         }
 
         @Override
         public void onError(UiError uiError) {
             //登录失败
+            IsLogining.setVisibility(View.GONE);
             Log.d("QQAuthLoginActivity", "QQ登陆失败，原因为" + uiError.errorCode + uiError.errorMessage);
             Toast.makeText(QQAuthLoginActivity.this,"QQ登陆失败，原因为" + uiError.errorCode + uiError.errorMessage,Toast.LENGTH_SHORT).show();
         }
@@ -90,6 +93,7 @@ public class QQAuthLoginActivity extends FindLostThingsActivity {
         @Override
         public void onCancel() {
             //取消登陆
+            IsLogining.setVisibility(View.GONE);
             Log.d("QQAuthLoginActivity", "用户取消了QQ登陆");
         }
     }
@@ -121,6 +125,7 @@ public class QQAuthLoginActivity extends FindLostThingsActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        IsLogining.setVisibility(View.VISIBLE);
         Tencent.onActivityResultData(requestCode, resultCode, data, mListener);
     }
 }

@@ -1,5 +1,7 @@
 package misaka.nemesiss.com.findlostthings.Utils;
 
+import android.util.Log;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -36,6 +38,7 @@ public class EventProxy<TKey> {
         {
             throw new UnsupportedOperationException("Cannot emit an event twice!");
         }
+        Log.d("EventProxy",key.toString());
         eventsStatus.replace(key,status);
         events.put(key,value);
         boolean AllFinish = true;
@@ -56,7 +59,7 @@ public class EventProxy<TKey> {
         if(status == EventStatus.InProgress) {
             throw new UnsupportedOperationException("Re-enter InProgress status is not allowed!");
         }
-
+        Log.d("EventProxy",key.toString());
         eventsStatus.replace(key,status);
         events.put(key,value);
         boolean AllFinish = true;
@@ -79,6 +82,7 @@ public class EventProxy<TKey> {
     public synchronized void reset(TKey key) {
         events.remove(key);
         eventsStatus.replace(key,EventStatus.InProgress);
+        HaveDoneAllTasks.set(false);
     }
 
     public interface EventResult<TKey> {
