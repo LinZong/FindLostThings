@@ -3,6 +3,7 @@ package misaka.nemesiss.com.findlostthings.Services.Thing;
 import android.util.Log;
 import android.util.SparseArray;
 import androidx.annotation.Nullable;
+import misaka.nemesiss.com.findlostthings.Activity.SplashActivity;
 import misaka.nemesiss.com.findlostthings.Application.FindLostThingsApplication;
 import misaka.nemesiss.com.findlostthings.Model.LostThingDetail;
 import misaka.nemesiss.com.findlostthings.Model.LostThingsCategory;
@@ -11,6 +12,7 @@ import misaka.nemesiss.com.findlostthings.Tasks.GetLostThingsCategoryAsyncTask;
 import misaka.nemesiss.com.findlostthings.Tasks.GetLostThingsCategoryPartitionTask;
 import misaka.nemesiss.com.findlostthings.Tasks.GetSupportSchoolsTask;
 import misaka.nemesiss.com.findlostthings.Utils.AppUtils;
+import misaka.nemesiss.com.findlostthings.Utils.EventProxy;
 import rx.subjects.BehaviorSubject;
 
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ public class ThingServices
     private BehaviorSubject<List<SchoolInfo>> OriginalSchools;
     private BehaviorSubject<List<LostThingsCategory>> OriginalThingCategory;
 
+
     public ThingServices()
     {
         Schools = new SparseArray<>();
@@ -35,9 +38,20 @@ public class ThingServices
 
         FindLostThingsApplication.GetCurrentNetworkStatusObservable()
                 .subscribe(result -> {
-                    if(result) {
-                        ReloadSchoolList(null);
-                        ReloadThingCategory(null);
+                    if(result && SplashActivity.GotoMainActivityEvent != null) {
+                        if(OriginalSchools.getValue().isEmpty()) {
+                            ReloadSchoolList(() -> {
+                                SplashActivity.GotoMainActivityEvent.tryemit("get_school_name", EventProxy.EventStatus.Finish,"GetSchoolNameFinish");
+                            });
+                        }
+                        if(OriginalThingCategory.getValue().isEmpty()) {
+                            ReloadThingCategory(() -> {
+                                SplashActivity.GotoMainActivityEvent.tryemit("get_thing_category", EventProxy.EventStatus.Finish,"GetThingCategoryFinish");
+                            });
+                            ReloadAllThingDetail(() -> {
+                                SplashActivity.GotoMainActivityEvent.tryemit("get_thing_detail", EventProxy.EventStatus.Finish,"GetThingDetailFinish");
+                            });
+                        }
                     }
                 });
     }
@@ -54,6 +68,7 @@ public class ThingServices
                     Schools.append(sc.getId(),sc);
                 }
                 Log.d("ThingServices","成功加载全部支持的学校列表.");
+                //SplashActivity.GotoMainActivityEvent.tryemit("get_school_name", EventProxy.EventStatus.Finish,"GetSchoolNameFinish");
                 if (callback != null)
                 {
                     callback.run();
@@ -73,6 +88,7 @@ public class ThingServices
                     ThingCategory.append(c.getId(),c);
                 }
                 Log.d("ThingServices","成功加载全部的物品列表.");
+                //SplashActivity.GotoMainActivityEvent.tryemit("get_thing_category", EventProxy.EventStatus.Finish,"GetThingCategoryFinish");
                 if (callback != null)
                 {
                     callback.run();
@@ -96,6 +112,7 @@ public class ThingServices
                     }
                     innerList.put(d.getId(),d);
                 }
+                //SplashActivity.GotoMainActivityEvent.tryemit("get_thing_detail", EventProxy.EventStatus.Finish,"GetThingDetailFinish");
                 if (callback != null) {
                     // 告知整个任务执行完成。
                     callback.run();

@@ -121,13 +121,13 @@ public class FindLostThingsApplication extends MultiDexApplication
 
     public static void ReloadBeforeLogin() {
         thingServices.ReloadSchoolList(() -> {
-            SplashActivity.GotoMainActivityEvent.emit("get_school_name", EventProxy.EventStatus.Finish,"GetSchoolNameFinish");
+            SplashActivity.GotoMainActivityEvent.tryemit("get_school_name", EventProxy.EventStatus.Finish,"GetSchoolNameFinish");
         });
         thingServices.ReloadThingCategory(() -> {
-            SplashActivity.GotoMainActivityEvent.emit("get_thing_category", EventProxy.EventStatus.Finish,"GetThingCategoryFinish");
+            SplashActivity.GotoMainActivityEvent.tryemit("get_thing_category", EventProxy.EventStatus.Finish,"GetThingCategoryFinish");
         });
         thingServices.ReloadAllThingDetail(() -> {
-            SplashActivity.GotoMainActivityEvent.emit("get_thing_detail", EventProxy.EventStatus.Finish,"GetThingDetailFinish");
+            SplashActivity.GotoMainActivityEvent.tryemit("get_thing_detail", EventProxy.EventStatus.Finish,"GetThingDetailFinish");
         });
     }
 

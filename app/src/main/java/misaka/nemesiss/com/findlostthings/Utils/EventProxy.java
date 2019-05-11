@@ -1,11 +1,14 @@
 package misaka.nemesiss.com.findlostthings.Utils;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EventProxy<TKey> {
     private ConcurrentHashMap<TKey, Object> events;
     private ConcurrentHashMap<TKey,EventStatus> eventsStatus;
     private EventResult<TKey> finishCallback;
+
+    private AtomicBoolean HaveDoneAllTasks = new AtomicBoolean(false);
     public EventProxy() {
         events = new ConcurrentHashMap<>();
         eventsStatus = new ConcurrentHashMap<>();
@@ -41,10 +44,33 @@ public class EventProxy<TKey> {
                 AllFinish = false;
             }
         }
-        if(AllFinish)
+        if(AllFinish && !HaveDoneAllTasks.get())
+        {
             finishCallback.handle(events,eventsStatus);
+            HaveDoneAllTasks.set(true);
+        }
     }
 
+    public synchronized void tryemit(TKey key,EventStatus status,Object value)
+    {
+        if(status == EventStatus.InProgress) {
+            throw new UnsupportedOperationException("Re-enter InProgress status is not allowed!");
+        }
+
+        eventsStatus.replace(key,status);
+        events.put(key,value);
+        boolean AllFinish = true;
+        for (EventStatus evs : eventsStatus.values()) {
+            if(evs==EventStatus.InProgress) {
+                AllFinish = false;
+            }
+        }
+        if(AllFinish && !HaveDoneAllTasks.get())
+        {
+            finishCallback.handle(events,eventsStatus);
+            HaveDoneAllTasks.set(true);
+        }
+    }
     public synchronized void revoke(TKey key){
         events.remove(key);
         eventsStatus.remove(key);
